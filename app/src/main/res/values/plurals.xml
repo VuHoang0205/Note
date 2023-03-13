@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="folder">
+        <item quantity="one">1 folder</item>
+        <item quantity="zero">0 folders</item>
+        <item quantity="many">%d folders</item>
+        <item quantity="other">%d folders</item>
+    </plurals>
+
+    <plurals name="script">
+        <item quantity="one">"1 script"</item>
+        <item quantity="zero">"0 scripts"</item>
+        <item quantity="many">"%d scripts"</item>
+        <item quantity="other">"%d scripts"</item>
+    </plurals>
+
+    <plurals name="item_selected">
+        <item quantity="one">"1 item selected"</item>
+        <item quantity="zero">"0 items selected"</item>
+        <item quantity="many">"%d items selected"</item>
+        <item quantity="other">"%d items selected"</item>
+    </plurals>
+</resources>

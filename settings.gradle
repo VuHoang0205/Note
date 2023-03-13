@@ -1,0 +1,8 @@
+rootProject.name = "Note"
+include ':app'
+include ':base:theme'
+include ':base:common'
+include ':data:persistence'
+include ':base:ui'
+include ':feature:ads'
+include ':feature:purchase'
