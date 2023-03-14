@@ -61,7 +61,6 @@ dependencies {
     implementation("org.apache.poi:poi-ooxml:5.2.3")
 
 
-
     // Module dependencies
     implementation(project(":feature:ads"))
     implementation(project(":feature:purchase"))
@@ -75,6 +74,7 @@ dependencies {
         deps.AndroidX,
         deps.Hilt,
         deps.Compose,
+        deps.Gson,
         deps.Log,
         deps.Glide,
         deps.Coroutine,

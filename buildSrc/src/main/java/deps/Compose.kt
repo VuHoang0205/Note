@@ -14,6 +14,7 @@ object Compose : Dependency() {
         const val liveData = "1.1.1"
         const val material3 = "1.1.0-alpha06"
         const val googleFont = "1.3.2"
+        const val coilCompose = "2.2.2"
     }
 
     private const val ui = "androidx.compose.ui:ui:${Versions.compose}"
@@ -32,6 +33,7 @@ object Compose : Dependency() {
     private const val accompanistSwipeRefresh = "com.google.accompanist:accompanist-swiperefresh:${Versions.accompanistSwipeRefresh}"
     private const val liveData = "androidx.compose.runtime:runtime-livedata:${Versions.liveData}"
     private const val googleFont = "androidx.compose.ui:ui-text-google-fonts:${Versions.googleFont}"
+    private const val coilCompose = "io.coil-kt:coil-compose:${Versions.coilCompose}"
 
     override fun implementations() = listOf<String>(
         ui,
@@ -45,7 +47,8 @@ object Compose : Dependency() {
         activity,
         accompanistPager,
         accompanistPermission,
-        googleFont
+        googleFont,
+        coilCompose
     )
 
     override fun debugImplementations() = listOf<String>(
