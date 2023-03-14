@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Note</string>
+
+    <string name="note">Note</string>
+    <string name="folder">Folder</string>
+    <string name="create">Create</string>
+    <string name="todo">Todo</string>
+    <string name="account">Account</string>
 </resources>
