@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "381599986925",
+    "project_id": "teleprompter-a814e",
+    "storage_bucket": "teleprompter-a814e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:381599986925:android:ba8f73e26ae2301b6408e4",
+        "android_client_info": {
+          "package_name": "com.solid.teleprompter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "381599986925-jre8f78j8v5tpi59mg7lj05757j24fmn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr90KKsDWc2OZFoY2mVgdn8JWnWWI28n0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "381599986925-jre8f78j8v5tpi59mg7lj05757j24fmn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:381599986925:android:a058b93c3d98fcf66408e4",
+        "android_client_info": {
+          "package_name": "com.solid.teleprompter.qa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "381599986925-jre8f78j8v5tpi59mg7lj05757j24fmn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr90KKsDWc2OZFoY2mVgdn8JWnWWI28n0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "381599986925-jre8f78j8v5tpi59mg7lj05757j24fmn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

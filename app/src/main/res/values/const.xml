@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="default_speed">2</integer>
+    <integer name="min_speed">1</integer>
+    <integer name="max_speed">6</integer>
+
+    <integer name="default_fontsize">30</integer>
+    <integer name="min_fontsize">10</integer>
+    <integer name="max_fontsize">48</integer>
+
+    <integer name="default_line_height">40</integer>
+    <integer name="min_line_height">12</integer>
+    <integer name="max_line_height">60</integer>
+</resources>
