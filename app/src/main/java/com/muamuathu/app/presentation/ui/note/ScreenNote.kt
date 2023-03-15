@@ -63,7 +63,7 @@ fun ScreenNote() {
     var selectDate by remember { mutableStateOf(ZonedDateTime.now()) }
 
     Content(selectDate, selectDateList, noteItemList,
-        onMenu = {
+        onAdd = {
 
         }, onSearch = {
 
@@ -112,7 +112,7 @@ private fun Content(
     selectDate: ZonedDateTime,
     dateList: List<ZonedDateTime>,
     noteItemList: List<Note>,
-    onMenu: () -> Unit,
+    onAdd: () -> Unit,
     onSearch: () -> Unit,
     onCalendar: (selectDate: ZonedDateTime?) -> Unit,
     onSelectDate: (selectDate: ZonedDateTime) -> Unit,
@@ -139,10 +139,10 @@ private fun Content(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = {
-                onMenu()
+                onAdd()
             }) {
                 Image(
-                    painter = painterResource(R.drawable.ic_menu),
+                    painter = painterResource(R.drawable.ic_add),
                     contentDescription = "menu"
                 )
             }

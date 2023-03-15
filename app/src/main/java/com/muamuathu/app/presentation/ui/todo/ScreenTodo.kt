@@ -61,7 +61,7 @@ fun ScreenTodo() {
     val selectTaskList: List<Task> by remember { mutableStateOf(emptyList()) }
 
     Content(selectDate, dateList, taskList, selectTaskList,
-        onMenu = {
+        onAdd = {
 
         }, onSort = {
 
@@ -105,7 +105,7 @@ private fun Content(
     dateList: List<ZonedDateTime>,
     taskList: List<Task>,
     selectTaskList: List<Task>,
-    onMenu: () -> Unit,
+    onAdd: () -> Unit,
     onSort: () -> Unit,
     onCalendar: (selectDate: ZonedDateTime) -> Unit,
     onSelectDate: (selectDate: ZonedDateTime) -> Unit,
@@ -144,10 +144,10 @@ private fun Content(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = {
-                onMenu()
+                onAdd()
             }) {
                 Image(
-                    painter = painterResource(R.drawable.ic_menu),
+                    painter = painterResource(R.drawable.ic_add),
                     contentDescription = "menu"
                 )
             }

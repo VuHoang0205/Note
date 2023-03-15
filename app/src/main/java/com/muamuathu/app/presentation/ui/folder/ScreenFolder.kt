@@ -44,7 +44,7 @@ fun ScreenFolder() {
 
     Content(folderList,
         query,
-        onMenu = {},
+        onAdd = {},
         onSearch = {},
         onSearchFolder = {
             viewModel.searchFolder(it)
@@ -58,7 +58,7 @@ fun ScreenFolder() {
 private fun Content(
     folderList: List<Folder>,
     query: String,
-    onMenu: () -> Unit,
+    onAdd: () -> Unit,
     onSearch: () -> Unit,
     onSearchFolder: (query: String) -> Unit,
     onEdit: () -> Unit,
@@ -74,9 +74,9 @@ private fun Content(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
             IconButton(onClick = {
-                onMenu()
+                onAdd()
             }) {
-                Image(painter = painterResource(R.drawable.ic_menu),
+                Image(painter = painterResource(R.drawable.ic_add),
                     contentDescription = "menu")
             }
             val title = if (!folderList.isEmpty()) {
@@ -94,7 +94,7 @@ private fun Content(
             IconButton(onClick = {
                 onSearch()
             }) {
-                Image(painter = painterResource(R.drawable.ic_search),
+                Image(painter = painterResource(R.drawable.ic_add),
                     contentDescription = "search")
             }
         }
@@ -272,7 +272,7 @@ private fun ItemFolder(
 private fun PreviewContent() {
     Content(emptyList(),
         "",
-        onMenu = {},
+        onAdd = {},
         onSearch = {},
         onSearchFolder = {},
         onEdit = {},

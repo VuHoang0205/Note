@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity() {
         val eventHandler = initEventHandler()
 
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-//        val bottomSheetScreen by remember { derivedStateOf { navBackStackEntry?.destination?.route.orEmpty() } }
 
         LaunchedEffect(key1 = "Navigation Event Handler") {
             eventHandler.navEvent().collect {
