@@ -401,7 +401,7 @@ fun ItemTask(
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
-            elevation = 1.dp,
+            elevation = 4.dp,
             shape = RoundedCornerShape(8.dp),
             backgroundColor = Color.White
         ) {
@@ -509,7 +509,7 @@ private fun ItemCalendar(
             .width(58.dp)
             .clickable {
                 onClickDate()
-            }, shape = RoundedCornerShape(8.dp), elevation = 2.dp
+            }, shape = RoundedCornerShape(8.dp), elevation = 4.dp
     ) {
         Column(verticalArrangement = Arrangement.Center) {
             Text(

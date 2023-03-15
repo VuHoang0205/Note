@@ -107,7 +107,7 @@ private fun Content(
             Card(
                 modifier = Modifier
                     .fillMaxWidth(),
-                elevation = 1.dp,
+                elevation = 4.dp,
             ) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     TextField(

@@ -309,7 +309,9 @@ private fun ItemCalendar(
             .width(58.dp)
             .clickable {
                 onClickDate()
-            }, shape = RoundedCornerShape(8.dp), elevation = CardDefaults.cardElevation()
+            },
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Text(
@@ -383,7 +385,8 @@ private fun ItemNote(
         }) {
         Card(
             colors = CardDefaults.cardColors(containerColor = Color.White),
-            shape = RoundedCornerShape(8.dp), elevation = CardDefaults.cardElevation()
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
                 val (contentView1, viewLine1) = createRefs()

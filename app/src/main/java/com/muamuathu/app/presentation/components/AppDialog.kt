@@ -93,7 +93,7 @@ internal fun DialogBase(
         onDismissRequest.invoke()
         eventHandler.postDialogEvent(DialogEvent.None)
     }, properties = properties) {
-        Card(elevation = CardDefaults.cardElevation(), shape = RoundedCornerShape(12.dp)) {
+        Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), shape = RoundedCornerShape(12.dp)) {
             content.invoke()
         }
     }

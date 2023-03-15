@@ -2,7 +2,9 @@ package com.muamuathu.app.presentation.nav
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.muamuathu.app.presentation.ui.note.ScreenNote
+import com.muamuathu.app.presentation.ui.draw_sketch.ScreenDrawSketch
+import com.muamuathu.app.presentation.ui.note.*
+import com.solid.note.ScreenNoteDetail
 
 fun NavGraphBuilder.note() {
     composable(NavTarget.Note.route) {
@@ -10,41 +12,41 @@ fun NavGraphBuilder.note() {
     }
 
     composable(NavTarget.NoteDetail.route) { backstackEntry ->
-//        backstackEntry.arguments?.getString(EXTRA_NOTE_ID)?.let {
-//            ScreenNoteDetail(it)
-//        }
+        backstackEntry.arguments?.getString(EXTRA_NOTE_ID)?.let {
+            ScreenNoteDetail(it)
+        }
     }
 
     composable(NavTarget.NoteAdd.route) {
-//        ScreenNewNote()
+        ScreenNewNote()
     }
 
     composable(NavTarget.NoteAddImage.route) {
-//        ScreenSelectAttachment(true)
+        ScreenSelectAttachment(true)
     }
 
     composable(NavTarget.NoteAddVideo.route) {
-//        ScreenSelectAttachment(false)
+        ScreenSelectAttachment(false)
     }
 
     composable(NavTarget.NotePickImage.route) {
-//        ScreenPickFile(MediaType.IMAGE)
+        ScreenPickFile(MediaType.IMAGE)
     }
 
     composable(NavTarget.NotePickVideo.route) {
-//        ScreenPickFile(MediaType.VIDEO)
+        ScreenPickFile(MediaType.VIDEO)
     }
 
     composable(NavTarget.NoteDrawSketch.route) {
-//        ScreenDrawSketch()
+        ScreenDrawSketch()
     }
 
     composable(NavTarget.NoteCaptureImage.route) {
-//        ScreenCaptureImage()
+        ScreenCaptureImage()
     }
 
     composable(NavTarget.NoteAddTags.route) {
-//        ScreenAddTag()
+        ScreenAddTag()
     }
 }
 
