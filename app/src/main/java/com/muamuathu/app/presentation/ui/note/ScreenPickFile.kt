@@ -16,7 +16,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.muamuathu.app.R
 import com.muamuathu.app.presentation.common.CheckAndRequestPermission
 import com.muamuathu.app.presentation.event.NavEvent
-import com.muamuathu.app.presentation.nav.initEventHandler
+import com.muamuathu.app.presentation.event.initEventHandler
+
 
 val EMPTY_IMAGE_URI: Uri = Uri.parse("file://journal/null")
 

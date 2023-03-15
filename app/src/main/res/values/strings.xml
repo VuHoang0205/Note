@@ -45,4 +45,30 @@
     <string name="txt_read_more">…Read More</string>
     <string name="txt_read_less">…Read Less</string>
 
+    <string name="txt_keep_me_synced">Keep me Synced</string>
+    <string name="txt_content_keep_me_synced">It’s free to sync your memories &amp; see them on any of devices.</string>
+    <string name="txt_login_with_google">Log in With Google</string>
+    <string name="txt_login_with_facebook">Log in With Facebook</string>
+    <string name="txt_login_with_email">Log in With Email</string>
+    <string name="txt_not_want_sync">No, I dont want to sync</string>
+    <string name="txt_note_privacy">By continuing, you are indicating that you accept our</string>
+    <string name="txt_term_of_service">Terms of Service</string>
+    <string name="txt_and">and</string>
+    <string name="txt_privacy_policy">Privacy Policy.</string>
+    <string name="txt_log_in">Log In</string>
+    <string name="txt_welcome_back">Welcome back</string>
+    <string name="txt_email">Email</string>
+    <string name="txt_password">Password</string>
+    <string name="txt_forgot_password">Forgot Password ?</string>
+    <string name="txt_not_have_account">Don’t have an account?</string>
+    <string name="txt_sign_up">"Sign Up"</string>
+    <string name="txt_login">LogIn</string>
+    <string name="txt_welcome">Welcome</string>
+    <string name="txt_repeat_password">Repeat Password</string>
+    <string name="txt_have_account">Already have an account?</string>
+    <string name="txt_verification">Verification</string>
+    <string name="txt_to_be_discussed">TO BE DISCUSSED</string>
+    <string name="txt_verification_note">An email verification link has been send to your account</string>
+    <string name="txt_resend_email">Resend Email</string>
+
 </resources>

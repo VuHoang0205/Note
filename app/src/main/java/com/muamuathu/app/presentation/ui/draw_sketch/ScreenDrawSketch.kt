@@ -40,7 +40,7 @@ import com.muamuathu.app.data.model.note.SketchColor
 import com.muamuathu.app.presentation.common.CheckAndAskPermission
 import com.muamuathu.app.presentation.components.topbar.Toolbar
 import com.muamuathu.app.presentation.event.NavEvent
-import com.muamuathu.app.presentation.nav.initEventHandler
+import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.ui.draw_sketch.drawbox.DrawBox
 import com.muamuathu.app.presentation.ui.draw_sketch.drawbox.rememberDrawController
 import com.muamuathu.app.presentation.ui.note.viewModel.SelectFileViewModel

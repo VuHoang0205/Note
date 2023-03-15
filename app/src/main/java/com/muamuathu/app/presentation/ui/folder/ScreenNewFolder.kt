@@ -1,4 +1,4 @@
-package com.solid.folder
+package com.muamuathu.app.presentation.ui.folder
 
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
@@ -39,7 +39,7 @@ import com.muamuathu.app.data.entity.Folder
 import com.muamuathu.app.data.model.folder.FolderColor
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
-import com.muamuathu.app.presentation.nav.initEventHandler
+import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.ui.folder.viewModel.AddFolderViewModel
 
 @Composable

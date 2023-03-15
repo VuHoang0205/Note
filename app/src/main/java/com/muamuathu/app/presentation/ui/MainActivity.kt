@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -20,8 +22,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.muamuathu.app.R
+import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.handleNavEvent
-import com.muamuathu.app.presentation.nav.*
+import com.muamuathu.app.presentation.graph.*
 import com.muamuathu.app.presentation.ui.tab.BottomTabItem
 import com.muamuathu.feature.consent.ConsentInfo
 import com.muamuathu.theme.AppTheme
@@ -58,10 +61,8 @@ class MainActivity : AppCompatActivity() {
         val navController = rememberNavController()
         val eventHandler = initEventHandler()
 
-        val scaffoldState = rememberScrollState()
-
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-        var visibilityFloatButton by remember { mutableStateOf(true) }
+//        val bottomSheetScreen by remember { derivedStateOf { navBackStackEntry?.destination?.route.orEmpty() } }
 
         LaunchedEffect(key1 = "Navigation Event Handler") {
             eventHandler.navEvent().collect {
@@ -78,11 +79,21 @@ class MainActivity : AppCompatActivity() {
         ) {
             Box(modifier = Modifier.padding(it)) {
                 val data = navBackStackEntry?.destination?.route
-                visibilityFloatButton =
-                    NavTarget.Note.route == data || NavTarget.Folder.route == data || NavTarget.Todo.route == data
+                NavTarget.Note.route == data || NavTarget.Folder.route == data || NavTarget.Todo.route == data
 
                 NavGraph(navController)
             }
+
+//            var openBottomSheet by rememberSaveable { mutableStateOf(false) }
+//            if (TextUtils.equals(
+//                    NavTarget.NoteAdd.route,
+//                    bottomSheetScreen
+//                ) || TextUtils.equals(NavTarget.FolderAdd.route, bottomSheetScreen)
+//            ) {
+//                ModalBottomSheet(onDismissRequest = { openBottomSheet = false }) {
+//                    SheetLayout(currentScreen = bottomSheetScreen)
+//                }
+//            }
         }
     }
 
@@ -138,12 +149,12 @@ class MainActivity : AppCompatActivity() {
 //
 //            }
 //
-//            navigation(
-//                startDestination = NavTarget.Login.route,
-//                route = NavTarget.GraphAuthentication.route
-//            ) {
-//
-//            }
+            navigation(
+                startDestination = NavTarget.Login.route,
+                route = NavTarget.GraphAuthentication.route
+            ) {
+                authentication()
+            }
 
             navigation(
                 startDestination = NavTarget.Note.route,
@@ -168,4 +179,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
+//@Composable
+//fun SheetLayout(currentScreen: String) {
+//    when (currentScreen) {
+//        NavTarget.NoteAdd.route -> Column(modifier = Modifier
+//            .fillMaxSize()
+//            .padding(top = 10.dp)) { ScreenNewNote() }
+//        NavTarget.FolderAdd.route -> Column(modifier = Modifier
+//            .fillMaxSize()
+//            .padding(top = 10.dp)) { ScreenNewFolder() }
+//        else -> Column(Modifier.size(1.dp)) {}
+//    }
+//}
 

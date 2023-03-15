@@ -33,9 +33,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.data.model.note.Action
 import com.muamuathu.app.presentation.event.NavEvent
+import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.formatFromPattern
-import com.muamuathu.app.presentation.nav.NavTarget
-import com.muamuathu.app.presentation.nav.initEventHandler
+import com.muamuathu.app.presentation.graph.NavTarget
+
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 import java.util.*
 

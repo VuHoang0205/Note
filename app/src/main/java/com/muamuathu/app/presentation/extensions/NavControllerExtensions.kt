@@ -3,7 +3,7 @@ package com.muamuathu.app.presentation.extensions
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.muamuathu.app.presentation.event.NavEvent
-import com.muamuathu.app.presentation.nav.NavTarget
+import com.muamuathu.app.presentation.graph.NavTarget
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 

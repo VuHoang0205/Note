@@ -40,8 +40,9 @@ import com.google.accompanist.pager.rememberPagerState
 import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.Note
 import com.muamuathu.app.presentation.event.NavEvent
+import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
-import com.muamuathu.app.presentation.nav.initEventHandler
+
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 import java.time.Instant
 import java.time.ZoneId

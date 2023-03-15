@@ -2,7 +2,7 @@ package com.muamuathu.app.presentation.components.dialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.muamuathu.app.presentation.nav.EventHandler
+import com.muamuathu.app.presentation.event.EventHandler
 
 @Composable
 fun DialogConfirmation(

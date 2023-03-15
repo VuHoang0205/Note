@@ -31,7 +31,8 @@ import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.Tag
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
-import com.muamuathu.app.presentation.nav.initEventHandler
+import com.muamuathu.app.presentation.event.initEventHandler
+
 import com.muamuathu.app.presentation.ui.note.viewModel.TagViewModel
 
 @Composable

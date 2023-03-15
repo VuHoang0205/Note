@@ -22,7 +22,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.muamuathu.app.presentation.event.DialogEvent
-import com.muamuathu.app.presentation.nav.EventHandler
+import com.muamuathu.app.presentation.event.EventHandler
 
 @Composable
 fun DialogTwoButton(

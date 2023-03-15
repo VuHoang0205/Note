@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.muamuathu.app.presentation.event.DialogEvent
-import com.muamuathu.app.presentation.nav.EventHandler
+import com.muamuathu.app.presentation.event.EventHandler
 
 
 @Composable

@@ -3,7 +3,7 @@ package com.muamuathu.app.presentation.ui.tab
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.muamuathu.app.R
-import com.muamuathu.app.presentation.nav.NavTarget
+import com.muamuathu.app.presentation.graph.NavTarget
 
 enum class BottomTabItem(
     @DrawableRes val icon: Int,
@@ -14,5 +14,5 @@ enum class BottomTabItem(
     FOLDER(R.drawable.ic_folder_tab, R.string.folder, NavTarget.Folder.route),
     ADD(R.drawable.ic_add_note, R.string.create, NavTarget.NoteAdd.route),
     TODO(R.drawable.ic_todo_tab, R.string.todo, NavTarget.Todo.route),
-    ACCOUNT(R.drawable.ic_tab_profile, R.string.account, NavTarget.Account.route)
+    ACCOUNT(R.drawable.ic_tab_profile, R.string.account, NavTarget.Login.route)
 }

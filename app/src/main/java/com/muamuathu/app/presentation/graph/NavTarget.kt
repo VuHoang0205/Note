@@ -1,4 +1,4 @@
-package com.muamuathu.app.presentation.nav
+package com.muamuathu.app.presentation.graph
 
 sealed class NavTarget(val route: String) {
     // splash

@@ -1,4 +1,4 @@
-package com.muamuathu.app.presentation.nav
+package com.muamuathu.app.presentation.graph
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable

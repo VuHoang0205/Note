@@ -37,9 +37,10 @@ import coil.compose.AsyncImage
 import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.Note
 import com.muamuathu.app.presentation.event.NavEvent
+import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
-import com.muamuathu.app.presentation.nav.NavTarget
-import com.muamuathu.app.presentation.nav.initEventHandler
+import com.muamuathu.app.presentation.graph.NavTarget
+
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 import de.charlex.compose.RevealDirection
 import de.charlex.compose.RevealSwipe

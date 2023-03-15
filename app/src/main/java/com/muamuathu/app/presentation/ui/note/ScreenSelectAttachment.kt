@@ -39,7 +39,8 @@ import com.muamuathu.app.data.model.note.DEFAULT_ID
 import com.muamuathu.app.data.model.note.FileInfo
 import com.muamuathu.app.presentation.components.topbar.Toolbar
 import com.muamuathu.app.presentation.event.NavEvent
-import com.muamuathu.app.presentation.nav.initEventHandler
+import com.muamuathu.app.presentation.event.initEventHandler
+
 import com.muamuathu.app.presentation.ui.note.viewModel.SelectFileViewModel
 
 

@@ -1,11 +1,10 @@
-package com.muamuathu.app.presentation.nav
+package com.muamuathu.app.presentation.event
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.presentation.common.viewmodel.*
-import com.muamuathu.app.presentation.event.*
 
 
 class EventHandler(

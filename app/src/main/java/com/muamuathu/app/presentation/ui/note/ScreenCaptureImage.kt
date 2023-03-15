@@ -38,7 +38,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.muamuathu.app.R
 import com.muamuathu.app.presentation.common.CheckAndRequestPermission
 import com.muamuathu.app.presentation.event.NavEvent
-import com.muamuathu.app.presentation.nav.initEventHandler
+import com.muamuathu.app.presentation.event.initEventHandler
+
 import com.muamuathu.app.presentation.ui.note.viewModel.SelectFileViewModel
 import java.io.File
 import java.text.SimpleDateFormat

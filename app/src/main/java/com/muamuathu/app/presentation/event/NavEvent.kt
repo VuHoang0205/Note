@@ -1,6 +1,6 @@
 package com.muamuathu.app.presentation.event
 
-import com.muamuathu.app.presentation.nav.NavTarget
+import com.muamuathu.app.presentation.graph.NavTarget
 
 sealed class NavEvent {
     object None : NavEvent()
