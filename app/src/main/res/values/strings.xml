@@ -38,4 +38,9 @@
     <string name="txt_enter_folder_name">Enter Folder Name</string>
     <string name="txt_add">Add</string>
     <string name="txt_done">Done</string>
+
+    <string name="txt_todo_list">My Todo List</string>
+    <string name="txt_task_today">Tasks today</string>
+    <string name="txt_incomplete_task">Incomplete Tasks</string>
+    <string name="txt_completed_task">Completed Tasks</string>
 </resources>

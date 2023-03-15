@@ -103,6 +103,7 @@ class MainActivity : AppCompatActivity() {
                             )
                         },
                         label = { Text(text = stringResource(tab.title)) },
+                        alwaysShowLabel = false,
                         selected = currentRoute == tab.route,
                         onClick = {
                             if (tab.route != currentRoute) {
