@@ -20,10 +20,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.muamuathu.app.R
-import com.muamuathu.app.presentation.nav.NavTarget
-import com.muamuathu.app.presentation.nav.folder
-import com.muamuathu.app.presentation.nav.note
-import com.muamuathu.app.presentation.nav.todo
+import com.muamuathu.app.presentation.extensions.handleNavEvent
+import com.muamuathu.app.presentation.nav.*
 import com.muamuathu.app.presentation.ui.tab.BottomTabItem
 import com.muamuathu.feature.consent.ConsentInfo
 import com.muamuathu.theme.AppTheme
@@ -58,11 +56,18 @@ class MainActivity : AppCompatActivity() {
     @Composable
     private fun GraphMainApp() {
         val navController = rememberNavController()
+        val eventHandler = initEventHandler()
 
         val scaffoldState = rememberScrollState()
 
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         var visibilityFloatButton by remember { mutableStateOf(true) }
+
+        LaunchedEffect(key1 = "Navigation Event Handler") {
+            eventHandler.navEvent().collect {
+                navController.handleNavEvent(it)
+            }
+        }
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
