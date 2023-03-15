@@ -31,4 +31,11 @@
     <string name="add">Add</string>
     <string name="add_new_tag">Add New Tag</string>
     <string name="done">Done</string>
+
+    <string name="txt_folders">Folders</string>
+    <string name="txt_search_folder_name">"Search Folder Name "</string>
+    <string name="txt_add_new_folder">"Add New Folder"</string>
+    <string name="txt_enter_folder_name">Enter Folder Name</string>
+    <string name="txt_add">Add</string>
+    <string name="txt_done">Done</string>
 </resources>
