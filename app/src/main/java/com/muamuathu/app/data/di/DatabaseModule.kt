@@ -2,7 +2,7 @@ package com.solid.journal.data.di
 
 import android.content.Context
 import androidx.room.Room
-import com.solid.journal.data.JournalDatabase
+import com.muamuathu.app.data.JournalDatabase
 import com.solid.journal.data.repository.FileRepo
 import com.solid.journal.data.repository.FileRepoImpl
 import com.solid.journal.data.repository.JournalRepo

@@ -1,12 +1,13 @@
-package com.solid.journal.data
+package com.muamuathu.app.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.muamuathu.app.data.converters.Converters
 import com.muamuathu.app.data.dao.*
-import com.solid.journal.data.dao.*
-import com.solid.journal.data.entity.*
+import com.muamuathu.app.data.entity.Tag
+import com.muamuathu.app.data.entity.Task
+import com.muamuathu.app.data.entity.*
 import kotlinx.coroutines.flow.Flow
 
 @Database(

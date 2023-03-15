@@ -2,7 +2,7 @@ package com.muamuathu.app.data.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.solid.journal.data.entity.Folder
+import com.muamuathu.app.data.entity.Folder
 import kotlinx.coroutines.flow.Flow
 
 

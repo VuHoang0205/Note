@@ -1,9 +1,9 @@
 package com.muamuathu.app.data.base
 
 import android.os.SystemClock
-import com.solid.journal.data.entity.Folder
-import com.solid.journal.data.entity.Note
-import com.solid.journal.data.entity.Task
+import com.muamuathu.app.data.entity.Folder
+import com.muamuathu.app.data.entity.Note
+import com.muamuathu.app.data.entity.Task
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.time.ZonedDateTime
@@ -88,7 +88,8 @@ object MockData {
             (0..17).toList().forEach {
                 time += TimeUnit.HOURS.toMillis(1)
                 if (it % 5 == 0) "" else "https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg"
-                taskList.add(Task(
+                taskList.add(
+                    Task(
                     random.nextInt(Int.MAX_VALUE - 1).toLong(),
                     "Metting With James Royal $it",
                     "Come on, people now Smile on your bro everybody get together to try new...",
@@ -97,7 +98,8 @@ object MockData {
                     if (it % 3 == 0) 0 else 1,
                     0,
                     random.nextInt(3)
-                ))
+                )
+                )
             }
             emit(taskList)
         }

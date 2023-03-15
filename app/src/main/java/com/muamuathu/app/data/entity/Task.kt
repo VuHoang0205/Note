@@ -1,8 +1,8 @@
-package com.solid.journal.data.entity
+package com.muamuathu.app.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.solid.data.R
+import com.muamuathu.app.R
 
 @Entity
 data class Task(

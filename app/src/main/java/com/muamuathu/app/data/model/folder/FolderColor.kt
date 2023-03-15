@@ -1,7 +1,7 @@
-package com.solid.journal.data.model.folder
+package com.muamuathu.app.data.model.folder
 
 import androidx.annotation.ColorRes
-import com.solid.data.R
+import com.muamuathu.app.R
 
 enum class FolderColor(@ColorRes val color: Int) {
     ORANGE(R.color.coral),

@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,14 +34,15 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import coil.compose.rememberImagePainter
 import com.muamuathu.app.R
+import com.muamuathu.app.data.entity.Note
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.extensions.*
 import com.muamuathu.app.presentation.nav.NavTarget
 import com.muamuathu.app.presentation.nav.initEventHandler
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
-import com.solid.journal.data.entity.Note
+import de.charlex.compose.RevealDirection
+import de.charlex.compose.RevealSwipe
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
@@ -219,14 +222,16 @@ private fun Content(
             TextButton(
                 onClick = {
                     onCalendar(selectDate)
-                }, modifier = Modifier.constrainAs(textYear) {
+                },
+                modifier = Modifier.constrainAs(textYear) {
                     top.linkTo(icCalendar.top)
                     bottom.linkTo(icCalendar.bottom)
                     end.linkTo(icCalendar.start, 8.dp)
-                }) {
+                },
+            ) {
                 Text(
                     text = selectDate.year.toString(),
-                    color = colorResource(R.color.gulf_blue),
+                    color = colorResource(id = R.color.gulf_blue),
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center,
                 )
@@ -306,7 +311,7 @@ private fun ItemCalendar(
                 onClickDate()
             }, shape = RoundedCornerShape(8.dp), elevation = CardDefaults.cardElevation()
     ) {
-        Column(verticalArrangement = Arrangement.Center) {
+        Column(modifier = Modifier.fillMaxSize()) {
             Text(
                 text = date.dayOfMonth.toString(),
                 color = if (select) Color.White else colorResource(R.color.gulf_blue),
@@ -325,6 +330,7 @@ private fun ItemCalendar(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ItemNote(
     note: Note,

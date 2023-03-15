@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.muamuathu.app.data.base.MockData.getCalendarList
 import com.muamuathu.app.data.base.MockData.getNote
 import com.muamuathu.app.data.base.MockData.getNoteItemList
-import com.solid.journal.data.entity.Note
+import com.muamuathu.app.data.entity.Note
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

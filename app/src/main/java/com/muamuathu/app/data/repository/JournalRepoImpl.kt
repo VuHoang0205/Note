@@ -1,8 +1,8 @@
 package com.solid.journal.data.repository
 
-import com.solid.journal.data.JournalDatabase
-import com.solid.journal.data.entity.Folder
-import com.solid.journal.data.entity.Tag
+import com.muamuathu.app.data.JournalDatabase
+import com.muamuathu.app.data.entity.Folder
+import com.muamuathu.app.data.entity.Tag
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

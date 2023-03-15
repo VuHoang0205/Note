@@ -1,7 +1,7 @@
 package com.solid.journal.data.repository
 
-import com.solid.journal.data.entity.Folder
-import com.solid.journal.data.entity.Tag
+import com.muamuathu.app.data.entity.Folder
+import com.muamuathu.app.data.entity.Tag
 import kotlinx.coroutines.flow.Flow
 
 interface JournalRepo {

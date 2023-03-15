@@ -82,7 +82,8 @@ dependencies {
         deps.CameraX,
         deps.Test,
         deps.Ads,
-        deps.Billing
+        deps.Billing,
+        deps.RevealSwipe
     )
 }
 
