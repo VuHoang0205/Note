@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.Note
+import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
@@ -64,7 +65,7 @@ fun ScreenNote() {
 
     Content(selectDate, selectDateList, noteItemList,
         onAdd = {
-
+            eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { ScreenNewNote() })
         }, onSearch = {
 
         }, onCalendar = {
@@ -314,7 +315,10 @@ private fun ItemCalendar(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
             Text(
                 text = date.dayOfMonth.toString(),
                 color = if (select) Color.White else colorResource(R.color.gulf_blue),

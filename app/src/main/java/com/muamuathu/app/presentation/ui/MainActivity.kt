@@ -1,14 +1,13 @@
 package com.muamuathu.app.presentation.ui
 
 import android.os.Bundle
+import android.text.TextUtils
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -22,6 +21,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.muamuathu.app.R
+import com.muamuathu.app.presentation.components.bottomsheet.BottomSheetEmpty
+import com.muamuathu.app.presentation.components.bottomsheet.HandleBottomSheetDisplay
+import com.muamuathu.app.presentation.components.bottomsheet.handleBottomStateChange
+import com.muamuathu.app.presentation.event.BottomSheetEvent
+import com.muamuathu.app.presentation.event.EventHandler
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.handleNavEvent
 import com.muamuathu.app.presentation.graph.*
@@ -55,14 +59,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
     @Composable
     private fun GraphMainApp() {
         val navController = rememberNavController()
         val eventHandler = initEventHandler()
 
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-
+        val bottomSheetScreen by remember { derivedStateOf { navBackStackEntry?.destination?.route.orEmpty() } }
+        val isShowBottomSheet by remember {
+            derivedStateOf {
+                TextUtils.equals(NavTarget.NoteAdd.route, bottomSheetScreen) || TextUtils.equals(
+                    NavTarget.FolderAdd.route,
+                    bottomSheetScreen
+                )
+            }
+        }
         LaunchedEffect(key1 = "Navigation Event Handler") {
             eventHandler.navEvent().collect {
                 navController.handleNavEvent(it)
@@ -83,16 +95,16 @@ class MainActivity : AppCompatActivity() {
                 NavGraph(navController)
             }
 
-//            var openBottomSheet by rememberSaveable { mutableStateOf(false) }
-//            if (TextUtils.equals(
-//                    NavTarget.NoteAdd.route,
-//                    bottomSheetScreen
-//                ) || TextUtils.equals(NavTarget.FolderAdd.route, bottomSheetScreen)
-//            ) {
-//                ModalBottomSheet(onDismissRequest = { openBottomSheet = false }) {
-//                    SheetLayout(currentScreen = bottomSheetScreen)
-//                }
-//            }
+            val bottomState =
+                rememberModalBottomSheetState(skipPartiallyExpanded = false, confirmValueChange = {
+                    handleBottomStateChange(eventHandler, it)
+                })
+            HandleBottomSheetDisplay(eventHandler, bottomState)
+            if (bottomState.isVisible) {
+                ModalBottomSheet(sheetState = bottomState, onDismissRequest = {}) {
+                    AppBottomSheet(eventHandler)
+                }
+            }
         }
     }
 
@@ -105,18 +117,17 @@ class MainActivity : AppCompatActivity() {
         if (currentRoute in routes) {
             NavigationBar(containerColor = Color.White) {
                 tabs.forEach { tab ->
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                painterResource(tab.icon),
-                                contentDescription = null,
-                                tint = if (currentRoute == tab.route) {
-                                    colorResource(R.color.royal_blue)
-                                } else {
-                                    colorResource(R.color.mischka)
-                                }
-                            )
-                        },
+                    NavigationBarItem(icon = {
+                        Icon(
+                            painterResource(tab.icon),
+                            contentDescription = null,
+                            tint = if (currentRoute == tab.route) {
+                                colorResource(R.color.royal_blue)
+                            } else {
+                                colorResource(R.color.mischka)
+                            }
+                        )
+                    },
                         label = { Text(text = stringResource(tab.title)) },
                         alwaysShowLabel = false,
                         selected = currentRoute == tab.route,
@@ -130,8 +141,7 @@ class MainActivity : AppCompatActivity() {
                                     restoreState = true
                                 }
                             }
-                        }
-                    )
+                        })
                 }
             }
         }
@@ -156,22 +166,19 @@ class MainActivity : AppCompatActivity() {
             }
 
             navigation(
-                startDestination = NavTarget.Note.route,
-                route = NavTarget.GraphNote.route
+                startDestination = NavTarget.Note.route, route = NavTarget.GraphNote.route
             ) {
                 note()
             }
 
             navigation(
-                startDestination = NavTarget.Folder.route,
-                route = NavTarget.GraphFolder.route
+                startDestination = NavTarget.Folder.route, route = NavTarget.GraphFolder.route
             ) {
                 folder()
             }
 
             navigation(
-                startDestination = NavTarget.Todo.route,
-                route = NavTarget.GraphTodo.route
+                startDestination = NavTarget.Todo.route, route = NavTarget.GraphTodo.route
             ) {
                 todo()
             }
@@ -179,16 +186,12 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-//@Composable
-//fun SheetLayout(currentScreen: String) {
-//    when (currentScreen) {
-//        NavTarget.NoteAdd.route -> Column(modifier = Modifier
-//            .fillMaxSize()
-//            .padding(top = 10.dp)) { ScreenNewNote() }
-//        NavTarget.FolderAdd.route -> Column(modifier = Modifier
-//            .fillMaxSize()
-//            .padding(top = 10.dp)) { ScreenNewFolder() }
-//        else -> Column(Modifier.size(1.dp)) {}
-//    }
-//}
+@Composable
+fun AppBottomSheet(eventHandler: EventHandler) {
+    when (val event = eventHandler.bottomSheetEvent()) {
+        is BottomSheetEvent.Custom -> event.ui()
+        is BottomSheetEvent.None -> BottomSheetEmpty()
+        else -> BottomSheetEmpty()
+    }
+}
 

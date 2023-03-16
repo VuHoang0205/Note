@@ -33,10 +33,13 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.Folder
+import com.muamuathu.app.presentation.event.BottomSheetEvent
+import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
 
 @Composable
 fun ScreenFolder() {
+    val eventHandler = initEventHandler()
     val context = LocalContext.current
     val viewModel: FolderViewModel = hiltViewModel(context as ComponentActivity)
     val folderList by viewModel.folderListState
@@ -44,7 +47,9 @@ fun ScreenFolder() {
 
     Content(folderList,
         query,
-        onAdd = {},
+        onAdd = {
+            eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { ScreenNewFolder() })
+        },
         onSearch = {},
         onSearchFolder = {
             viewModel.searchFolder(it)
