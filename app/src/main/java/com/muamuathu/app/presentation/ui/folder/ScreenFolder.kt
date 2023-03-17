@@ -78,19 +78,17 @@ private fun Content(
             .background(colorResource(R.color.alice_blue))
     ) {
         val (topView, searchView, contentView) = createRefs()
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(70.dp)
                 .background(Color.White)
                 .padding(horizontal = 12.dp)
                 .constrainAs(topView) { top.linkTo(parent.top) },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = {
                 onAdd()
-            }) {
+            },modifier = Modifier.align(Alignment.CenterStart)) {
                 Image(
                     painter = painterResource(R.drawable.ic_add),
                     contentDescription = "menu"
@@ -105,17 +103,9 @@ private fun Content(
                 text = title,
                 color = colorResource(R.color.gulf_blue),
                 fontSize = 20.sp,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center)
             )
-
-            IconButton(onClick = {
-                onSearch()
-            }) {
-                Image(
-                    painter = painterResource(R.drawable.ic_add),
-                    contentDescription = "search"
-                )
-            }
         }
         Column(modifier = Modifier.constrainAs(searchView) {
             top.linkTo(topView.bottom, 16.dp)

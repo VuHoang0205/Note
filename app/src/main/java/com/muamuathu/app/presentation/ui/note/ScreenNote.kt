@@ -167,7 +167,7 @@ private fun Content(
 
         ConstraintLayout(modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp)
+            .padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 8.dp)
             .constrainAs(contentView) {
                 top.linkTo(topView.bottom)
             }) {
@@ -251,7 +251,7 @@ private fun Content(
                 modifier = Modifier
                     .fillMaxWidth()
                     .constrainAs(lazyRowCalendar) {
-                        top.linkTo(textTotalJournal.bottom, 16.dp)
+                        top.linkTo(textTotalJournal.bottom, 4.dp)
                     },
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -274,9 +274,9 @@ private fun Content(
                 contentDescription = "divider",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 45.dp)
+                    .padding(start = 16.dp)
                     .constrainAs(viewLine) {
-                        top.linkTo(lazyRowCalendar.bottom, 12.dp)
+                        top.linkTo(lazyRowCalendar.bottom)
                     })
 
             LazyColumn(
@@ -484,7 +484,7 @@ private fun ItemNote(
                         .height(0.5.dp)
                         .background(colorResource(R.color.gulf_blue))
                         .constrainAs(viewLine) {
-                            top.linkTo(contentView.bottom, 8.dp)
+                            top.linkTo(contentView.bottom)
                         })
 
                     Row(modifier = Modifier.constrainAs(textImage) {
