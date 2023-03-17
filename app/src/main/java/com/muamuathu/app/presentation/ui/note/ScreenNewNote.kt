@@ -63,7 +63,7 @@ fun ScreenNewNote() {
             dateTime.formatFromPattern("yyyy, EEEE")
         }
     }
-    val timeString by  remember {
+    val timeString by remember {
         derivedStateOf {
             dateTime.formatFromPattern("hh:mm a")
         }
@@ -80,7 +80,8 @@ fun ScreenNewNote() {
             // TODO: Save
         },
         onCalendar = {
-            val dialog = DatePickerDialog(context,
+            val dialog = DatePickerDialog(
+                context,
                 { _, year, month, dayOfMonth ->
                     calendar.set(Calendar.YEAR, year)
                     calendar.set(Calendar.MONTH, month)
@@ -88,17 +89,20 @@ fun ScreenNewNote() {
                     dateTime = calendar.timeInMillis
                 },
                 calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH))
+                calendar.get(Calendar.DAY_OF_MONTH)
+            )
             dialog.show()
         }, onTimePicker = {
-            val dialog = TimePickerDialog(context,
+            val dialog = TimePickerDialog(
+                context,
                 { _, hourOfDay, minute ->
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                     calendar.set(Calendar.MINUTE, minute)
                     dateTime = calendar.timeInMillis
                 }, calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
-                false)
+                false
+            )
             dialog.show()
         },
         onActionClick = {
@@ -144,38 +148,35 @@ private fun Content(
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
 
-    ConstraintLayout(modifier = Modifier
-        .fillMaxSize()
-        .background(colorResource(R.color.alice_blue))) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.alice_blue))
+    ) {
         val (topView, contentView) = createRefs()
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .height(70.dp)
-            .background(Color.White)
-            .padding(horizontal = 12.dp)
-            .constrainAs(topView) { top.linkTo(parent.top) },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween) {
-            IconButton(onClick = {
-                onClose()
-            }) {
-                Image(painter = painterResource(R.drawable.ic_close),
-                    contentDescription = "close")
-            }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+                .constrainAs(topView) { top.linkTo(parent.top) },
+        ) {
 
             Text(
                 text = stringResource(R.string.txt_add_new_journal),
                 color = colorResource(R.color.gulf_blue),
                 fontSize = 20.sp,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center)
             )
 
             IconButton(onClick = {
                 onSave()
-            }) {
-                Image(painter = painterResource(R.drawable.ic_save),
-                    contentDescription = "save")
+            }, modifier = Modifier.align(Alignment.CenterEnd)) {
+                Image(
+                    painter = painterResource(R.drawable.ic_save),
+                    contentDescription = "save"
+                )
             }
         }
 
@@ -235,8 +236,10 @@ private fun Content(
                 bottom.linkTo(columnDate.bottom)
                 end.linkTo(parent.end, 10.dp)
             }) {
-                Image(painter = painterResource(R.drawable.ic_clock_time),
-                    contentDescription = "clock")
+                Image(
+                    painter = painterResource(R.drawable.ic_clock_time),
+                    contentDescription = "clock"
+                )
             }
 
             Text(
@@ -289,7 +292,8 @@ private fun Content(
                         start.linkTo(icFolder.end, 16.dp)
                     })
 
-                Image(painter = painterResource(R.drawable.ic_down),
+                Image(
+                    painter = painterResource(R.drawable.ic_down),
                     contentDescription = null,
                     modifier = Modifier
                         .rotate(-90f)
@@ -298,7 +302,8 @@ private fun Content(
                             bottom.linkTo(icFolder.bottom)
                             end.linkTo(parent.end, 8.dp)
                         },
-                    colorFilter = ColorFilter.tint(colorResource(R.color.storm_grey)))
+                    colorFilter = ColorFilter.tint(colorResource(R.color.storm_grey))
+                )
             }
 
             Divider(modifier = Modifier
@@ -313,15 +318,19 @@ private fun Content(
             TextField(
                 value = title,
                 placeholder = {
-                    Text(stringResource(R.string.txt_title),
-                        color = colorResource(R.color.gulf_blue))
+                    Text(
+                        stringResource(R.string.txt_title),
+                        color = colorResource(R.color.gulf_blue)
+                    )
                 },
                 onValueChange = {
                     title = it
                     onInputTitle(title)
                 },
-                textStyle = TextStyle(fontSize = 16.sp,
-                    color = colorResource(R.color.gulf_blue)),
+                textStyle = TextStyle(
+                    fontSize = 16.sp,
+                    color = colorResource(R.color.gulf_blue)
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Transparent)
@@ -366,25 +375,29 @@ private fun Content(
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledTextColor = Color.Transparent,
                 ),
-                textStyle = TextStyle(fontSize = 14.sp,
-                    color = colorResource(R.color.storm_grey)),
+                textStyle = TextStyle(
+                    fontSize = 14.sp,
+                    color = colorResource(R.color.storm_grey)
+                ),
             )
 
-            LazyRow(modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp)
-                .background(
-                    shape = RoundedCornerShape(topStartPercent = 8, bottomStartPercent = 8),
-                    color = Color.White
-                )
-                .constrainAs(lazyRowBottom) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start, 20.dp)
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
-                },
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp)
+                    .background(
+                        shape = RoundedCornerShape(topStartPercent = 8, bottomStartPercent = 8),
+                        color = Color.White
+                    )
+                    .constrainAs(lazyRowBottom) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start, 20.dp)
+                        end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
+                    },
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically) {
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 items(Action.values()) {
                     IconButton(onClick = {
                         onActionClick(it)

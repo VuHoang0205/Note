@@ -1,13 +1,15 @@
 package com.muamuathu.app.presentation.ui
 
 import android.os.Bundle
-import android.text.TextUtils
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -22,8 +24,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.muamuathu.app.R
 import com.muamuathu.app.presentation.components.bottomsheet.BottomSheetEmpty
-import com.muamuathu.app.presentation.components.bottomsheet.HandleBottomSheetDisplay
-import com.muamuathu.app.presentation.components.bottomsheet.handleBottomStateChange
 import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.EventHandler
 import com.muamuathu.app.presentation.event.initEventHandler
@@ -64,23 +64,19 @@ class MainActivity : AppCompatActivity() {
     private fun GraphMainApp() {
         val navController = rememberNavController()
         val eventHandler = initEventHandler()
-
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val bottomSheetScreen by remember { derivedStateOf { navBackStackEntry?.destination?.route.orEmpty() } }
-        val isShowBottomSheet by remember {
-            derivedStateOf {
-                TextUtils.equals(NavTarget.NoteAdd.route, bottomSheetScreen) || TextUtils.equals(
-                    NavTarget.FolderAdd.route,
-                    bottomSheetScreen
-                )
-            }
-        }
         LaunchedEffect(key1 = "Navigation Event Handler") {
             eventHandler.navEvent().collect {
                 navController.handleNavEvent(it)
             }
         }
-
+        val sheetState = rememberModalBottomSheetState()
+        LaunchedEffect(key1 = eventHandler.bottomSheetEvent().isShowing()) {
+            if (eventHandler.bottomSheetEvent().isShowing()) {
+                sheetState.show()
+            } else {
+                sheetState.hide()
+            }
+        }
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
@@ -89,21 +85,19 @@ class MainActivity : AppCompatActivity() {
             },
         ) {
             Box(modifier = Modifier.padding(it)) {
-                val data = navBackStackEntry?.destination?.route
-                NavTarget.Note.route == data || NavTarget.Folder.route == data || NavTarget.Todo.route == data
-
                 NavGraph(navController)
             }
+        }
 
-            val bottomState =
-                rememberModalBottomSheetState(skipPartiallyExpanded = false, confirmValueChange = {
-                    handleBottomStateChange(eventHandler, it)
-                })
-            HandleBottomSheetDisplay(eventHandler, bottomState)
-            if (bottomState.isVisible) {
-                ModalBottomSheet(sheetState = bottomState, onDismissRequest = {}) {
-                    AppBottomSheet(eventHandler)
-                }
+        if (sheetState.isVisible) {
+            ModalBottomSheet(
+                sheetState = sheetState,
+                containerColor = colorResource(id = R.color.alice_blue),
+                onDismissRequest = {
+                    eventHandler.postBottomSheetEvent(BottomSheetEvent.Hide { true })
+                },
+            ) {
+                AppBottomSheet(eventHandler)
             }
         }
     }

@@ -71,20 +71,32 @@ private fun Content(
     onItemFolder: () -> Unit,
 ) {
 
-    ConstraintLayout(modifier = Modifier.fillMaxSize().padding(bottom = 46.dp)
-        .background(colorResource(R.color.alice_blue))) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 46.dp)
+            .background(colorResource(R.color.alice_blue))
+    ) {
         val (topView, searchView, contentView) = createRefs()
-        Row(modifier = Modifier.fillMaxWidth().height(70.dp).background(Color.White)
-            .padding(horizontal = 12.dp).constrainAs(topView) { top.linkTo(parent.top) },
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(70.dp)
+                .background(Color.White)
+                .padding(horizontal = 12.dp)
+                .constrainAs(topView) { top.linkTo(parent.top) },
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween) {
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             IconButton(onClick = {
                 onAdd()
             }) {
-                Image(painter = painterResource(R.drawable.ic_add),
-                    contentDescription = "menu")
+                Image(
+                    painter = painterResource(R.drawable.ic_add),
+                    contentDescription = "menu"
+                )
             }
-            val title = if (!folderList.isEmpty()) {
+            val title = if (folderList.isNotEmpty()) {
                 String.format(stringResource(R.string.txt_folders) + " (%s)", folderList.size)
             } else {
                 String.format(stringResource(R.string.txt_folders))
@@ -99,8 +111,10 @@ private fun Content(
             IconButton(onClick = {
                 onSearch()
             }) {
-                Image(painter = painterResource(R.drawable.ic_add),
-                    contentDescription = "search")
+                Image(
+                    painter = painterResource(R.drawable.ic_add),
+                    contentDescription = "search"
+                )
             }
         }
         Column(modifier = Modifier.constrainAs(searchView) {
@@ -168,12 +182,16 @@ private fun Content(
             }
         }
 
-        LazyColumn(modifier = Modifier.fillMaxWidth().padding(16.dp)
-            .constrainAs(contentView) {
-                top.linkTo(searchView.bottom)
-                bottom.linkTo(parent.bottom)
-                height = Dimension.fillToConstraints
-            }, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .constrainAs(contentView) {
+                    top.linkTo(searchView.bottom)
+                    bottom.linkTo(parent.bottom)
+                    height = Dimension.fillToConstraints
+                }, verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             itemsIndexed(folderList) { index, item ->
                 ItemFolder(item, onItemFolder, onEdit, onDelete)
             }
@@ -188,26 +206,34 @@ private fun ItemFolder(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    ConstraintLayout(modifier = Modifier.fillMaxWidth().height(75.dp)
-        .background(shape = RoundedCornerShape(8.dp), color = Color.White).clickable {
+    ConstraintLayout(modifier = Modifier
+        .fillMaxWidth()
+        .height(75.dp)
+        .background(shape = RoundedCornerShape(8.dp), color = Color.White)
+        .clickable {
             onItemFolder()
         }) {
         val (viewColor, iconFolder, cotentView, iconEdit, iconDelete) = createRefs()
         Image(painter = painterResource(R.drawable.ic_folder),
             contentDescription = "folder",
-            modifier = Modifier.width(23.dp).height(19.dp).constrainAs(iconFolder) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(viewColor.end, 8.dp)
-            })
+            modifier = Modifier
+                .width(23.dp)
+                .height(19.dp)
+                .constrainAs(iconFolder) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(viewColor.end, 8.dp)
+                })
 
         IconButton(onClick = {
             onEdit()
-        }, modifier = Modifier.size(20.dp).constrainAs(iconEdit) {
-            top.linkTo(parent.top)
-            bottom.linkTo(parent.bottom)
-            end.linkTo(iconDelete.start, 12.dp)
-        }) {
+        }, modifier = Modifier
+            .size(20.dp)
+            .constrainAs(iconEdit) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                end.linkTo(iconDelete.start, 12.dp)
+            }) {
             Image(
                 painter = painterResource(R.drawable.ic_edit),
                 contentDescription = "edit",
@@ -217,11 +243,13 @@ private fun ItemFolder(
 
         IconButton(onClick = {
             onDelete()
-        }, modifier = Modifier.size(20.dp).constrainAs(iconDelete) {
-            top.linkTo(parent.top)
-            bottom.linkTo(parent.bottom)
-            end.linkTo(parent.end, 16.dp)
-        }) {
+        }, modifier = Modifier
+            .size(20.dp)
+            .constrainAs(iconDelete) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end, 16.dp)
+            }) {
             Image(
                 painter = painterResource(R.drawable.ic_delete),
                 contentDescription = "delete",
@@ -229,22 +257,26 @@ private fun ItemFolder(
             )
         }
 
-        Column(modifier = Modifier.constrainAs(cotentView) {
-            top.linkTo(parent.top)
-            bottom.linkTo(parent.bottom)
-            start.linkTo(iconFolder.end, 8.dp)
-            end.linkTo(iconEdit.start, 8.dp)
-            width = Dimension.fillToConstraints
-        },
-            verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(
+            modifier = Modifier.constrainAs(cotentView) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                start.linkTo(iconFolder.end, 8.dp)
+                end.linkTo(iconEdit.start, 8.dp)
+                width = Dimension.fillToConstraints
+            },
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
 
             Text(
                 text = folder.name,
                 color = colorResource(R.color.gulf_blue),
                 fontSize = 14.sp,
             )
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = "Journals: 7",
                     color = colorResource(R.color.storm_grey),
@@ -260,7 +292,8 @@ private fun ItemFolder(
             }
         }
 
-        Divider(modifier = Modifier.width(4.dp)
+        Divider(modifier = Modifier
+            .width(4.dp)
             .clip(shape = RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp))
             .background(colorResource(R.color.royal_blue))
             .constrainAs(viewColor) {
