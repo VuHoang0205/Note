@@ -1,35 +1,33 @@
 package com.muamuathu.app.presentation.ui.folder.viewModel
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.muamuathu.app.data.entity.Folder
 import com.muamuathu.app.data.repository.JournalRepo
 import com.muamuathu.app.presentation.extensions.removeAccent
+import com.muamuathu.common.ioLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class FolderViewModel @Inject constructor(private val repo: JournalRepo) : ViewModel() {
 
-    private val folderListOriginState: MutableState<List<Folder>> = mutableStateOf(ArrayList())
-    val folderListState: MutableState<List<Folder>> = mutableStateOf(ArrayList())
-    var query: MutableState<String> = mutableStateOf("")
+    private val folderListOriginState: MutableStateFlow<List<Folder>> = MutableStateFlow(ArrayList())
+    val folderListState: MutableStateFlow<List<Folder>> = MutableStateFlow(ArrayList())
+    var query: MutableStateFlow<String> = MutableStateFlow("")
 
     init {
         getFolderList()
     }
 
-    private fun getFolderList() = viewModelScope.launch {
+    private fun getFolderList() = ioLaunch {
         repo.loadFolders().collect {
             folderListOriginState.value = it
             folderListState.value = it
         }
     }
 
-    fun searchFolder(textSearch: String) {
+    fun searchFolder(textSearch: String) = ioLaunch {
         query.value = textSearch
         if (!folderListOriginState.value.isEmpty()) {
             if (textSearch.isNotEmpty()) {

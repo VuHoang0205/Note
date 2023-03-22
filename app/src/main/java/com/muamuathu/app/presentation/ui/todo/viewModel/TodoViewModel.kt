@@ -1,16 +1,14 @@
 package com.muamuathu.app.presentation.ui.todo.viewModel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.muamuathu.app.data.base.MockData.getCalendarList
-import com.muamuathu.app.data.base.MockData.getMockTaskList
+import com.muamuathu.app.data.base.MockData
 import com.muamuathu.app.data.entity.Task
+import com.muamuathu.common.ioLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
 import javax.inject.Inject
 
@@ -27,19 +25,19 @@ class TodoViewModel @Inject constructor() : ViewModel() {
 
     fun getCalenderList(
         zonedDateTime: ZonedDateTime,
-    ) = viewModelScope.launch {
-        getCalendarList(zonedDateTime).flowOn(Dispatchers.IO).collect {
+    ) = ioLaunch {
+        MockData.getCalendarList(zonedDateTime).flowOn(Dispatchers.IO).collect {
             dateListStateFlow.value = it
         }
     }
 
-    private fun getTaskList() = viewModelScope.launch {
-        getMockTaskList().flowOn(Dispatchers.IO).collect {
+    private fun getTaskList() = ioLaunch {
+        MockData.getMockTaskList().flowOn(Dispatchers.IO).collect {
             taskListStateFlow.value = it
         }
     }
 
-    fun removeTask(selectTask: Task) = viewModelScope.launch {
+    fun removeTask(selectTask: Task) = ioLaunch {
         val newData = mutableListOf<Task>()
         newData.addAll(taskListStateFlow.value)
         newData.remove(selectTask)

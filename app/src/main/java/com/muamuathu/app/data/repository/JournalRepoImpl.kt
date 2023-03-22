@@ -1,14 +1,13 @@
-package com.solid.journal.data.repository
+package com.muamuathu.app.data.repository
 
 import com.muamuathu.app.data.JournalDatabase
 import com.muamuathu.app.data.entity.Folder
 import com.muamuathu.app.data.entity.Tag
-import com.muamuathu.app.data.repository.JournalRepo
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class JournalRepoImpl @Inject constructor(private val database: JournalDatabase) : JournalRepo {
-    override fun loadFolders(): Flow<List<Folder>> {
+    override suspend fun loadFolders(): Flow<List<Folder>> {
         return database.loadSelectFolders()
     }
 
@@ -16,11 +15,11 @@ class JournalRepoImpl @Inject constructor(private val database: JournalDatabase)
         database.daoFolder().insert(folder)
     }
 
-    override fun loadTags(): Flow<List<Tag>> {
+    override suspend fun loadTags(): Flow<List<Tag>> {
         return database.loadTags()
     }
 
     override suspend fun addTag(tag: Tag) {
-        return  database.daoTag().insert(tag)
+        return database.daoTag().insert(tag)
     }
 }

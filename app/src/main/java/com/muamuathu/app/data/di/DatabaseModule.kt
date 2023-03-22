@@ -1,12 +1,12 @@
-package com.solid.journal.data.di
+package com.muamuathu.app.data.di
 
 import android.content.Context
 import androidx.room.Room
 import com.muamuathu.app.data.JournalDatabase
-import com.solid.journal.data.repository.FileRepo
-import com.solid.journal.data.repository.FileRepoImpl
+import com.muamuathu.app.data.repository.FileRepo
 import com.muamuathu.app.data.repository.JournalRepo
-import com.solid.journal.data.repository.JournalRepoImpl
+import com.muamuathu.app.data.repository.FileRepoImpl
+import com.muamuathu.app.data.repository.JournalRepoImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

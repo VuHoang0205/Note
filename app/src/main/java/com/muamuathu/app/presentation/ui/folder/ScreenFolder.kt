@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,8 +43,8 @@ fun ScreenFolder() {
     val eventHandler = initEventHandler()
     val context = LocalContext.current
     val viewModel: FolderViewModel = hiltViewModel(context as ComponentActivity)
-    val folderList by viewModel.folderListState
-    val query by viewModel.query
+    val folderList by viewModel.folderListState.collectAsState()
+    val query by viewModel.query.collectAsState()
 
     Content(folderList,
         query,
@@ -88,7 +89,7 @@ private fun Content(
         ) {
             IconButton(onClick = {
                 onAdd()
-            },modifier = Modifier.align(Alignment.CenterStart)) {
+            }, modifier = Modifier.align(Alignment.CenterStart)) {
                 Image(
                     painter = painterResource(R.drawable.ic_add),
                     contentDescription = "menu"
@@ -285,7 +286,7 @@ private fun ItemFolder(
         Divider(modifier = Modifier
             .width(4.dp)
             .clip(shape = RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp))
-            .background(colorResource(R.color.royal_blue))
+            .background(Color(folder.color))
             .constrainAs(viewColor) {
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)

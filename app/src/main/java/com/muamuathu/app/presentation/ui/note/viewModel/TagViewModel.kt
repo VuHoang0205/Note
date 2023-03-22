@@ -1,14 +1,12 @@
 package com.muamuathu.app.presentation.ui.note.viewModel
 
-import androidx.lifecycle.viewModelScope
 import com.muamuathu.app.data.entity.Tag
-import com.muamuathu.app.presentation.common.BaseViewModel
 import com.muamuathu.app.data.repository.JournalRepo
+import com.muamuathu.app.presentation.common.BaseViewModel
+import com.muamuathu.common.ioLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,11 +18,11 @@ class TagViewModel @Inject constructor(private val repo: JournalRepo) : BaseView
         loadTags()
     }
 
-    fun saveTag(tag: Tag) = viewModelScope.launch(Dispatchers.IO) {
+    fun saveTag(tag: Tag) = ioLaunch {
         repo.addTag(tag)
     }
 
-    private fun loadTags() = viewModelScope.launch {
+    private fun loadTags() = ioLaunch {
         repo.loadTags()
             .flowOn(baseCoroutineContext)
             .collect {

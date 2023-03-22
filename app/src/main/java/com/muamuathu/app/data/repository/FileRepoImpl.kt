@@ -1,4 +1,4 @@
-package com.solid.journal.data.repository
+package com.muamuathu.app.data.repository
 
 import android.content.Context
 import android.database.Cursor
@@ -10,10 +10,8 @@ import com.muamuathu.app.data.constants.FILE_NAME_FORMAT
 import com.muamuathu.app.data.model.note.DEFAULT_ID
 import com.muamuathu.app.data.model.note.FileInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -25,9 +23,8 @@ import javax.inject.Inject
 class FileRepoImpl @Inject constructor(@ApplicationContext private val context: Context) :
     FileRepo {
 
-    private val dispatcher = Dispatchers.IO
 
-    override fun loadMediaFile(isImage: Boolean): Flow<List<FileInfo>> {
+    override suspend fun loadMediaFile(isImage: Boolean): Flow<List<FileInfo>> {
         return flow {
             val resolver = context.contentResolver
             val mediaList: MutableList<FileInfo> = mutableListOf()
@@ -39,7 +36,8 @@ class FileRepoImpl @Inject constructor(@ApplicationContext private val context: 
                 projection = arrayOf(
                     MediaStore.Images.Media._ID,
                     MediaStore.Images.Media.SIZE,
-                    MediaStore.Images.Media.DISPLAY_NAME)
+                    MediaStore.Images.Media.DISPLAY_NAME
+                )
                 uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 sortOrder = MediaStore.Images.ImageColumns.SIZE + " > 0"
                 where = MediaStore.Images.ImageColumns.SIZE + " > 0"
@@ -48,12 +46,14 @@ class FileRepoImpl @Inject constructor(@ApplicationContext private val context: 
                     MediaStore.Video.Media._ID,
                     MediaStore.Video.Media.SIZE,
                     MediaStore.Video.Media.DURATION,
-                    MediaStore.Video.Media.DISPLAY_NAME)
+                    MediaStore.Video.Media.DISPLAY_NAME
+                )
                 uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
                 where = MediaStore.Video.VideoColumns.SIZE + " > 0"
                 sortOrder = MediaStore.Video.VideoColumns.SIZE + " > 0"
             }
-            val cur: Cursor? = resolver.query(uri, projection,
+            val cur: Cursor? = resolver.query(
+                uri, projection,
                 where,
                 null,
                 sortOrder
@@ -80,11 +80,13 @@ class FileRepoImpl @Inject constructor(@ApplicationContext private val context: 
                         val name: String = getString(nameColumn)
                         val dataUri = Uri.withAppendedPath(uri, "" + id).toString()
                         val duration = if (isImage) 0 else getLong(durationColumn)
-                        val fileInfo = FileInfo(id = id.toString(),
+                        val fileInfo = FileInfo(
+                            id = id.toString(),
                             name = name,
                             data = dataUri,
                             size = size,
-                            duration = duration)
+                            duration = duration
+                        )
                         mediaList.add(fileInfo)
                     } while (moveToNext())
                 }
@@ -93,18 +95,21 @@ class FileRepoImpl @Inject constructor(@ApplicationContext private val context: 
                     mediaList.add(0, FileInfo(id = DEFAULT_ID))
                 })
             }
-        }.flowOn(dispatcher)
+        }
     }
 
-    override fun saveImageDrawSketch(bitmap: Bitmap): Flow<String> {
+    override suspend fun saveImageDrawSketch(bitmap: Bitmap): Flow<String> {
         return flow {
             try {
                 context.externalCacheDirs.firstOrNull()?.let {
                     val folder = File(it, context.applicationInfo.name).apply { mkdirs() }
                     if (folder.exists()) {
-                        val file = File(folder, SimpleDateFormat(
-                            FILE_NAME_FORMAT,
-                            Locale.US).format(System.currentTimeMillis()) + ".jpg")
+                        val file = File(
+                            folder, SimpleDateFormat(
+                                FILE_NAME_FORMAT,
+                                Locale.US
+                            ).format(System.currentTimeMillis()) + ".jpg"
+                        )
                         if (file.createNewFile()) {
                             var fos: FileOutputStream? = null
                             try {
@@ -128,6 +133,6 @@ class FileRepoImpl @Inject constructor(@ApplicationContext private val context: 
                 emit("")
                 AppLog.d("error: $e")
             }
-        }.flowOn(dispatcher)
+        }
     }
 }

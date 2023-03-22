@@ -3,16 +3,15 @@ package com.muamuathu.app.presentation.ui.note.viewModel
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import com.muamuathu.app.data.model.note.FileInfo
+import com.muamuathu.app.data.repository.FileRepo
 import com.muamuathu.app.presentation.common.BaseViewModel
-import com.solid.journal.data.repository.FileRepo
+import com.muamuathu.common.ioLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
@@ -22,7 +21,7 @@ class SelectFileViewModel @Inject constructor(private val fileRepo: FileRepo) : 
     private val allMediaStateFlow = MutableStateFlow<MutableList<FileInfo>>(mutableListOf())
     val pathDrawSketchStateFlow = mutableStateOf("")
 
-    fun loadMediaFile(isImage: Boolean) = viewModelScope.launch {
+    fun loadMediaFile(isImage: Boolean) = ioLaunch {
         fileRepo.loadMediaFile(isImage).onEach {
             allMediaStateFlow.value = it.toMutableList()
         }.collect()
@@ -35,7 +34,7 @@ class SelectFileViewModel @Inject constructor(private val fileRepo: FileRepo) : 
         return (if (mediaDir != null && mediaDir.exists()) mediaDir else context.filesDir)
     }
 
-    suspend fun saveImageDrawSketch(bitmap: Bitmap) {
+    suspend fun saveImageDrawSketch(bitmap: Bitmap) = ioLaunch {
         fileRepo.saveImageDrawSketch(bitmap).onEach {
             pathDrawSketchStateFlow.value = it
         }.collect()

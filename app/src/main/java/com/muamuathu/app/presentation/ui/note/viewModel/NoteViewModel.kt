@@ -1,18 +1,16 @@
 package com.muamuathu.app.presentation.ui.note.viewModel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.muamuathu.app.data.base.MockData.getCalendarList
+import com.muamuathu.app.data.base.MockData
 import com.muamuathu.app.data.base.MockData.getNote
-import com.muamuathu.app.data.base.MockData.getNoteItemList
 import com.muamuathu.app.data.entity.Note
+import com.muamuathu.common.ioLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
 import javax.inject.Inject
 
@@ -30,26 +28,26 @@ class NoteViewModel @Inject constructor() : ViewModel() {
 
     fun getCalenderList(
         zonedDateTime: ZonedDateTime
-    ) = viewModelScope.launch {
-        getCalendarList(zonedDateTime).flowOn(Dispatchers.IO).collect {
+    ) = ioLaunch {
+        MockData.getCalendarList(zonedDateTime).flowOn(Dispatchers.IO).collect {
             dateListStateFlow.value = it
         }
     }
 
-    private fun getNoteList() = viewModelScope.launch {
-        getNoteItemList().flowOn(Dispatchers.IO).collect {
+    private fun getNoteList() = ioLaunch {
+        MockData.getNoteItemList().flowOn(Dispatchers.IO).collect {
             noteListStateFlow.value = it
         }
     }
 
-    fun removeNote(note: Note) = viewModelScope.launch {
+    fun removeNote(note: Note) = ioLaunch {
         val newData = mutableListOf<Note>()
         newData.addAll(noteListStateFlow.value)
         newData.remove(note)
         noteListStateFlow.value = newData
     }
 
-    fun getNoteById(idNote: String) = viewModelScope.launch {
+    fun getNoteById(idNote: String) = ioLaunch {
         getNote().flowOn(Dispatchers.IO).collect {
             noteSharedFlow.value = it
         }
