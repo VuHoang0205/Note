@@ -34,6 +34,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.Note
 import com.muamuathu.app.presentation.event.BottomSheetEvent
@@ -45,8 +46,8 @@ import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 import de.charlex.compose.RevealDirection
 import de.charlex.compose.RevealSwipe
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
 import java.util.*
 
 const val EXTRA_NOTE_ID = "noteId"
@@ -575,6 +576,7 @@ private fun ItemNote(
 @Preview
 @Composable
 private fun PreviewContent() {
+    AndroidThreeTen.init(LocalContext.current)
     Content(ZonedDateTime.now(),
         emptyList(),
         emptyList(),

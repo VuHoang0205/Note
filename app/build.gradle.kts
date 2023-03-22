@@ -51,14 +51,14 @@ repositories {
 
 dependencies {
 
-    // https://mvnrepository.com/artifact/com.itextpdf/itextpdf
-    implementation("com.itextpdf:itextpdf:5.5.13.3")
-
-    // https://mvnrepository.com/artifact/org.apache.poi/poi
-    implementation("org.apache.poi:poi:5.2.3")
-
-    // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
-    implementation("org.apache.poi:poi-ooxml:5.2.3")
+//    // https://mvnrepository.com/artifact/com.itextpdf/itextpdf
+//    implementation("com.itextpdf:itextpdf:5.5.13.3")
+//
+//    // https://mvnrepository.com/artifact/org.apache.poi/poi
+//    implementation("org.apache.poi:poi:5.2.3")
+//
+//    // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
+//    implementation("org.apache.poi:poi-ooxml:5.2.3")
 
 
     // Module dependencies
@@ -83,7 +83,8 @@ dependencies {
         deps.Test,
         deps.Ads,
         deps.Billing,
-        deps.RevealSwipe
+        deps.RevealSwipe,
+        deps.DateTime
     )
 }
 

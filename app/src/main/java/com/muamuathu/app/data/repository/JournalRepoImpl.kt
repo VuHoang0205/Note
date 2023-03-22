@@ -3,6 +3,7 @@ package com.solid.journal.data.repository
 import com.muamuathu.app.data.JournalDatabase
 import com.muamuathu.app.data.entity.Folder
 import com.muamuathu.app.data.entity.Tag
+import com.muamuathu.app.data.repository.JournalRepo
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

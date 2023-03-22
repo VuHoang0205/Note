@@ -1,4 +1,4 @@
-package com.solid.journal.data.repository
+package com.muamuathu.app.data.repository
 
 import com.muamuathu.app.data.entity.Folder
 import com.muamuathu.app.data.entity.Tag

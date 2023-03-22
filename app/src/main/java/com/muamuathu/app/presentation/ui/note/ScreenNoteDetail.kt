@@ -1,4 +1,4 @@
-package com.solid.note
+package com.muamuathu.app.presentation.ui.note
 
 import android.os.SystemClock
 import androidx.activity.ComponentActivity
@@ -37,16 +37,16 @@ import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.Note
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
-
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
 
 @Composable
 fun ScreenNoteDetail(idNote: String) {
@@ -528,6 +528,7 @@ private fun ExpandedText(
 @Preview
 @Composable
 private fun PreviewContent() {
+    AndroidThreeTen.init(LocalContext.current)
     Content(Note(
         1,
         "Fun day with Friends $1",

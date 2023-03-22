@@ -5,7 +5,7 @@ import androidx.room.Room
 import com.muamuathu.app.data.JournalDatabase
 import com.solid.journal.data.repository.FileRepo
 import com.solid.journal.data.repository.FileRepoImpl
-import com.solid.journal.data.repository.JournalRepo
+import com.muamuathu.app.data.repository.JournalRepo
 import com.solid.journal.data.repository.JournalRepoImpl
 import dagger.Module
 import dagger.Provides

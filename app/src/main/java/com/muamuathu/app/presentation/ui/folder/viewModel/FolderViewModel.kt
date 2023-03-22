@@ -4,10 +4,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.muamuathu.app.data.base.MockData.getMockFolderList
 import com.muamuathu.app.data.entity.Folder
+import com.muamuathu.app.data.repository.JournalRepo
 import com.muamuathu.app.presentation.extensions.removeAccent
-import com.solid.journal.data.repository.JournalRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,7 +23,7 @@ class FolderViewModel @Inject constructor(private val repo: JournalRepo) : ViewM
     }
 
     private fun getFolderList() = viewModelScope.launch {
-        getMockFolderList().collect {
+        repo.loadFolders().collect {
             folderListOriginState.value = it
             folderListState.value = it
         }

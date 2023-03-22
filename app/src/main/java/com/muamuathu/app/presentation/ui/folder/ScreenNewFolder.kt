@@ -2,6 +2,7 @@ package com.muamuathu.app.presentation.ui.folder
 
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -17,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +44,7 @@ import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.ui.folder.viewModel.AddFolderViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun ScreenNewFolder() {
@@ -73,6 +77,7 @@ fun ScreenNewFolder() {
         })
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Content(
     colorList: List<FolderColor>,
@@ -82,6 +87,8 @@ private fun Content(
     onItemSelect: (selectFolder: Folder) -> Unit,
     onDone: () -> Unit,
 ) {
+    val bringIntoViewRequester = BringIntoViewRequester()
+    val coroutine = rememberCoroutineScope()
 
     var folderName by remember { mutableStateOf("") }
     val stateVisibility by remember {
@@ -149,7 +156,6 @@ private fun Content(
                         onClick = {
                             onAdd(folderName, colorSelected.color)
                             folderName = ""
-//                        colorSelected=FolderColor.ORANGE
                         }, shape = RoundedCornerShape(4.dp),
                         colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(R.color.royal_blue))
                     ) {
@@ -179,6 +185,13 @@ private fun Content(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Transparent)
+                    .onFocusChanged {
+                        if (it.hasFocus) {
+                            coroutine.launch {
+                                bringIntoViewRequester.bringIntoView()
+                            }
+                        }
+                    }
                     .constrainAs(textFieldInput) {
                         top.linkTo(imgPlus.top)
                         start.linkTo(imgPlus.end)
@@ -289,10 +302,11 @@ private fun ItemFolderColor(
     selected: Boolean,
     itemClick: (selectColor: FolderColor) -> Unit,
 ) {
-    Box(modifier = Modifier
-        .clickable {
-            itemClick(itemColor)
-        }, contentAlignment = Alignment.Center
+    Box(
+        modifier = Modifier
+            .clickable {
+                itemClick(itemColor)
+            }, contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier

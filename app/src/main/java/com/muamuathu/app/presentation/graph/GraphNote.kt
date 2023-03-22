@@ -4,7 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.muamuathu.app.presentation.ui.draw_sketch.ScreenDrawSketch
 import com.muamuathu.app.presentation.ui.note.*
-import com.solid.note.ScreenNoteDetail
+import com.muamuathu.app.presentation.ui.note.ScreenNoteDetail
 
 fun NavGraphBuilder.note() {
     composable(NavTarget.Note.route) {

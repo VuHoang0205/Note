@@ -3,8 +3,8 @@ package com.muamuathu.app.presentation.ui
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +34,7 @@ import com.muamuathu.feature.consent.ConsentInfo
 import com.muamuathu.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalFoundationApi
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -59,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun GraphMainApp() {
         val navController = rememberNavController()
@@ -188,4 +189,5 @@ fun AppBottomSheet(eventHandler: EventHandler) {
         else -> BottomSheetEmpty()
     }
 }
+
 
