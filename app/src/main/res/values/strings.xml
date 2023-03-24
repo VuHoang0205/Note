@@ -73,5 +73,6 @@
     <string name="edit_folder">Edit Folder</string>
     <string name="name_of_folder">Name of Folder</string>
     <string name="save">Save</string>
+    <string name="color">Color</string>
 
 </resources>

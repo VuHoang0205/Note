@@ -1,5 +1,6 @@
 package com.muamuathu.app.presentation.event
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.muamuathu.app.R
 
@@ -21,4 +22,6 @@ sealed class DialogEvent {
         val message: String,
         val onConfirm: () -> Unit
     ) : DialogEvent()
+
+    class Custom(val ui: @Composable () -> Unit) : DialogEvent()
 }

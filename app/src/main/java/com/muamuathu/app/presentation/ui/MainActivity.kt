@@ -23,6 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.muamuathu.app.R
+import com.muamuathu.app.presentation.components.AppDialog
 import com.muamuathu.app.presentation.components.bottomsheet.BottomSheetEmpty
 import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.EventHandler
@@ -99,6 +100,8 @@ class MainActivity : AppCompatActivity() {
                         AppBottomSheet(eventHandler)
                     }
                 }
+
+                AppDialog(eventHandler = eventHandler)
             }
         }
     }

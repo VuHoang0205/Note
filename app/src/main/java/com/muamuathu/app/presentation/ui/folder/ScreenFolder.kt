@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,13 +33,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.presentation.event.BottomSheetEvent
+import com.muamuathu.app.presentation.event.DialogEvent
 import com.muamuathu.app.presentation.event.initEventHandler
+import com.muamuathu.app.presentation.ui.folder.dialog.EditFolderDialog
 import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
 
 @Composable
 fun ScreenFolder() {
     val eventHandler = initEventHandler()
-    val context = LocalContext.current
     val viewModel: FolderViewModel = hiltViewModel()
     val folderList by viewModel.entityFolderListState.collectAsState()
     val query by viewModel.query.collectAsState()
@@ -55,7 +55,7 @@ fun ScreenFolder() {
             viewModel.searchFolder(it)
         },
         onEdit = {
-
+            eventHandler.postDialogEvent(DialogEvent.Custom { EditFolderDialog(folder = it) })
         },
         onDelete = {
             viewModel.deleteFolder(it)
@@ -72,7 +72,7 @@ private fun Content(
     onAdd: () -> Unit,
     onSearch: () -> Unit,
     onSearchFolder: (query: String) -> Unit,
-    onEdit: () -> Unit,
+    onEdit: (Folder) -> Unit,
     onDelete: (Folder) -> Unit,
     onItemFolder: () -> Unit,
 ) {
@@ -199,7 +199,7 @@ private fun Content(
 private fun ItemFolder(
     folder: Folder,
     onItemFolder: () -> Unit,
-    onEdit: () -> Unit,
+    onEdit: (Folder) -> Unit,
     onDelete: (Folder) -> Unit,
 ) {
     ConstraintLayout(modifier = Modifier
@@ -222,7 +222,7 @@ private fun ItemFolder(
                 })
 
         IconButton(onClick = {
-            onEdit()
+            onEdit(folder)
         }, modifier = Modifier
             .size(20.dp)
             .constrainAs(iconEdit) {

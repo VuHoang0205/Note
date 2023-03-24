@@ -1,13 +1,13 @@
 package com.muamuathu.app.domain.model
 
 enum class FolderColor(val color: Long) {
-    ORANGE(0xFF7348),
-    GREEN(0x3FCD69),
-    BLUE(0x41ABFF),
-    BROWN(0x7A5353),
-    DARK_BLUE(0x458FA6),
-    DARK_GREEN(0x6B7A53),
-    PURPLE(0x54537A);
+    ORANGE(0xFFFF7348),
+    GREEN(0xFF3FCD69),
+    BLUE(0xFF41ABFF),
+    BROWN(0xFF7A5353),
+    DARK_BLUE(0xFF458FA6),
+    DARK_GREEN(0xFF6B7A53),
+    PURPLE(0xFF54537A);
 
     companion object {
         fun fromValue(color: Long): FolderColor {
