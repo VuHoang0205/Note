@@ -5,24 +5,23 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.muamuathu.app.data.converters.Converters
 import com.muamuathu.app.data.dao.*
-import com.muamuathu.app.data.entity.Tag
-import com.muamuathu.app.data.entity.Task
 import com.muamuathu.app.data.entity.*
+import com.muamuathu.app.data.entity.embedded.EmbeddedFolder
 import kotlinx.coroutines.flow.Flow
 
 @Database(
     entities = [
         Account::class,
-        Folder::class,
+        EntityFolder::class,
         LinkFolderNote::class,
         LinkFolderTask::class,
         LinkTagNode::class,
-        Tag::class,
-        Note::class,
-        NoteItem::class,
-        NoteItemMetaValue::class,
-        Task::class,
-        SubTask::class,
+        EntityTag::class,
+        EntityNote::class,
+        EntityNoteItem::class,
+        EntityNoteItemMetaValue::class,
+        EntityTask::class,
+        EntitySubTask::class,
     ],
     version = 1,
     exportSchema = false
@@ -41,11 +40,11 @@ abstract class JournalDatabase : RoomDatabase() {
     abstract fun daoTag(): DaoTag
     abstract fun daoTask(): DaoTask
 
-    fun loadSelectFolders(): Flow<List<Folder>> {
+    fun loadSelectFolders(): Flow<List<EmbeddedFolder>> {
         return daoFolder().getFolders()
     }
 
-    fun loadTags(): Flow<List<Tag>> {
+    fun loadTags(): Flow<List<EntityTag>> {
         return daoTag().getTags()
     }
 }

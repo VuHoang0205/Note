@@ -36,7 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
-import com.muamuathu.app.data.entity.Note
+import com.muamuathu.app.data.entity.EntityNote
 import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
@@ -113,14 +113,14 @@ fun ScreenNote() {
 private fun Content(
     selectDate: ZonedDateTime,
     dateList: List<ZonedDateTime>,
-    noteItemList: List<Note>,
+    entityNoteItemList: List<EntityNote>,
     onAdd: () -> Unit,
     onSearch: () -> Unit,
     onCalendar: (selectDate: ZonedDateTime?) -> Unit,
     onSelectDate: (selectDate: ZonedDateTime) -> Unit,
-    onNoteItem: (note: Note) -> Unit,
-    onDeleteNoteItem: (note: Note) -> Unit,
-    onEditNoteItem: (note: Note) -> Unit,
+    onNoteItem: (entityNote: EntityNote) -> Unit,
+    onDeleteNoteItem: (entityNote: EntityNote) -> Unit,
+    onEditNoteItem: (entityNote: EntityNote) -> Unit,
 ) {
 
     ConstraintLayout(
@@ -192,7 +192,7 @@ private fun Content(
             Text(
                 text = String.format(
                     "%d ${stringResource(R.string.txt_journals_today)}",
-                    noteItemList.size
+                    entityNoteItemList.size
                 ),
                 color = colorResource(R.color.storm_grey),
                 fontSize = 13.sp,
@@ -287,7 +287,7 @@ private fun Content(
                         top.linkTo(viewLine.bottom)
                     }, verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                itemsIndexed(noteItemList) { _, item ->
+                itemsIndexed(entityNoteItemList) { _, item ->
                     ItemNote(item,
                         { onNoteItem(item) },
                         { onDeleteNoteItem(item) },
@@ -341,7 +341,7 @@ private fun ItemCalendar(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ItemNote(
-    note: Note,
+    entityNote: EntityNote,
     onNote: () -> Unit,
     onDeleteNote: () -> Unit,
     onEditNote: () -> Unit,
@@ -413,8 +413,8 @@ private fun ItemNote(
                         }) {
                         val (imgAvatar, textTitle, textContent, lazyRowCategoryNote) = createRefs()
 
-                        if (note.avatar.isNotEmpty()) {
-                            AsyncImage(model = note.avatar,
+                        if (entityNote.avatar.isNotEmpty()) {
+                            AsyncImage(model = entityNote.avatar,
                                 contentDescription = "avatar",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -427,7 +427,7 @@ private fun ItemNote(
                         }
 
                         Text(
-                            text = note.title,
+                            text = entityNote.title,
                             color = colorResource(R.color.gulf_blue),
                             fontSize = 16.sp,
                             maxLines = 1,
@@ -438,7 +438,7 @@ private fun ItemNote(
                         )
 
                         Text(
-                            text = note.content,
+                            text = entityNote.content,
                             color = colorResource(R.color.storm_grey),
                             fontSize = 11.sp,
                             maxLines = 2,
@@ -460,7 +460,7 @@ private fun ItemNote(
                                     start.linkTo(textTitle.start)
                                 }, horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            val strs = note.tag.split(",").toTypedArray()
+                            val strs = entityNote.tag.split(",").toTypedArray()
                             items(strs) {
                                 TextButton(
                                     onClick = {},
@@ -543,7 +543,7 @@ private fun ItemNote(
                         )
 
                         Text(
-                            text = note.dateTime.toHour(),
+                            text = entityNote.dateTime.toHour(),
                             color = colorResource(R.color.gulf_blue),
                             fontSize = 11.sp,
                             textAlign = TextAlign.Center,
@@ -551,7 +551,7 @@ private fun ItemNote(
                         )
                     }
                 }
-                if (note.avatar.isEmpty()) {
+                if (entityNote.avatar.isEmpty()) {
                     Divider(modifier = Modifier
                         .width(8.dp)
                         .clip(

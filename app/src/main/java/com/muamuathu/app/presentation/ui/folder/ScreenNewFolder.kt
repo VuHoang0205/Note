@@ -2,7 +2,6 @@ package com.muamuathu.app.presentation.ui.folder
 
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,14 +32,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
-import com.muamuathu.app.data.entity.Folder
-import com.muamuathu.app.data.model.folder.FolderColor
+import com.muamuathu.app.data.entity.EntityFolder
+import com.muamuathu.app.domain.model.Folder
+import com.muamuathu.app.domain.model.FolderColor
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
+import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
+import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.folder.viewModel.AddFolderViewModel
 
 @Composable
@@ -51,8 +52,9 @@ fun ScreenNewFolder() {
 
     val colorList by remember { mutableStateOf(FolderColor.values().toList()) }
 
-    val folderList by viewModel.folderListState.collectAsState()
+    val folderList by viewModel.entityFolderListState.collectAsState()
 
+    val coroutineScope = rememberCoroutineScope()
 
     Content(
         colorList,
@@ -61,12 +63,11 @@ fun ScreenNewFolder() {
             eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         },
         onAdd = { folderName, colorFolder ->
-                viewModel.saveFolder(
-                Folder(
-                    name = folderName,
-                    color = ContextCompat.getColor(context, colorFolder)
-                )
-            )
+            coroutineScope.observeResultFlow(viewModel.saveFolder(
+                Folder(name = folderName, color = colorFolder)
+            ), successHandler = {
+                eventHandler.postBottomSheetEvent(BottomSheetEvent.Hide { true })
+            })
         }, onItemSelect = {
 
         }, onDone = {
@@ -74,14 +75,13 @@ fun ScreenNewFolder() {
         })
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Content(
     colorList: List<FolderColor>,
-    folderList: List<Folder>,
+    entityFolderList: List<EntityFolder>,
     onClose: () -> Unit,
-    onAdd: (folderName: String, colorFolder: Int) -> Unit,
-    onItemSelect: (selectFolder: Folder) -> Unit,
+    onAdd: (folderName: String, colorFolder: Long) -> Unit,
+    onItemSelect: (selectEntityFolder: EntityFolder) -> Unit,
     onDone: () -> Unit,
 ) {
 
@@ -93,11 +93,11 @@ private fun Content(
     }
 
     var colorSelected by remember { mutableStateOf(FolderColor.ORANGE) }
-    val folderSelectedList: List<Folder> by remember { mutableStateOf(emptyList()) }
+    val entityFolderSelectedList: List<EntityFolder> by remember { mutableStateOf(emptyList()) }
 
     val stateBtnDone by remember {
         derivedStateOf {
-            folderSelectedList.isNotEmpty()
+            entityFolderSelectedList.isNotEmpty()
         }
     }
 
@@ -248,8 +248,11 @@ private fun Content(
                 },
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                itemsIndexed(folderList) { _, item ->
-                    ItemFolder(itemColor = item, selected = folderSelectedList.contains(item)) {
+                itemsIndexed(entityFolderList) { _, item ->
+                    ItemFolder(
+                        itemColor = item,
+                        selected = entityFolderSelectedList.contains(item)
+                    ) {
                         onItemSelect(item)
                     }
                 }
@@ -285,7 +288,7 @@ private fun Content(
 }
 
 @Composable
-private fun ItemFolderColor(
+internal fun ItemFolderColor(
     itemColor: FolderColor,
     selected: Boolean,
     itemClick: (selectColor: FolderColor) -> Unit,
@@ -300,7 +303,7 @@ private fun ItemFolderColor(
             modifier = Modifier
                 .size(25.dp)
                 .clip(CircleShape)
-                .background(colorResource(itemColor.color))
+                .background(Color(itemColor.color))
         )
         if (selected) {
             Image(
@@ -313,7 +316,7 @@ private fun ItemFolderColor(
 
 @Composable
 private fun ItemFolder(
-    itemColor: Folder,
+    itemColor: EntityFolder,
     selected: Boolean,
     itemClick: () -> Unit,
 ) {
@@ -372,5 +375,5 @@ private fun ItemFolder(
 @Preview
 @Composable
 private fun PreviewContent() {
-    Content(emptyList(), emptyList(), {}, { folderName, colorFolder -> }, {}, {})
+    Content(emptyList(), emptyList(), {}, { _, _ -> }, {}, {})
 }

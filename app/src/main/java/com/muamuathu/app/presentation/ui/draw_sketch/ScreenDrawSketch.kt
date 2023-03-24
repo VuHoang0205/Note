@@ -36,7 +36,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.muamuathu.app.R
 import com.muamuathu.app.data.base.AppLog
-import com.muamuathu.app.data.model.note.SketchColor
+import com.muamuathu.app.domain.model.SketchColor
 import com.muamuathu.app.presentation.common.CheckAndAskPermission
 import com.muamuathu.app.presentation.components.topbar.Toolbar
 import com.muamuathu.app.presentation.event.NavEvent

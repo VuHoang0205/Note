@@ -1,8 +1,8 @@
 package com.muamuathu.app.data.dao
 
 import androidx.room.Dao
-import com.muamuathu.app.data.entity.NoteItemMetaValue
+import com.muamuathu.app.data.entity.EntityNoteItemMetaValue
 
 @Dao
-abstract class DaoNoteItemMetaValue : DaoBase<NoteItemMetaValue>() {
+abstract class DaoNoteItemMetaValue : DaoBase<EntityNoteItemMetaValue>() {
 }

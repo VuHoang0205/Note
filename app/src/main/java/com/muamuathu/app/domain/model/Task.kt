@@ -1,13 +1,12 @@
-package com.muamuathu.app.data.entity
+package com.muamuathu.app.domain.model
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.muamuathu.app.R
 
 @Entity
 data class Task(
-    @PrimaryKey(autoGenerate = true)
     val taskId: Long,
+    val folderId: Long,
     val name: String,
     val description: String,
     val startDate: Long,

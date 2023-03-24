@@ -28,7 +28,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
-import com.muamuathu.app.data.entity.Tag
+import com.muamuathu.app.data.entity.EntityTag
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
@@ -41,25 +41,25 @@ fun ScreenAddTag() {
 
     val viewModel: TagViewModel = hiltViewModel()
 
-    val tagSelectedList = remember { mutableStateListOf<Tag>() }
-    val tagList by viewModel.tagListState.collectAsState()
+    val entityTagSelectedList = remember { mutableStateListOf<EntityTag>() }
+    val tagList by viewModel.entityTagListState.collectAsState()
 
 
     Content(
-        tagSelectedList = tagSelectedList,
-        tagList = tagList,
+        entityTagSelectedList = entityTagSelectedList,
+        entityTagList = tagList,
         onItemClick = {
-            if (tagSelectedList.contains(it)) {
-                tagSelectedList.remove(it)
+            if (entityTagSelectedList.contains(it)) {
+                entityTagSelectedList.remove(it)
             } else {
-                tagSelectedList.add(it)
+                entityTagSelectedList.add(it)
             }
         },
         onClose = {
             eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         },
         onAdd = {
-            viewModel.saveTag(Tag(name = it))
+            viewModel.saveTag(EntityTag(name = it))
         }, onDone = {
 
         })
@@ -67,9 +67,9 @@ fun ScreenAddTag() {
 
 @Composable
 private fun Content(
-    tagSelectedList: MutableList<Tag>,
-    tagList: List<Tag>,
-    onItemClick: (Tag) -> Unit,
+    entityTagSelectedList: MutableList<EntityTag>,
+    entityTagList: List<EntityTag>,
+    onItemClick: (EntityTag) -> Unit,
     onClose: () -> Unit,
     onAdd: (String) -> Unit,
     onDone: () -> Unit,
@@ -186,8 +186,8 @@ private fun Content(
                 height = Dimension.fillToConstraints
             },
                 horizontalAlignment = Alignment.CenterHorizontally) {
-                itemsIndexed(tagList) { _, item ->
-                    ItemTag(item, tagSelectedList) {
+                itemsIndexed(entityTagList) { _, item ->
+                    ItemTag(item, entityTagSelectedList) {
                         onItemClick(it)
                     }
                 }
@@ -201,7 +201,7 @@ private fun Content(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .alpha(if (tagSelectedList.isNotEmpty()) 1f else 0.5f)
+                    .alpha(if (entityTagSelectedList.isNotEmpty()) 1f else 0.5f)
                     .background(
                         colorResource(R.color.royal_blue),
                         RoundedCornerShape(4.dp)
@@ -224,9 +224,9 @@ private fun Content(
 
 @Composable
 private fun ItemTag(
-    tag: Tag,
-    tagSelectedList: MutableList<Tag>,
-    itemClick: (Tag) -> Unit,
+    entityTag: EntityTag,
+    entityTagSelectedList: MutableList<EntityTag>,
+    itemClick: (EntityTag) -> Unit,
 ) {
 
     ConstraintLayout(modifier = Modifier
@@ -244,7 +244,7 @@ private fun ItemTag(
                     bottom.linkTo(parent.bottom)
                 })
 
-        Text(text = tag.name,
+        Text(text = entityTag.name,
             fontSize = 14.sp,
             color = colorResource(id = R.color.gulf_blue),
             modifier = Modifier.constrainAs(textName) {
@@ -255,7 +255,7 @@ private fun ItemTag(
                 width = Dimension.fillToConstraints
             })
         Checkbox(
-            checked = tagSelectedList.contains(tag),
+            checked = entityTagSelectedList.contains(entityTag),
             colors = CheckboxDefaults.colors(
                 checkedColor = colorResource(R.color.royal_blue),
                 uncheckedColor = colorResource(R.color.storm_grey)),
@@ -264,7 +264,7 @@ private fun ItemTag(
                 end.linkTo(parent.end)
                 bottom.linkTo(imgTag.bottom)
             }, onCheckedChange = {
-                itemClick(tag)
+                itemClick(entityTag)
             })
     }
 }

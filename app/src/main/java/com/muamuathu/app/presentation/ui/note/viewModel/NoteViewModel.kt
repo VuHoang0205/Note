@@ -3,7 +3,7 @@ package com.muamuathu.app.presentation.ui.note.viewModel
 import androidx.lifecycle.ViewModel
 import com.muamuathu.app.data.base.MockData
 import com.muamuathu.app.data.base.MockData.getNote
-import com.muamuathu.app.data.entity.Note
+import com.muamuathu.app.data.entity.EntityNote
 import com.muamuathu.common.ioLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,8 +18,8 @@ import javax.inject.Inject
 class NoteViewModel @Inject constructor() : ViewModel() {
 
     private val dateListStateFlow = MutableStateFlow<List<ZonedDateTime>>(emptyList())
-    private val noteListStateFlow = MutableStateFlow<MutableList<Note>>(mutableListOf())
-    private val noteSharedFlow = MutableStateFlow<Note?>(null)
+    private val entityNoteListStateFlow = MutableStateFlow<MutableList<EntityNote>>(mutableListOf())
+    private val entityNoteSharedFlow = MutableStateFlow<EntityNote?>(null)
 
     init {
         getCalenderList(ZonedDateTime.now())
@@ -36,24 +36,24 @@ class NoteViewModel @Inject constructor() : ViewModel() {
 
     private fun getNoteList() = ioLaunch {
         MockData.getNoteItemList().flowOn(Dispatchers.IO).collect {
-            noteListStateFlow.value = it
+            entityNoteListStateFlow.value = it
         }
     }
 
-    fun removeNote(note: Note) = ioLaunch {
-        val newData = mutableListOf<Note>()
-        newData.addAll(noteListStateFlow.value)
-        newData.remove(note)
-        noteListStateFlow.value = newData
+    fun removeNote(entityNote: EntityNote) = ioLaunch {
+        val newData = mutableListOf<EntityNote>()
+        newData.addAll(entityNoteListStateFlow.value)
+        newData.remove(entityNote)
+        entityNoteListStateFlow.value = newData
     }
 
     fun getNoteById(idNote: String) = ioLaunch {
         getNote().flowOn(Dispatchers.IO).collect {
-            noteSharedFlow.value = it
+            entityNoteSharedFlow.value = it
         }
     }
 
     fun bindDateListState() = dateListStateFlow.asStateFlow()
-    fun bindNoteListState() = noteListStateFlow.asStateFlow()
-    fun bindNote() = noteSharedFlow.asSharedFlow()
+    fun bindNoteListState() = entityNoteListStateFlow.asStateFlow()
+    fun bindNote() = entityNoteSharedFlow.asSharedFlow()
 }

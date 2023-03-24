@@ -7,8 +7,8 @@ import android.net.Uri
 import android.provider.MediaStore
 import com.muamuathu.app.data.base.AppLog
 import com.muamuathu.app.data.constants.FILE_NAME_FORMAT
-import com.muamuathu.app.data.model.note.DEFAULT_ID
-import com.muamuathu.app.data.model.note.FileInfo
+import com.muamuathu.app.domain.model.DEFAULT_ID
+import com.muamuathu.app.domain.model.FileInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

@@ -1,4 +1,4 @@
-package com.muamuathu.app.data.model.note
+package com.muamuathu.app.domain.model
 
 import com.muamuathu.app.R
 

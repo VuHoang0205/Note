@@ -3,7 +3,7 @@ package com.muamuathu.app.presentation.ui.note.viewModel
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateOf
-import com.muamuathu.app.data.model.note.FileInfo
+import com.muamuathu.app.domain.model.FileInfo
 import com.muamuathu.app.data.repository.FileRepo
 import com.muamuathu.app.presentation.common.BaseViewModel
 import com.muamuathu.common.ioLaunch

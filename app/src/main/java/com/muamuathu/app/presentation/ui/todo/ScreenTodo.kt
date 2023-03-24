@@ -31,7 +31,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
-import com.muamuathu.app.data.entity.Task
+import com.muamuathu.app.data.entity.EntityTask
 import com.muamuathu.app.presentation.extensions.*
 import com.muamuathu.app.presentation.ui.todo.viewModel.TodoViewModel
 import de.charlex.compose.*
@@ -58,9 +58,9 @@ fun ScreenTodo() {
 
     var selectDate by remember { mutableStateOf(ZonedDateTime.now()) }
 
-    val selectTaskList: List<Task> by remember { mutableStateOf(emptyList()) }
+    val selectEntityTaskList: List<EntityTask> by remember { mutableStateOf(emptyList()) }
 
-    Content(selectDate, dateList, taskList, selectTaskList,
+    Content(selectDate, dateList, taskList, selectEntityTaskList,
         onAdd = {
 
         }, onSort = {
@@ -103,24 +103,24 @@ fun ScreenTodo() {
 private fun Content(
     selectDate: ZonedDateTime,
     dateList: List<ZonedDateTime>,
-    taskList: List<Task>,
-    selectTaskList: List<Task>,
+    entityTaskList: List<EntityTask>,
+    selectEntityTaskList: List<EntityTask>,
     onAdd: () -> Unit,
     onSort: () -> Unit,
     onCalendar: (selectDate: ZonedDateTime) -> Unit,
     onSelectDate: (selectDate: ZonedDateTime) -> Unit,
-    onTaskItem: (selectTask: Task) -> Unit,
-    onDeleteTaskItem: (selectTask: Task) -> Unit,
-    onEditTaskItem: (selectTask: Task) -> Unit,
+    onTaskItem: (selectEntityTask: EntityTask) -> Unit,
+    onDeleteTaskItem: (selectEntityTask: EntityTask) -> Unit,
+    onEditTaskItem: (selectEntityTask: EntityTask) -> Unit,
 ) {
     val tabItems = listOf(Tabs.Tab1, Tabs.Tab2)
     var selectedTab by remember { mutableStateOf(0) }
     val tasks = if (selectedTab == TAB_1) {
-        taskList.filter {
+        entityTaskList.filter {
             it.reminderType == 0
         }
     } else {
-        taskList.filter {
+        entityTaskList.filter {
             it.reminderType == 1
         }
     }
@@ -324,7 +324,7 @@ private fun Content(
                         onEditTaskItem(item)
                     }, onDeleteTaskItem = {
                         onDeleteTaskItem(item)
-                    }, checked = selectTaskList.contains(item))
+                    }, checked = selectEntityTaskList.contains(item))
                 }
             }
         }
@@ -334,7 +334,7 @@ private fun Content(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ItemTask(
-    task: Task,
+    entityTask: EntityTask,
     checked: Boolean,
     onTaskItem: () -> Unit,
     onEditTaskItem: () -> Unit,
@@ -422,7 +422,7 @@ fun ItemTask(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        text = task.name,
+                        text = entityTask.name,
                         textAlign = TextAlign.Start,
                         fontSize = 16.sp,
                         color = colorResource(R.color.gulf_blue),
@@ -435,12 +435,12 @@ fun ItemTask(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = task.startDate.toHour(),
+                            text = entityTask.startDate.toHour(),
                             textAlign = TextAlign.Start,
                             color = colorResource(R.color.storm_grey),
                             fontSize = 12.sp,
                         )
-                        val color = task.getPriorityTask().color
+                        val color = entityTask.getPriorityTask().color
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -452,7 +452,7 @@ fun ItemTask(
                                 )
                             )
                             Text(
-                                text = task.getPriorityTask().name,
+                                text = entityTask.getPriorityTask().name,
                                 textAlign = TextAlign.Start,
                                 fontSize = 12.sp,
                                 color = colorResource(color),

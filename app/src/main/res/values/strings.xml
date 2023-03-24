@@ -70,5 +70,8 @@
     <string name="txt_to_be_discussed">TO BE DISCUSSED</string>
     <string name="txt_verification_note">An email verification link has been send to your account</string>
     <string name="txt_resend_email">Resend Email</string>
+    <string name="edit_folder">Edit Folder</string>
+    <string name="name_of_folder">Name of Folder</string>
+    <string name="save">Save</string>
 
 </resources>

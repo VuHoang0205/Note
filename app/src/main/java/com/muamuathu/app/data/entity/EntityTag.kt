@@ -4,9 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class Folder(
+data class EntityTag(
     @PrimaryKey(autoGenerate = true)
-    val folderId: Long = 0,
-    var name: String = "",
-    var color: Int = 0,
+    val tagId: Long = 0,
+    val name: String,
 )

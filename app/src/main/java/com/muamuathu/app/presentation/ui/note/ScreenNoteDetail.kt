@@ -39,7 +39,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
-import com.muamuathu.app.data.entity.Note
+import com.muamuathu.app.data.entity.EntityNote
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
@@ -73,13 +73,13 @@ fun ScreenNoteDetail(idNote: String) {
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun Content(
-    note: Note?,
+    entityNote: EntityNote?,
     onBack: () -> Unit,
     onMoreSetting: () -> Unit,
     onPlayAudio: () -> Unit,
     onAttachments: () -> Unit,
 ) {
-    note?.apply {
+    entityNote?.apply {
         val pagerState = rememberPagerState(0)
         ConstraintLayout(modifier = Modifier
             .fillMaxSize()
@@ -163,7 +163,7 @@ private fun Content(
                     val (textDay, columnDate, columnTime) = createRefs()
                     Text(
                         text = ZonedDateTime.ofInstant(
-                            Instant.ofEpochMilli(note.dateTime),
+                            Instant.ofEpochMilli(entityNote.dateTime),
                             ZoneId.systemDefault()).toDayOfMonth(),
                         color = colorResource(R.color.royal_blue_2),
                         fontSize = 34.sp,
@@ -255,7 +255,7 @@ private fun Content(
                 )
 
                 ExpandedText(
-                    text = content.substring(0, note.content.length / 2),
+                    text = content.substring(0, entityNote.content.length / 2),
                     expandedText = content,
                     expandedTextButton = stringResource(R.string.txt_read_more),
                     shrinkTextButton = stringResource(R.string.txt_read_less),
@@ -529,7 +529,8 @@ private fun ExpandedText(
 @Composable
 private fun PreviewContent() {
     AndroidThreeTen.init(LocalContext.current)
-    Content(Note(
+    Content(EntityNote(
+        1,
         1,
         "Fun day with Friends $1",
         "Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new...",

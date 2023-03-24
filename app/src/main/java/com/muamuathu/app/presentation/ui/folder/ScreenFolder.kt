@@ -1,6 +1,5 @@
 package com.muamuathu.app.presentation.ui.folder
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,7 +32,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
-import com.muamuathu.app.data.entity.Folder
+import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
@@ -42,8 +41,8 @@ import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
 fun ScreenFolder() {
     val eventHandler = initEventHandler()
     val context = LocalContext.current
-    val viewModel: FolderViewModel = hiltViewModel(context as ComponentActivity)
-    val folderList by viewModel.folderListState.collectAsState()
+    val viewModel: FolderViewModel = hiltViewModel()
+    val folderList by viewModel.entityFolderListState.collectAsState()
     val query by viewModel.query.collectAsState()
 
     Content(folderList,
@@ -55,9 +54,15 @@ fun ScreenFolder() {
         onSearchFolder = {
             viewModel.searchFolder(it)
         },
-        onEdit = {},
-        onDelete = {},
-        onItemFolder = {})
+        onEdit = {
+
+        },
+        onDelete = {
+            viewModel.deleteFolder(it)
+        },
+        onItemFolder = {
+
+        })
 }
 
 @Composable
@@ -68,7 +73,7 @@ private fun Content(
     onSearch: () -> Unit,
     onSearchFolder: (query: String) -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit,
+    onDelete: (Folder) -> Unit,
     onItemFolder: () -> Unit,
 ) {
 
@@ -195,7 +200,7 @@ private fun ItemFolder(
     folder: Folder,
     onItemFolder: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit,
+    onDelete: (Folder) -> Unit,
 ) {
     ConstraintLayout(modifier = Modifier
         .fillMaxWidth()
@@ -233,7 +238,7 @@ private fun ItemFolder(
         }
 
         IconButton(onClick = {
-            onDelete()
+            onDelete(folder)
         }, modifier = Modifier
             .size(20.dp)
             .constrainAs(iconDelete) {
@@ -269,13 +274,13 @@ private fun ItemFolder(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Journals: 7",
+                    text = "Journals: " + folder.noteList.size,
                     color = colorResource(R.color.storm_grey),
                     fontSize = 12.sp,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = "Todo: 5",
+                    text = "Todo: " + folder.getTotalTask(),
                     color = colorResource(R.color.storm_grey),
                     fontSize = 12.sp,
                     modifier = Modifier.weight(1f)

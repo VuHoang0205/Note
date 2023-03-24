@@ -1,7 +1,7 @@
 package com.muamuathu.app.data.repository
 
 import android.graphics.Bitmap
-import com.muamuathu.app.data.model.note.FileInfo
+import com.muamuathu.app.domain.model.FileInfo
 import kotlinx.coroutines.flow.Flow
 
 interface FileRepo {

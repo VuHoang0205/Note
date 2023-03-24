@@ -2,12 +2,15 @@ package com.muamuathu.app.data.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.muamuathu.app.data.entity.Folder
+import androidx.room.Transaction
+import com.muamuathu.app.data.entity.EntityFolder
+import com.muamuathu.app.data.entity.embedded.EmbeddedFolder
 import kotlinx.coroutines.flow.Flow
 
 
 @Dao
-abstract class DaoFolder : DaoBase<Folder>() {
-    @Query("SELECT * FROM folder ORDER BY folderId DESC ")
-    abstract fun getFolders(): Flow<List<Folder>>
+abstract class DaoFolder : DaoBase<EntityFolder>() {
+    @Transaction
+    @Query("SELECT * FROM EntityFolder ORDER BY folderId DESC ")
+    abstract fun getFolders(): Flow<List<EmbeddedFolder>>
 }

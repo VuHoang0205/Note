@@ -4,9 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class NoteItem(
+data class EntityFolder(
     @PrimaryKey(autoGenerate = true)
-    val noteItemId: Long = 0,
-    val noteId: Long,
-    val type: Int
+    val folderId: Long = 0,
+    var name: String = "",
+    var color: Long = 0,
 )

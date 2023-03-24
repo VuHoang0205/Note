@@ -35,8 +35,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.muamuathu.app.R
-import com.muamuathu.app.data.model.note.DEFAULT_ID
-import com.muamuathu.app.data.model.note.FileInfo
+import com.muamuathu.app.domain.model.DEFAULT_ID
+import com.muamuathu.app.domain.model.FileInfo
 import com.muamuathu.app.presentation.components.topbar.Toolbar
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler

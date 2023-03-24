@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class SubTask(
+data class EntitySubTask(
     @PrimaryKey(autoGenerate = true)
     val subTaskId: Long = 0,
     val taskId: Long,

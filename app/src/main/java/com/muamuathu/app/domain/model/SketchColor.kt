@@ -1,4 +1,4 @@
-package com.muamuathu.app.data.model.note
+package com.muamuathu.app.domain.model
 
 enum class SketchColor(val color: Long) {
     BLACK(0xFF000000),

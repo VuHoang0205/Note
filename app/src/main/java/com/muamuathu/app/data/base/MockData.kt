@@ -1,9 +1,9 @@
 package com.muamuathu.app.data.base
 
 import android.os.SystemClock
-import com.muamuathu.app.data.entity.Folder
-import com.muamuathu.app.data.entity.Note
-import com.muamuathu.app.data.entity.Task
+import com.muamuathu.app.data.entity.EntityFolder
+import com.muamuathu.app.data.entity.EntityNote
+import com.muamuathu.app.data.entity.EntityTask
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.threeten.bp.ZonedDateTime
@@ -27,16 +27,17 @@ object MockData {
     }
 
 
-    suspend fun getNoteItemList(): Flow<MutableList<Note>> {
+    suspend fun getNoteItemList(): Flow<MutableList<EntityNote>> {
         return flow {
-            val noteList = mutableListOf<Note>()
+            val entityNoteList = mutableListOf<EntityNote>()
             val random = Random()
             var time = SystemClock.currentThreadTimeMillis()
             (0..17).toList().forEach {
                 time += TimeUnit.HOURS.toMillis(1)
                 val avatar =
                     if (it % 5 == 0) "" else "https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg"
-                noteList.add(Note(
+                entityNoteList.add(EntityNote(
+                    random.nextInt(Int.MAX_VALUE - 1).toLong(),
                     random.nextInt(Int.MAX_VALUE - 1).toLong(),
                     "Fun day with Friends $it",
                     "Come on, people now Smile on your bro everybody get together to try new...",
@@ -44,13 +45,14 @@ object MockData {
                     "Fun,Family",
                     time))
             }
-            emit(noteList)
+            emit(entityNoteList)
         }
     }
 
-    suspend fun getNote(): Flow<Note> {
+    suspend fun getNote(): Flow<EntityNote> {
         return flow {
-            emit(Note(
+            emit(EntityNote(
+                1,
                 1,
                 "Fun day with Friends $1",
                 "Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new...",
@@ -64,30 +66,31 @@ object MockData {
         }
     }
 
-    suspend fun getMockFolderList(): Flow<MutableList<Folder>> {
+    suspend fun getMockFolderList(): Flow<MutableList<EntityFolder>> {
         return flow {
-            val folderList = mutableListOf<Folder>()
+            val entityFolderList = mutableListOf<EntityFolder>()
             val random = Random()
             (0..20).toList().forEach {
-                folderList.add(Folder(
+                entityFolderList.add(EntityFolder(
                     folderId = random.nextLong(),
                     name = "$it+Fun day with Friends",
                     color = 1
                 ))
             }
-            emit(folderList)
+            emit(entityFolderList)
         }
     }
 
-    suspend fun getMockTaskList(): Flow<MutableList<Task>> {
+    suspend fun getMockTaskList(): Flow<MutableList<EntityTask>> {
         return flow {
-            val taskList = mutableListOf<Task>()
+            val entityTaskList = mutableListOf<EntityTask>()
             val random = Random()
             var time = SystemClock.currentThreadTimeMillis()
             (0..17).toList().forEach {
                 time += TimeUnit.HOURS.toMillis(1)
                 if (it % 5 == 0) "" else "https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg"
-                taskList.add(Task(
+                entityTaskList.add(EntityTask(
+                    random.nextInt(Int.MAX_VALUE - 1).toLong(),
                     random.nextInt(Int.MAX_VALUE - 1).toLong(),
                     "Metting With James Royal $it",
                     "Come on, people now Smile on your bro everybody get together to try new...",
@@ -98,7 +101,7 @@ object MockData {
                     random.nextInt(3)
                 ))
             }
-            emit(taskList)
+            emit(entityTaskList)
         }
     }
 }
