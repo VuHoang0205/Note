@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.muamuathu.app.data.converters.Converters
 import com.muamuathu.app.data.dao.*
 import com.muamuathu.app.data.entity.*
-import com.muamuathu.app.data.entity.embedded.EmbeddedFolder
+import com.muamuathu.app.data.entity.embedded.EntityFolderInfo
 import kotlinx.coroutines.flow.Flow
 
 @Database(
@@ -40,7 +40,7 @@ abstract class JournalDatabase : RoomDatabase() {
     abstract fun daoTag(): DaoTag
     abstract fun daoTask(): DaoTask
 
-    fun loadSelectFolders(): Flow<List<EmbeddedFolder>> {
+    fun loadSelectFolders(): Flow<List<EntityFolderInfo>> {
         return daoFolder().getFolders()
     }
 

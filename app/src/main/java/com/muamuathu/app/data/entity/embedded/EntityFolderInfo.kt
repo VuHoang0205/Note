@@ -5,7 +5,7 @@ import androidx.room.Junction
 import androidx.room.Relation
 import com.muamuathu.app.data.entity.*
 
-data class EmbeddedFolder(
+data class EntityFolderInfo(
     @Embedded
     val folder: EntityFolder,
 
