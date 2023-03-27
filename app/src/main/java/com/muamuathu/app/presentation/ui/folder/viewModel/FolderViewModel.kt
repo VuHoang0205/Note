@@ -3,6 +3,7 @@ package com.muamuathu.app.presentation.ui.folder.viewModel
 import androidx.lifecycle.ViewModel
 import com.muamuathu.app.data.repository.JournalRepo
 import com.muamuathu.app.domain.model.Folder
+import com.muamuathu.app.domain.model.commons.WrapList
 import com.muamuathu.app.presentation.extensions.removeAccent
 import com.muamuathu.app.presentation.helper.resultFlow
 import com.muamuathu.common.ioLaunch
@@ -15,17 +16,14 @@ class FolderViewModel @Inject constructor(private val repo: JournalRepo) : ViewM
 
     private val entityFolderListOriginState: MutableStateFlow<List<Folder>> =
         MutableStateFlow(ArrayList())
-    val entityFolderListState: MutableStateFlow<List<Folder>> = MutableStateFlow(ArrayList())
+    val entityFolderListState: MutableStateFlow<WrapList<Folder>> =
+        MutableStateFlow(WrapList(emptyList()))
     var query: MutableStateFlow<String> = MutableStateFlow("")
 
-    init {
-        getFolderList()
-    }
-
-    private fun getFolderList() = ioLaunch {
+    fun getFolderList() = ioLaunch {
         repo.loadFolders().collect {
             entityFolderListOriginState.value = it
-            entityFolderListState.value = it
+            entityFolderListState.value = WrapList(it)
         }
     }
 
@@ -38,9 +36,9 @@ class FolderViewModel @Inject constructor(private val repo: JournalRepo) : ViewM
                 val result = folderList.filter {
                     it.name.removeAccent().contains(searchText)
                 }
-                entityFolderListState.value = result
+                entityFolderListState.value = WrapList(result)
             } else {
-                entityFolderListState.value = entityFolderListOriginState.value
+                entityFolderListState.value = WrapList(entityFolderListOriginState.value)
             }
         }
     }

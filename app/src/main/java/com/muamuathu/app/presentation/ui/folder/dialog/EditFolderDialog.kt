@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -35,11 +36,14 @@ import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.folder.ItemFolderColor
 import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
 
+const val KEY_UPDATE_FOLDER = "KEY_UPDATE_FOLDER"
+
 @Composable
 fun EditFolderDialog(
     folder: Folder,
     onDismissRequest: () -> Unit = {},
     properties: DialogProperties = DialogProperties(),
+    onUpdateFolder: () -> Unit,
 ) {
     val eventHandler = initEventHandler()
     val viewModel: FolderViewModel = hiltViewModel()
@@ -51,9 +55,10 @@ fun EditFolderDialog(
             onSave = { folder ->
                 coroutineScope.observeResultFlow(viewModel.updateFolder(folder), successHandler = {
                     eventHandler.postDialogEvent(DialogEvent.None)
+                    onUpdateFolder.invoke()
                 })
             }
-        ) { onDismissRequest }
+        ) { eventHandler.postDialogEvent(DialogEvent.None) }
     }
 }
 
@@ -161,16 +166,19 @@ private fun Content(
             }
         }
 
-        TextButton(modifier = Modifier.constrainAs(btnSave) {
-            end.linkTo(textField.end)
-            top.linkTo(lazyColor.bottom, 16.dp)
-        }, onClick = {
+        val alpha = if (folderName.isEmpty()) 0.5f else 1f
+        TextButton(modifier = Modifier
+            .alpha(alpha)
+            .constrainAs(btnSave) {
+                end.linkTo(textField.end)
+                top.linkTo(lazyColor.bottom, 16.dp)
+            }, onClick = {
             onSave?.let {
                 folder.name = folderName
                 folder.color = colorSelected.color
                 it(folder)
             }
-        }) {
+        }, enabled = folderName.isNotEmpty()) {
             Text(
                 text = stringResource(id = R.string.save),
                 color = colorResource(id = R.color.royal_blue),
@@ -195,5 +203,5 @@ private fun Content(
 @Preview
 @Composable
 private fun ContentPreview() {
-    Content(Folder(), null, {})
+    Content(Folder(), null) {}
 }

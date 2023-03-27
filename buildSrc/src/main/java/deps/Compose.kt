@@ -50,7 +50,8 @@ object Compose : Dependency() {
         accompanistPermission,
         googleFont,
         coilCompose,
-        coilComposeVideo
+        coilComposeVideo,
+        liveData
     )
 
     override fun debugImplementations() = listOf<String>(

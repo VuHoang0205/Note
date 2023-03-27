@@ -11,9 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,10 +40,24 @@ import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
 fun ScreenFolder() {
     val eventHandler = initEventHandler()
     val viewModel: FolderViewModel = hiltViewModel()
-    val folderList by viewModel.entityFolderListState.collectAsState()
+    val wrapperList by viewModel.entityFolderListState.collectAsState()
     val query by viewModel.query.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
-    Content(folderList,
+    @Composable
+    fun loadData() {
+        LaunchedEffect(key1 = Unit, block = {
+            viewModel.getFolderList()
+        })
+    }
+
+    fun reloadData() {
+        viewModel.getFolderList()
+    }
+
+    loadData()
+
+    Content(wrapperList.list,
         query,
         onAdd = {
             eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { ScreenNewFolder() })
@@ -55,7 +67,12 @@ fun ScreenFolder() {
             viewModel.searchFolder(it)
         },
         onEdit = {
-            eventHandler.postDialogEvent(DialogEvent.Custom { EditFolderDialog(folder = it) })
+            eventHandler.postDialogEvent(DialogEvent.Custom {
+                EditFolderDialog(folder = it,
+                    onUpdateFolder = {
+                        reloadData()
+                    })
+            })
         },
         onDelete = {
             viewModel.deleteFolder(it)
@@ -209,7 +226,7 @@ private fun ItemFolder(
         .clickable {
             onItemFolder()
         }) {
-        val (viewColor, iconFolder, cotentView, iconEdit, iconDelete) = createRefs()
+        val (viewColor, iconFolder, contentView, iconEdit, iconDelete) = createRefs()
         Image(painter = painterResource(R.drawable.ic_folder),
             contentDescription = "folder",
             modifier = Modifier
@@ -254,7 +271,7 @@ private fun ItemFolder(
         }
 
         Column(
-            modifier = Modifier.constrainAs(cotentView) {
+            modifier = Modifier.constrainAs(contentView) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 start.linkTo(iconFolder.end, 8.dp)

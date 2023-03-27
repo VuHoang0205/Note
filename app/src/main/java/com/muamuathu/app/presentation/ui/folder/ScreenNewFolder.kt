@@ -1,6 +1,5 @@
 package com.muamuathu.app.presentation.ui.folder
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -48,7 +47,7 @@ import com.muamuathu.app.presentation.ui.folder.viewModel.AddFolderViewModel
 fun ScreenNewFolder() {
     val eventHandler = initEventHandler()
     val context = LocalContext.current
-    val viewModel: AddFolderViewModel = hiltViewModel(context as ComponentActivity)
+    val viewModel: AddFolderViewModel = hiltViewModel()
 
     val colorList by remember { mutableStateOf(FolderColor.values().toList()) }
 
