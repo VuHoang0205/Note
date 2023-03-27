@@ -2,7 +2,6 @@ package com.muamuathu.app.domain.model
 
 data class Note(
     val noteId: Long,
-    val folderId: Long,
     val title: String,
     val content: String,
     val avatar: String,

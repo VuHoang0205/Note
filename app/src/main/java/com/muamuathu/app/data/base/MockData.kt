@@ -38,7 +38,6 @@ object MockData {
                     if (it % 5 == 0) "" else "https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg"
                 entityNoteList.add(EntityNote(
                     random.nextInt(Int.MAX_VALUE - 1).toLong(),
-                    random.nextInt(Int.MAX_VALUE - 1).toLong(),
                     "Fun day with Friends $it",
                     "Come on, people now Smile on your bro everybody get together to try new...",
                     avatar,
@@ -52,7 +51,6 @@ object MockData {
     suspend fun getNote(): Flow<EntityNote> {
         return flow {
             emit(EntityNote(
-                1,
                 1,
                 "Fun day with Friends $1",
                 "Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new...",

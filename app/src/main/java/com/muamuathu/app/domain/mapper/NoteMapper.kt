@@ -6,7 +6,6 @@ import com.muamuathu.app.domain.model.Note
 
 fun EmbeddedNote.toDomainModel() = Note(
     noteId = note.noteId,
-    folderId = note.folderId,
     title = note.title,
     content = note.content,
     avatar = note.avatar,
@@ -18,7 +17,6 @@ fun EmbeddedNote.toDomainModel() = Note(
 
 fun EntityNote.toDomainModel() = Note(
     noteId = noteId,
-    folderId = folderId,
     title = title,
     content = content,
     avatar = avatar,
@@ -29,7 +27,6 @@ fun EntityNote.toDomainModel() = Note(
 
 fun Note.toEntityModel() = EntityNote(
     noteId = noteId,
-    folderId = folderId,
     title = title,
     content = content,
     avatar = avatar,

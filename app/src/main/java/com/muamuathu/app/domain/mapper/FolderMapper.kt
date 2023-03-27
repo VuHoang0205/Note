@@ -8,7 +8,7 @@ fun EmbeddedFolder.toDomainModel() = Folder(
     folderId = folder.folderId,
     name = folder.name,
     color = folder.color,
-    noteList = notes.map { it.note.toDomainModel() },
+    noteList = notes.map { it.toDomainModel() },
 )
 
 fun EntityFolder.toDomainModel() = Folder(

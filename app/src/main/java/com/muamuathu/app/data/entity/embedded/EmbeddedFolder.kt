@@ -1,9 +1,9 @@
 package com.muamuathu.app.data.entity.embedded
 
 import androidx.room.Embedded
+import androidx.room.Junction
 import androidx.room.Relation
-import com.muamuathu.app.data.entity.EntityFolder
-import com.muamuathu.app.data.entity.EntityNote
+import com.muamuathu.app.data.entity.*
 
 data class EmbeddedFolder(
     @Embedded
@@ -11,8 +11,15 @@ data class EmbeddedFolder(
 
     @Relation(
         parentColumn = "folderId",
-        entityColumn = "folderId",
-        entity = EntityNote::class
+        entityColumn = "noteId",
+        associateBy = Junction(LinkFolderNote::class)
     )
-    val notes: List<EmbeddedNote> = emptyList()
+    val notes: List<EntityNote> = emptyList(),
+
+    @Relation(
+        parentColumn = "folderId",
+        entityColumn = "taskId",
+        associateBy = Junction(LinkFolderTask::class)
+    )
+    val task: List<EntityTask> = emptyList()
 )

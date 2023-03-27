@@ -531,7 +531,6 @@ private fun PreviewContent() {
     AndroidThreeTen.init(LocalContext.current)
     Content(EntityNote(
         1,
-        1,
         "Fun day with Friends $1",
         "Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new...",
         "https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg,https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg",
