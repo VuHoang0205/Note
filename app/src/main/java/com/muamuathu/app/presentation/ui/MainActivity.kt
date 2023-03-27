@@ -89,17 +89,17 @@ class MainActivity : AppCompatActivity() {
             Box(modifier = Modifier.padding(it)) {
                 NavGraph(navController)
 
-                if (sheetState.isVisible) {
-                    ModalBottomSheet(
-                        sheetState = sheetState,
-                        containerColor = colorResource(id = R.color.alice_blue),
-                        onDismissRequest = {
-                            eventHandler.postBottomSheetEvent(BottomSheetEvent.Hide { true })
-                        },
-                    ) {
-                        AppBottomSheet(eventHandler)
-                    }
-                }
+//                if (sheetState.isVisible) {
+//                    ModalBottomSheet(
+//                        sheetState = sheetState,
+//                        containerColor = colorResource(id = R.color.alice_blue),
+//                        onDismissRequest = {
+//                            eventHandler.postBottomSheetEvent(BottomSheetEvent.Hide { true })
+//                        },
+//                    ) {
+//                        AppBottomSheet(eventHandler)
+//                    }
+//                }
 
                 AppDialog(eventHandler = eventHandler)
             }

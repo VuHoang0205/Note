@@ -37,12 +37,10 @@ import coil.compose.AsyncImage
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.EntityNote
-import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
 import com.muamuathu.app.presentation.graph.NavTarget
-
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 import de.charlex.compose.RevealDirection
 import de.charlex.compose.RevealSwipe
@@ -66,7 +64,7 @@ fun ScreenNote() {
 
     Content(selectDate, selectDateList, noteItemList,
         onAdd = {
-            eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { ScreenNewNote() })
+            eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAdd))
         }, onSearch = {
 
         }, onCalendar = {

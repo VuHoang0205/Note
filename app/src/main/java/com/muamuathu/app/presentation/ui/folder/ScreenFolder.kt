@@ -11,7 +11,10 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,9 +33,10 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Folder
-import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.DialogEvent
+import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
+import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.ui.folder.dialog.EditFolderDialog
 import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
 
@@ -42,7 +46,6 @@ fun ScreenFolder() {
     val viewModel: FolderViewModel = hiltViewModel()
     val wrapperList by viewModel.entityFolderListState.collectAsState()
     val query by viewModel.query.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
 
     @Composable
     fun loadData() {
@@ -60,7 +63,7 @@ fun ScreenFolder() {
     Content(wrapperList.list,
         query,
         onAdd = {
-            eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { ScreenNewFolder() })
+            eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderAdd))
         },
         onSearch = {},
         onSearchFolder = {

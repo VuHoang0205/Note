@@ -18,7 +18,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,12 +31,12 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
 import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.EntityFolder
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.FolderColor
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
-import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.helper.observeResultFlow
@@ -46,14 +45,11 @@ import com.muamuathu.app.presentation.ui.folder.viewModel.AddFolderViewModel
 @Composable
 fun ScreenNewFolder() {
     val eventHandler = initEventHandler()
-    val context = LocalContext.current
     val viewModel: AddFolderViewModel = hiltViewModel()
-
     val colorList by remember { mutableStateOf(FolderColor.values().toList()) }
-
     val folderList by viewModel.entityFolderListState.collectAsState()
-
     val coroutineScope = rememberCoroutineScope()
+    val controller = rememberNavController()
 
     Content(
         colorList,
@@ -65,7 +61,7 @@ fun ScreenNewFolder() {
             coroutineScope.observeResultFlow(viewModel.saveFolder(
                 Folder(name = folderName, color = colorFolder)
             ), successHandler = {
-                eventHandler.postBottomSheetEvent(BottomSheetEvent.Hide { true })
+                eventHandler.postNavEvent(NavEvent.PopBackStack(false))
             })
         }, onItemSelect = {
 

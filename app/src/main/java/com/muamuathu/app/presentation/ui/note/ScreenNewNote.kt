@@ -155,28 +155,33 @@ private fun Content(
     ) {
         val (topView, contentView) = createRefs()
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp)
-                .constrainAs(topView) { top.linkTo(parent.top) },
-        ) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .height(70.dp)
+            .background(Color.White)
+            .padding(horizontal = 12.dp)
+            .constrainAs(topView) { top.linkTo(parent.top) },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween) {
+            IconButton(onClick = {
+                onClose()
+            }) {
+                Image(painter = painterResource(R.drawable.ic_close),
+                    contentDescription = "close")
+            }
 
             Text(
                 text = stringResource(R.string.txt_add_new_journal),
                 color = colorResource(R.color.gulf_blue),
                 fontSize = 20.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.Center)
+                textAlign = TextAlign.Center
             )
 
             IconButton(onClick = {
                 onSave()
-            }, modifier = Modifier.align(Alignment.CenterEnd)) {
-                Image(
-                    painter = painterResource(R.drawable.ic_save),
-                    contentDescription = "save"
-                )
+            }) {
+                Image(painter = painterResource(R.drawable.ic_save),
+                    contentDescription = "save")
             }
         }
 
