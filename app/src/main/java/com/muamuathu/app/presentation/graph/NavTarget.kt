@@ -36,6 +36,7 @@ sealed class NavTarget(val route: String) {
     object GraphFolder : NavTarget("folder/graph")
     object Folder : NavTarget("folder")
     object FolderAdd : NavTarget("folder/add")
+    object FolderChoose : NavTarget("folder/add?isChoose={true}")
 
     object GraphTodo : NavTarget("todo/graph")
     object Todo : NavTarget("todo")

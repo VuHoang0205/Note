@@ -74,5 +74,6 @@
     <string name="name_of_folder">Name of Folder</string>
     <string name="save">Save</string>
     <string name="color">Color</string>
+    <string name="capture_photo">Capture Photo</string>
 
 </resources>

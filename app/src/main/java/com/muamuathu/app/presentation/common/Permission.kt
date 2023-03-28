@@ -2,10 +2,7 @@
 
 package com.muamuathu.app.presentation.common
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
@@ -23,7 +20,7 @@ import com.muamuathu.app.R
 
 @Composable
 fun CheckAndRequestPermission(
-    modifier: Modifier = Modifier.fillMaxSize(),
+    modifier: Modifier = Modifier,
     permissionState: PermissionState,
     rationalePermissionMessage: Int,
     permissionMessage: Int,
@@ -33,8 +30,11 @@ fun CheckAndRequestPermission(
         if (permissionState.hasPermission) {
             onGrantedPermission()
         } else if (permissionState.permissionRequested) {
-            Column(modifier = Modifier.padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center) {
                 val textToShow = if (permissionState.shouldShowRationale) {
                     stringResource(id = rationalePermissionMessage)
                 } else {

@@ -1,9 +1,13 @@
 package com.muamuathu.app.presentation.ui.note.viewModel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.muamuathu.app.data.base.MockData
 import com.muamuathu.app.data.base.MockData.getNote
 import com.muamuathu.app.data.entity.EntityNote
+import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.common.ioLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +24,7 @@ class NoteViewModel @Inject constructor() : ViewModel() {
     private val dateListStateFlow = MutableStateFlow<List<ZonedDateTime>>(emptyList())
     private val entityNoteListStateFlow = MutableStateFlow<MutableList<EntityNote>>(mutableListOf())
     private val entityNoteSharedFlow = MutableStateFlow<EntityNote?>(null)
+    var folder by mutableStateOf(Folder())
 
     init {
         getCalenderList(ZonedDateTime.now())
@@ -27,7 +32,7 @@ class NoteViewModel @Inject constructor() : ViewModel() {
     }
 
     fun getCalenderList(
-        zonedDateTime: ZonedDateTime
+        zonedDateTime: ZonedDateTime,
     ) = ioLaunch {
         MockData.getCalendarList(zonedDateTime).flowOn(Dispatchers.IO).collect {
             dateListStateFlow.value = it
@@ -56,4 +61,12 @@ class NoteViewModel @Inject constructor() : ViewModel() {
     fun bindDateListState() = dateListStateFlow.asStateFlow()
     fun bindNoteListState() = entityNoteListStateFlow.asStateFlow()
     fun bindNote() = entityNoteSharedFlow.asSharedFlow()
+
+    fun updateFolder(folder: Folder) {
+        this.folder = folder
+    }
+
+    fun clearReference() {
+        folder = Folder()
+    }
 }

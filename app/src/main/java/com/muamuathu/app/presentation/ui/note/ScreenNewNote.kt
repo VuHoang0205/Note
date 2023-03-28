@@ -30,13 +30,15 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Action
+import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.formatFromPattern
 import com.muamuathu.app.presentation.graph.NavTarget
-
+import com.muamuathu.app.presentation.helper.OnLifecycleEvent
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 import java.util.*
 
@@ -44,8 +46,9 @@ import java.util.*
 fun ScreenNewNote() {
 
     val eventHandler = initEventHandler()
-    val context = LocalContext.current
-    val viewModel: NoteViewModel = hiltViewModel(context as ComponentActivity)
+    val context = LocalContext.current as ComponentActivity
+
+    val viewModel = hiltViewModel<NoteViewModel>(context)
 
     val calendar: Calendar by remember {
         mutableStateOf(Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar)
@@ -69,10 +72,20 @@ fun ScreenNewNote() {
         }
     }
 
+    OnLifecycleEvent { _, event ->
+        when (event) {
+            Lifecycle.Event.ON_DESTROY -> {
+                viewModel.clearReference()
+            }
+            else -> {}
+        }
+    }
+
     Content(
         monthString, yearString, timeString,
         onInputTitle = {},
         onInputContent = {},
+        folder = viewModel.folder,
         onClose = {
             eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         },
@@ -92,6 +105,8 @@ fun ScreenNewNote() {
                 calendar.get(Calendar.DAY_OF_MONTH)
             )
             dialog.show()
+        }, onChooseFolder = {
+            eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderChoose))
         }, onTimePicker = {
             val dialog = TimePickerDialog(
                 context,
@@ -138,9 +153,11 @@ private fun Content(
     timeString: String,
     onInputTitle: (title: String) -> Unit,
     onInputContent: (content: String) -> Unit,
+    folder: Folder,
     onClose: () -> Unit,
     onSave: () -> Unit,
     onCalendar: () -> Unit,
+    onChooseFolder: () -> Unit,
     onTimePicker: () -> Unit,
     onActionClick: (action: Action) -> Unit,
 ) {
@@ -270,7 +287,7 @@ private fun Content(
             ConstraintLayout(modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-
+                    onChooseFolder.invoke()
                 }
                 .constrainAs(rowFolder) {
                     top.linkTo(divider1.bottom)
@@ -287,8 +304,8 @@ private fun Content(
                         })
 
                 Text(
-                    text = stringResource(R.string.txt_choose_folder),
-                    color = colorResource(R.color.storm_grey),
+                    text = folder.name.ifEmpty { stringResource(R.string.txt_choose_folder) },
+                    color = colorResource(if (folder.name.isEmpty()) R.color.storm_grey else R.color.gulf_blue),
                     fontSize = 14.sp,
                     textAlign = TextAlign.End,
                     modifier = Modifier.constrainAs(textChooseFolder) {
@@ -419,5 +436,5 @@ private fun Content(
 @Preview
 @Composable
 private fun PreviewContent() {
-    Content("", "", "", {}, {}, {}, {}, {}, {}, {})
+    Content("", "", "", {}, {}, Folder(), {}, {}, {}, {}, {}, {})
 }

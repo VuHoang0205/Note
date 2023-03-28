@@ -23,7 +23,6 @@ import javax.inject.Inject
 class FileRepoImpl @Inject constructor(@ApplicationContext private val context: Context) :
     FileRepo {
 
-
     override suspend fun loadMediaFile(isImage: Boolean): Flow<List<FileInfo>> {
         return flow {
             val resolver = context.contentResolver

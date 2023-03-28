@@ -1,5 +1,6 @@
 package com.muamuathu.app.presentation.ui.folder
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,6 +19,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,53 +33,58 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
 import com.muamuathu.app.R
-import com.muamuathu.app.data.entity.EntityFolder
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.FolderColor
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.helper.observeResultFlow
-import com.muamuathu.app.presentation.ui.folder.viewModel.AddFolderViewModel
+import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
+import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 
 @Composable
-fun ScreenNewFolder() {
+fun ScreenNewFolder(isChooseFolder: Boolean) {
     val eventHandler = initEventHandler()
-    val viewModel: AddFolderViewModel = hiltViewModel()
+    val viewModel: FolderViewModel = hiltViewModel()
+    val noteViewModel: NoteViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val colorList by remember { mutableStateOf(FolderColor.values().toList()) }
     val folderList by viewModel.entityFolderListState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-    val controller = rememberNavController()
+
+    if (isChooseFolder) {
+        LaunchedEffect(key1 = Unit, block = {
+            viewModel.getFolderList()
+        })
+    }
 
     Content(
         colorList,
-        folderList,
+        folderList.list,
         onClose = {
             eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         },
         onAdd = { folderName, colorFolder ->
-            coroutineScope.observeResultFlow(viewModel.saveFolder(
-                Folder(name = folderName, color = colorFolder)
-            ), successHandler = {
-                eventHandler.postNavEvent(NavEvent.PopBackStack(false))
-            })
+            val folder = Folder(name = folderName, color = colorFolder)
+            coroutineScope.observeResultFlow(viewModel.saveFolder(folder))
         }, onItemSelect = {
 
-        }, onDone = {
-
+        }, onDone = { folder ->
+            if (isChooseFolder) {
+                noteViewModel.updateFolder(folder)
+            }
+            eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         })
 }
 
 @Composable
 private fun Content(
     colorList: List<FolderColor>,
-    entityFolderList: List<EntityFolder>,
+    entityFolderList: List<Folder>,
     onClose: () -> Unit,
     onAdd: (folderName: String, colorFolder: Long) -> Unit,
-    onItemSelect: (selectEntityFolder: EntityFolder) -> Unit,
-    onDone: () -> Unit,
+    onItemSelect: (folder: Folder) -> Unit,
+    onDone: (folder: Folder) -> Unit,
 ) {
 
     var folderName by remember { mutableStateOf("") }
@@ -88,13 +95,7 @@ private fun Content(
     }
 
     var colorSelected by remember { mutableStateOf(FolderColor.ORANGE) }
-    val entityFolderSelectedList: List<EntityFolder> by remember { mutableStateOf(emptyList()) }
-
-    val stateBtnDone by remember {
-        derivedStateOf {
-            entityFolderSelectedList.isNotEmpty()
-        }
-    }
+    var folderSelected by remember { mutableStateOf(Folder()) }
 
     ConstraintLayout(
         modifier = Modifier
@@ -199,7 +200,7 @@ private fun Content(
             if (folderName.isNotEmpty()) {
                 AnimatedVisibility(visible = stateVisibility,
                     modifier = Modifier.constrainAs(lazyRowColor) {
-                        top.linkTo(btnAdd.bottom, 4.dp)
+                        top.linkTo(btnAdd.bottom, 8.dp)
                         start.linkTo(imgPlus.start)
                         end.linkTo(btnAdd.end, 4.dp)
                         width = Dimension.fillToConstraints
@@ -246,22 +247,23 @@ private fun Content(
                 itemsIndexed(entityFolderList) { _, item ->
                     ItemFolder(
                         itemColor = item,
-                        selected = entityFolderSelectedList.contains(item)
+                        selected = folderSelected == item
                     ) {
+                        folderSelected = item
                         onItemSelect(item)
                     }
                 }
             }
 
             TextButton(
-                enabled = folderName.isNotEmpty(),
+                enabled = folderSelected.name.isNotEmpty(),
                 onClick = {
-                    onDone()
+                    onDone(folderSelected)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .alpha(if (stateBtnDone) 1f else 0.5f)
+                    .alpha(if (folderSelected.name.isNotEmpty()) 1f else 0.5f)
                     .background(
                         colorResource(R.color.royal_blue),
                         RoundedCornerShape(4.dp)
@@ -311,7 +313,7 @@ internal fun ItemFolderColor(
 
 @Composable
 private fun ItemFolder(
-    itemColor: EntityFolder,
+    itemColor: Folder,
     selected: Boolean,
     itemClick: () -> Unit,
 ) {
@@ -370,5 +372,5 @@ private fun ItemFolder(
 @Preview
 @Composable
 private fun PreviewContent() {
-    Content(emptyList(), emptyList(), {}, { _, _ -> }, {}, {})
+    Content(emptyList(), emptyList(), {}, { _, _ -> }, {}, { })
 }

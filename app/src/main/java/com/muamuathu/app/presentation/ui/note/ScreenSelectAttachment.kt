@@ -80,8 +80,6 @@ fun ScreenSelectAttachment(isSelectImage: Boolean) {
             } else {
                 mediaSelectedList.add(it)
             }
-        } else {
-
         }
     })
 }

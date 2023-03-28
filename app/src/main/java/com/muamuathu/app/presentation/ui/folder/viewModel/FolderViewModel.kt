@@ -50,4 +50,8 @@ class FolderViewModel @Inject constructor(private val repo: JournalRepo) : ViewM
     fun deleteFolder(folder: Folder) = ioLaunch {
         repo.deleteFolder(folder)
     }
+
+    fun saveFolder(folder: Folder) = resultFlow {
+        repo.saveFolder(folder)
+    }
 }
