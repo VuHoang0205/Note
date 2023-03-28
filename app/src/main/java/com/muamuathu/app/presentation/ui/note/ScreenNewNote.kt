@@ -3,13 +3,13 @@ package com.muamuathu.app.presentation.ui.note
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -34,6 +35,7 @@ import androidx.lifecycle.Lifecycle
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Action
 import com.muamuathu.app.domain.model.Folder
+import com.muamuathu.app.domain.model.Note
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.formatFromPattern
@@ -131,10 +133,10 @@ fun ScreenNewNote() {
                 Action.AddTag -> {
                     eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddTags))
                 }
-                Action.AddAudio -> {}
-                Action.OpenVideo -> {
-                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddVideo))
-                }
+//                Action.AddAudio -> {}
+//                Action.OpenVideo -> {
+//                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddVideo))
+//                }
                 Action.FileManager -> {
                     eventHandler.postNavEvent(NavEvent.Action(NavTarget.NotePickImage))
                 }
@@ -164,27 +166,32 @@ private fun Content(
 
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
+    var note by remember { mutableStateOf(Note()) }
 
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(R.color.alice_blue))
     ) {
-        val (topView, contentView) = createRefs()
+        val (topView, contentView, lazyRowBottom) = createRefs()
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .height(70.dp)
-            .background(Color.White)
-            .padding(horizontal = 12.dp)
-            .constrainAs(topView) { top.linkTo(parent.top) },
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(70.dp)
+                .background(Color.White)
+                .padding(horizontal = 12.dp)
+                .constrainAs(topView) { top.linkTo(parent.top) },
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween) {
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             IconButton(onClick = {
                 onClose()
             }) {
-                Image(painter = painterResource(R.drawable.ic_close),
-                    contentDescription = "close")
+                Image(
+                    painter = painterResource(R.drawable.ic_close),
+                    contentDescription = "close"
+                )
             }
 
             Text(
@@ -197,20 +204,22 @@ private fun Content(
             IconButton(onClick = {
                 onSave()
             }) {
-                Image(painter = painterResource(R.drawable.ic_save),
-                    contentDescription = "save")
+                Image(
+                    painter = painterResource(R.drawable.ic_save),
+                    contentDescription = "save"
+                )
             }
         }
 
         ConstraintLayout(modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 20.dp)
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
             .constrainAs(contentView) {
                 top.linkTo(topView.bottom)
-                bottom.linkTo(parent.bottom)
+                bottom.linkTo(lazyRowBottom.top)
                 height = Dimension.fillToConstraints
             }) {
-            val (columnDate, imgCalendar, imgClock, textTime, divider1, rowFolder, divider2, textTitle, textContent, lazyRowBottom) = createRefs()
+            val (columnDate, imgCalendar, imgClock, textTime, divider1, rowFolder, divider2, textTitle, textContent, textAttachment, lazyRowAttachMent, columnTag) = createRefs()
 
             Column(modifier = Modifier
                 .constrainAs(columnDate) {
@@ -373,12 +382,15 @@ private fun Content(
                 singleLine = true,
             )
 
+            val maxChar = 200
             TextField(
-                value = content,
+                value = "Chỉ số trung bình công nghiệp Dow Jones hay Chỉ số bình quân công nghiệp Dow Jones (tiếng Anh: Dow Jones Industrial Average, viết tắt DJIA, còn gọi Dow 30, Dow Jones công nghiệp, hoặc Dow Jones; NYSE: DJI Lưu trữ 2008-10-26 tại Wayback Machine) là một trong vài chỉ số thị trường chứng khoán được tạo ra bởi Charles Dow, chủ báo The Wall Street Journal và đồng sáng lập viên của công ty Dow Jones & Company vào thế kỷ 19. Dow tập hợp chỉ số này để đánh giá khu vực công nghiệp của thị trường chứng khoán tại Hoa Kỳ. Nó là chỉ số Mỹ lâu đời thứ hai, chỉ sau Chỉ số Trung bình Vận tải Dow Jones, cũng do Dow tạo ra.\n",
                 placeholder = { Text(stringResource(R.string.txt_write_more_here)) },
                 onValueChange = {
-                    content = it
-                    onInputContent(content)
+                    if (it.length < maxChar) {
+                        content = it
+                        onInputContent(content)
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -403,29 +415,116 @@ private fun Content(
                 ),
             )
 
+            val limitItem: Int =
+                (((LocalConfiguration.current.screenWidthDp) / 70) - 0.5f).toInt()
+            val redundantItem = note.attachments.size - limitItem
+            val redundantItemString = if (note.attachments.size > limitItem) {
+                String.format(
+                    "%s (%d)",
+                    stringResource(R.string.txt_attachments),
+                    redundantItem
+                )
+            } else {
+                stringResource(R.string.txt_attachments)
+            }
+            Text(text = redundantItemString,
+                color = colorResource(R.color.gulf_blue),
+                fontSize = 17.sp,
+                modifier = Modifier.constrainAs(textAttachment) {
+                    top.linkTo(textContent.bottom, 12.dp)
+                    start.linkTo(parent.start, 16.dp)
+                }
+            )
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 10.dp)
-                    .background(
-                        shape = RoundedCornerShape(topStartPercent = 8, bottomStartPercent = 8),
-                        color = Color.White
-                    )
-                    .constrainAs(lazyRowBottom) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start, 20.dp)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
-                    },
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .constrainAs(lazyRowAttachMent) {
+                        top.linkTo(textAttachment.bottom, 12.dp)
+                        start.linkTo(topView.start)
+                    }, horizontalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                items(Action.values()) {
-                    IconButton(onClick = {
-                        onActionClick(it)
-                    }, modifier = Modifier.padding(6.dp)) {
-                        Image(painterResource(it.resource), contentDescription = null)
+                itemsIndexed(note.attachments.take(limitItem)) { index, path ->
+                    AttachmentsItem(
+                        path,
+                        index == limitItem - 1,
+                        redundantItem
+                    ) { }
+                }
+            }
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(columnTag) {
+                        top.linkTo(lazyRowAttachMent.bottom, 12.dp)
+                        start.linkTo(topView.start)
+                    }, elevation = 4.dp,
+                backgroundColor = Color.White,
+                shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(R.string.txt_tags),
+                        color = colorResource(R.color.gulf_blue),
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(8.dp)
+                    )
+
+                    val strs = "tag,TAG".split(",").toTypedArray()
+                    LazyRow(
+                        modifier = Modifier
+                            .padding(
+                                top = 4.dp,
+                                start = 8.dp,
+                                end = 8.dp,
+                                bottom = 10.dp
+                            )
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(strs) {
+                            TextButton(
+                                onClick = {},
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = colorResource(
+                                        R.color.royal_blue_2
+                                    )
+                                ),
+                                shape = RoundedCornerShape(100.dp),
+                                modifier = Modifier.height(25.dp),
+                                contentPadding = PaddingValues(3.dp)
+                            ) {
+                                Text(it, color = Color.White, textAlign = TextAlign.Center)
+                            }
+                        }
                     }
+                }
+            }
+        }
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp)
+                .background(
+                    shape = RoundedCornerShape(topStartPercent = 8, bottomStartPercent = 8),
+                    color = Color.White
+                )
+                .constrainAs(lazyRowBottom) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start, 60.dp)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                },
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items(Action.values()) {
+                IconButton(onClick = {
+                    onActionClick(it)
+                }, modifier = Modifier.padding(6.dp)) {
+                    Image(painterResource(it.resource), contentDescription = null)
                 }
             }
         }

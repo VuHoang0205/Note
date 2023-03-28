@@ -9,10 +9,8 @@ fun EmbeddedNote.toDomainModel() = Note(
     title = note.title,
     content = note.content,
     avatar = note.avatar,
-    tag = note.tag,
     dateTime = note.dateTime,
     attachments = note.attachments,
-    tasks = tasks.map { it.toDomainModel() },
 )
 
 fun EntityNote.toDomainModel() = Note(
@@ -20,7 +18,6 @@ fun EntityNote.toDomainModel() = Note(
     title = title,
     content = content,
     avatar = avatar,
-    tag = tag,
     dateTime = dateTime,
     attachments = attachments,
 )
@@ -30,7 +27,6 @@ fun Note.toEntityModel() = EntityNote(
     title = title,
     content = content,
     avatar = avatar,
-    tag = tag,
     dateTime = dateTime,
     attachments = attachments
 )

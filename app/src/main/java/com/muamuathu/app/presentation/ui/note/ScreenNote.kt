@@ -458,7 +458,7 @@ private fun ItemNote(
                                     start.linkTo(textTitle.start)
                                 }, horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            val strs = entityNote.tag.split(",").toTypedArray()
+                            val strs = "fun,family".split(",").toTypedArray()
                             items(strs) {
                                 TextButton(
                                     onClick = {},

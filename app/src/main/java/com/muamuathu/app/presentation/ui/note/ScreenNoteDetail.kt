@@ -81,26 +81,32 @@ private fun Content(
 ) {
     entityNote?.apply {
         val pagerState = rememberPagerState(0)
-        ConstraintLayout(modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(colorResource(R.color.alice_blue))) {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .background(colorResource(R.color.alice_blue))
+        ) {
 
             val (topView, pagerAvatar, pagerIndicator, contentView) = createRefs()
 
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-                .background(Color.White)
-                .padding(horizontal = 12.dp)
-                .constrainAs(topView) { top.linkTo(parent.top) },
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.dp)
+                    .background(Color.White)
+                    .padding(horizontal = 12.dp)
+                    .constrainAs(topView) { top.linkTo(parent.top) },
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween) {
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 IconButton(onClick = {
                     onBack()
                 }) {
-                    Image(painter = painterResource(R.drawable.ic_back),
-                        contentDescription = "back")
+                    Image(
+                        painter = painterResource(R.drawable.ic_back),
+                        contentDescription = "back"
+                    )
                 }
 
                 Text(
@@ -113,8 +119,10 @@ private fun Content(
                 IconButton(onClick = {
                     onMoreSetting()
                 }) {
-                    Image(painter = painterResource(R.drawable.ic_more),
-                        contentDescription = "more setting")
+                    Image(
+                        painter = painterResource(R.drawable.ic_more),
+                        contentDescription = "more setting"
+                    )
                 }
             }
 
@@ -164,7 +172,8 @@ private fun Content(
                     Text(
                         text = ZonedDateTime.ofInstant(
                             Instant.ofEpochMilli(entityNote.dateTime),
-                            ZoneId.systemDefault()).toDayOfMonth(),
+                            ZoneId.systemDefault()
+                        ).toDayOfMonth(),
                         color = colorResource(R.color.royal_blue_2),
                         fontSize = 34.sp,
                         textAlign = TextAlign.Center,
@@ -175,13 +184,15 @@ private fun Content(
                         }
                     )
 
-                    Column(modifier = Modifier.constrainAs(columnDate) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(textDay.end, 4.dp)
-                    },
+                    Column(
+                        modifier = Modifier.constrainAs(columnDate) {
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(textDay.end, 4.dp)
+                        },
                         verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(
                             text = dateTime.toMonth(),
                             color = colorResource(R.color.catalina_blue),
@@ -197,13 +208,15 @@ private fun Content(
                         )
                     }
 
-                    Column(modifier = Modifier.constrainAs(columnTime) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end)
-                    },
+                    Column(
+                        modifier = Modifier.constrainAs(columnTime) {
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            end.linkTo(parent.end)
+                        },
                         verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(
                             text = dateTime.toDayOfWeekDetail(),
                             color = colorResource(R.color.storm_grey),
@@ -237,7 +250,7 @@ private fun Content(
                             .background(Color.Blue)
                     )
                     Text(
-                        text = tag,
+                        text = "tag",
                         color = colorResource(R.color.gulf_blue),
                         fontSize = 11.sp,
                         modifier = Modifier.padding(start = 4.dp)
@@ -268,19 +281,23 @@ private fun Content(
                             start.linkTo(parent.start)
                         })
 
-                Card(modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(audioView) {
-                        top.linkTo(textContent.bottom, 8.dp)
-                        start.linkTo(parent.start)
-                    },
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(audioView) {
+                            top.linkTo(textContent.bottom, 8.dp)
+                            start.linkTo(parent.start)
+                        },
                     elevation = 4.dp,
                     backgroundColor = Color.White,
-                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))) {
+                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
+                ) {
                     Box(modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier
-                            .padding(vertical = 8.dp, horizontal = 12.dp)
-                            .align(alignment = Alignment.CenterStart)) {
+                        Column(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp, horizontal = 12.dp)
+                                .align(alignment = Alignment.CenterStart)
+                        ) {
                             Text(
                                 text = "Audio",
                                 color = colorResource(R.color.gulf_blue),
@@ -311,9 +328,11 @@ private fun Content(
                                 .align(alignment = Alignment.CenterEnd)
                                 .padding(8.dp)
                         ) {
-                            Image(painter = painterResource(R.drawable.ic_play),
+                            Image(
+                                painter = painterResource(R.drawable.ic_play),
                                 contentDescription = "down",
-                                modifier = Modifier.align(alignment = Alignment.CenterVertically))
+                                modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                            )
                             Text(
                                 text = stringResource(R.string.txt_play),
                                 color = colorResource(R.color.gulf_blue),
@@ -324,14 +343,16 @@ private fun Content(
                         }
                     }
                 }
-                Card(modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(tagView) {
-                        top.linkTo(audioView.bottom, 16.dp)
-                        start.linkTo(parent.start)
-                    }, elevation = 4.dp,
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(tagView) {
+                            top.linkTo(audioView.bottom, 16.dp)
+                            start.linkTo(parent.start)
+                        }, elevation = 4.dp,
                     backgroundColor = Color.White,
-                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))) {
+                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
+                ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
 
                         Text(
@@ -341,21 +362,30 @@ private fun Content(
                             modifier = Modifier.padding(8.dp)
                         )
 
-                        val strs = tag.split(",").toTypedArray()
-                        LazyRow(modifier = Modifier
-                            .padding(top = 4.dp,
-                                start = 8.dp,
-                                end = 8.dp,
-                                bottom = 10.dp)
-                            .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        val strs = "tag,TAG".split(",").toTypedArray()
+                        LazyRow(
+                            modifier = Modifier
+                                .padding(
+                                    top = 4.dp,
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    bottom = 10.dp
+                                )
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             items(strs) {
-                                TextButton(onClick = {},
-                                    colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(
-                                        R.color.royal_blue_2)),
+                                TextButton(
+                                    onClick = {},
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = colorResource(
+                                            R.color.royal_blue_2
+                                        )
+                                    ),
                                     shape = RoundedCornerShape(100.dp),
                                     modifier = Modifier.height(25.dp),
-                                    contentPadding = PaddingValues(3.dp)) {
+                                    contentPadding = PaddingValues(3.dp)
+                                ) {
                                     Text(it, color = Color.White, textAlign = TextAlign.Center)
                                 }
                             }
@@ -367,9 +397,11 @@ private fun Content(
                     (((LocalConfiguration.current.screenWidthDp) / 70) - 0.5f).toInt()
                 val redundantItem = attachments.size - limitItem
                 val redundantItemString = if (attachments.size > limitItem) {
-                    String.format("%s (%d)",
+                    String.format(
+                        "%s (%d)",
                         stringResource(R.string.txt_attachments),
-                        redundantItem)
+                        redundantItem
+                    )
                 } else {
                     stringResource(R.string.txt_attachments)
                 }
@@ -381,14 +413,17 @@ private fun Content(
                         start.linkTo(parent.start)
                     }
                 )
-                LazyRow(modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(lazyRowAttachMent) {
-                        top.linkTo(textAttachment.bottom, 12.dp)
-                        start.linkTo(topView.start)
-                    }, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(lazyRowAttachMent) {
+                            top.linkTo(textAttachment.bottom, 12.dp)
+                            start.linkTo(topView.start)
+                        }, horizontalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
                     itemsIndexed(attachments.take(limitItem)) { index, path ->
-                        AttachmentsItem(path,
+                        AttachmentsItem(
+                            path,
                             index == limitItem - 1,
                             redundantItem
                         ) { onAttachments() }
@@ -400,24 +435,28 @@ private fun Content(
 }
 
 @Composable
-private fun AttachmentsItem(
+fun AttachmentsItem(
     url: String,
     isLastItem: Boolean,
     redundantItem: Int,
     onAttachments: () -> Unit,
 ) {
-    Box(modifier = Modifier
-        .size(70.dp)
-        .clickable {
-            onAttachments()
-        }, contentAlignment = Alignment.Center) {
-        Image(painter = rememberAsyncImagePainter(url),
+    Box(
+        modifier = Modifier
+            .size(70.dp)
+            .clickable {
+                onAttachments()
+            }, contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(url),
             contentDescription = "attachments",
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(8.dp))
                 .alpha(if (isLastItem) 0.5f else 1f),
-            contentScale = ContentScale.Crop)
+            contentScale = ContentScale.Crop
+        )
         if (isLastItem) {
             Text(
                 text = String.format("+%s", redundantItem),
@@ -431,7 +470,8 @@ private fun AttachmentsItem(
 
 @Composable
 private fun PagerIndicator(totalDots: Int, currentPage: Int, modifier: Modifier) {
-    LazyRow(modifier = modifier
+    LazyRow(
+        modifier = modifier
     ) {
         items(totalDots) { index ->
             if (index == currentPage) {
@@ -534,10 +574,11 @@ private fun PreviewContent() {
         "Fun day with Friends $1",
         "Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new...",
         "https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg,https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg",
-        "Fun,Family",
         SystemClock.currentThreadTimeMillis(),
-        attachments = listOf("https://kenh14cdn.com/thumb_w/660/2020/7/17/brvn-15950048783381206275371.jpg",
+        attachments = listOf(
             "https://kenh14cdn.com/thumb_w/660/2020/7/17/brvn-15950048783381206275371.jpg",
-            "https://kenh14cdn.com/thumb_w/660/2020/7/17/brvn-15950048783381206275371.jpg")
+            "https://kenh14cdn.com/thumb_w/660/2020/7/17/brvn-15950048783381206275371.jpg",
+            "https://kenh14cdn.com/thumb_w/660/2020/7/17/brvn-15950048783381206275371.jpg"
+        )
     ), {}, {}, {}, {})
 }

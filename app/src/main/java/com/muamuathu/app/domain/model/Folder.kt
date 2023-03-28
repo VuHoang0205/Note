@@ -8,6 +8,6 @@ data class Folder(
     val noteList: List<Note> = emptyList(),
 ) {
     fun getTotalTask(): Int {
-        return noteList.sumOf { it.tasks.size }
+        return 0
     }
 }
