@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
         EntityFolder::class,
         LinkFolderNote::class,
         LinkFolderTask::class,
-        LinkTagNode::class,
+        LinkNoteTag::class,
         EntityTag::class,
         EntityNote::class,
         EntityNoteItem::class,

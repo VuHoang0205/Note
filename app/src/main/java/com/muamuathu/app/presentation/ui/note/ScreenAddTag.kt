@@ -3,6 +3,7 @@ package com.muamuathu.app.presentation.ui.note
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -28,11 +29,12 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
-import com.muamuathu.app.data.entity.EntityTag
+import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
-
+import com.muamuathu.app.presentation.helper.observeResultFlow
+import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 import com.muamuathu.app.presentation.ui.note.viewModel.TagViewModel
 
 @Composable
@@ -40,14 +42,14 @@ fun ScreenAddTag() {
     val eventHandler = initEventHandler()
 
     val viewModel: TagViewModel = hiltViewModel()
-
-    val entityTagSelectedList = remember { mutableStateListOf<EntityTag>() }
+    val noteViewModel = hiltViewModel<NoteViewModel>()
+    val coroutineScope = rememberCoroutineScope()
+    val entityTagSelectedList = remember { mutableStateListOf<Tag>() }
     val tagList by viewModel.entityTagListState.collectAsState()
 
-
     Content(
-        entityTagSelectedList = entityTagSelectedList,
-        entityTagList = tagList,
+        tagSelectedList = entityTagSelectedList,
+        tagList = tagList,
         onItemClick = {
             if (entityTagSelectedList.contains(it)) {
                 entityTagSelectedList.remove(it)
@@ -59,20 +61,21 @@ fun ScreenAddTag() {
             eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         },
         onAdd = {
-            viewModel.saveTag(EntityTag(name = it))
+            coroutineScope.observeResultFlow(viewModel.saveTag(Tag(name = it)))
         }, onDone = {
-
+            noteViewModel.updateTag(it)
+            eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         })
 }
 
 @Composable
 private fun Content(
-    entityTagSelectedList: MutableList<EntityTag>,
-    entityTagList: List<EntityTag>,
-    onItemClick: (EntityTag) -> Unit,
+    tagSelectedList: MutableList<Tag>,
+    tagList: List<Tag>,
+    onItemClick: (Tag) -> Unit,
     onClose: () -> Unit,
     onAdd: (String) -> Unit,
-    onDone: () -> Unit,
+    onDone: (MutableList<Tag>) -> Unit,
 ) {
     var tagName by remember { mutableStateOf("") }
     val stateVisibility by remember {
@@ -186,22 +189,22 @@ private fun Content(
                 height = Dimension.fillToConstraints
             },
                 horizontalAlignment = Alignment.CenterHorizontally) {
-                itemsIndexed(entityTagList) { _, item ->
-                    ItemTag(item, entityTagSelectedList) {
+                itemsIndexed(tagList) { _, item ->
+                    ItemTag(item, tagSelectedList) {
                         onItemClick(it)
                     }
                 }
             }
 
             TextButton(
-                enabled = tagName.isNotEmpty(),
+                enabled = tagSelectedList.isNotEmpty(),
                 onClick = {
-                    onDone()
+                    onDone(tagSelectedList)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .alpha(if (entityTagSelectedList.isNotEmpty()) 1f else 0.5f)
+                    .alpha(if (tagSelectedList.isNotEmpty()) 1f else 0.5f)
                     .background(
                         colorResource(R.color.royal_blue),
                         RoundedCornerShape(4.dp)
@@ -224,13 +227,16 @@ private fun Content(
 
 @Composable
 private fun ItemTag(
-    entityTag: EntityTag,
-    entityTagSelectedList: MutableList<EntityTag>,
-    itemClick: (EntityTag) -> Unit,
+    entityTag: Tag,
+    entityTagSelectedList: MutableList<Tag>,
+    itemClick: (Tag) -> Unit,
 ) {
 
     ConstraintLayout(modifier = Modifier
         .fillMaxWidth()
+        .clickable {
+            itemClick(entityTag)
+        }
         .height(50.dp)) {
         val (imgTag, textName, checkBox) = createRefs()
 

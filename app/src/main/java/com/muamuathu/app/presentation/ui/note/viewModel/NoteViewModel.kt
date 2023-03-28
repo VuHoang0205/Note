@@ -8,6 +8,7 @@ import com.muamuathu.app.data.base.MockData
 import com.muamuathu.app.data.base.MockData.getNote
 import com.muamuathu.app.data.entity.EntityNote
 import com.muamuathu.app.domain.model.Folder
+import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.common.ioLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,7 @@ class NoteViewModel @Inject constructor() : ViewModel() {
     private val entityNoteListStateFlow = MutableStateFlow<MutableList<EntityNote>>(mutableListOf())
     private val entityNoteSharedFlow = MutableStateFlow<EntityNote?>(null)
     var folder by mutableStateOf(Folder())
+    var tags by mutableStateOf(emptyList<Tag>())
 
     init {
         getCalenderList(ZonedDateTime.now())
@@ -66,7 +68,12 @@ class NoteViewModel @Inject constructor() : ViewModel() {
         this.folder = folder
     }
 
+    fun updateTag(tags: List<Tag>) {
+        this.tags = tags
+    }
+
     fun clearReference() {
         folder = Folder()
+        tags = emptyList()
     }
 }

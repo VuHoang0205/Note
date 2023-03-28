@@ -1,10 +1,10 @@
 package com.muamuathu.app.data.repository
 
 import com.muamuathu.app.data.JournalDatabase
-import com.muamuathu.app.data.entity.EntityTag
 import com.muamuathu.app.domain.mapper.toDomainModel
 import com.muamuathu.app.domain.mapper.toEntityModel
 import com.muamuathu.app.domain.model.Folder
+import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.helper.safeDataBaseCall
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -19,12 +19,12 @@ class JournalRepoImpl @Inject constructor(private val database: JournalDatabase)
         database.daoFolder().insert(folder.toEntityModel())
     }
 
-    override suspend fun loadTags(): Flow<List<EntityTag>> {
-        return database.loadTags()
+    override suspend fun loadTags(): Flow<List<Tag>> {
+        return database.loadTags().map { it.map { it.toDomainModel() } }
     }
 
-    override suspend fun addTag(entityTag: EntityTag) {
-        database.daoTag().insert(entityTag)
+    override suspend fun addTag(tag: Tag) = safeDataBaseCall {
+        database.daoTag().insert(tag.toEntityModel())
     }
 
     override suspend fun updateFolder(folder: Folder) = safeDataBaseCall {
