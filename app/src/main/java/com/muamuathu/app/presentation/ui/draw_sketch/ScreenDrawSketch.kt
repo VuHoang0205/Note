@@ -2,7 +2,7 @@ package com.muamuathu.app.presentation.ui.draw_sketch
 
 import android.Manifest
 import android.graphics.Bitmap
-import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,16 +35,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.muamuathu.app.R
-import com.muamuathu.app.data.base.AppLog
 import com.muamuathu.app.domain.model.SketchColor
 import com.muamuathu.app.presentation.common.CheckAndAskPermission
 import com.muamuathu.app.presentation.components.topbar.Toolbar
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
+import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.draw_sketch.drawbox.DrawBox
 import com.muamuathu.app.presentation.ui.draw_sketch.drawbox.rememberDrawController
+import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 import com.muamuathu.app.presentation.ui.note.viewModel.SelectFileViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -52,7 +52,7 @@ fun ScreenDrawSketch() {
     val eventHandler = initEventHandler()
     val coroutineScope = rememberCoroutineScope()
     val selectFileViewModel = hiltViewModel<SelectFileViewModel>()
-
+    val noteViewModel = hiltViewModel<AddNoteViewModel>(LocalContext.current as ComponentActivity)
     val pathSavedDrawSketch by remember { selectFileViewModel.pathDrawSketchStateFlow }
 
     val storagePermission = rememberPermissionState(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -63,9 +63,10 @@ fun ScreenDrawSketch() {
         CheckAndAskPermission(
             permissionState = storagePermission,
             onGrantedPermission = {
-                coroutineScope.launch {
-                    selectFileViewModel.saveImageDrawSketch(it)
-                }
+                coroutineScope.observeResultFlow(selectFileViewModel.saveImageDrawSketch(it), {
+                    noteViewModel.updateAttachments(listOf(it))
+                    eventHandler.postNavEvent(NavEvent.PopBackStack(false))
+                })
             },
             onNoRequestedPermission = {
                 storagePermission.launchPermissionRequest()
@@ -89,19 +90,14 @@ private fun Content(
     var undoVisibility by remember { mutableStateOf(false) }
     var redoVisibility by remember { mutableStateOf(false) }
     var sliderPosition by remember { mutableStateOf(50f) }
+    val enableSave by remember { derivedStateOf { undoVisibility || redoVisibility } }
 
     if (pathSavedDrawSketch.isNotEmpty()) {
-        Toast.makeText(LocalContext.current,
-            "Save DrawSketch $pathSavedDrawSketch ",
-            Toast.LENGTH_LONG).show()
-        AppLog.d("Save DrawSketch $pathSavedDrawSketch ")
         drawController.reset()
     }
 
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (topView, contentView, bottomView) = createRefs()
-
-
 
         Toolbar(modifier = Modifier
             .fillMaxWidth()
@@ -115,15 +111,17 @@ private fun Content(
             onRightClick = {
                 drawController.saveBitmap()
             },
-            enableIconRight = undoVisibility || redoVisibility)
-        ConstraintLayout(modifier = Modifier.background(colorResource(R.color.alice_blue))
+            enableIconRight = enableSave)
+        ConstraintLayout(modifier = Modifier
+            .background(colorResource(R.color.alice_blue))
             .constrainAs(contentView) {
                 top.linkTo(topView.bottom)
                 bottom.linkTo(bottomView.top)
                 height = Dimension.fillToConstraints
             }) {
             val (drawBox, ivUndo, ivRedo) = createRefs()
-            IconButton(modifier = Modifier.alpha(if (redoVisibility) 1f else 0.5f)
+            IconButton(modifier = Modifier
+                .alpha(if (redoVisibility) 1f else 0.5f)
                 .constrainAs(ivRedo) {
                     top.linkTo(parent.top, 8.dp)
                     end.linkTo(parent.end, 16.dp)
@@ -134,7 +132,8 @@ private fun Content(
                 Image(painter = painterResource(R.drawable.ic_redo), contentDescription = null)
             }
 
-            IconButton(modifier = Modifier.alpha(if (undoVisibility) 1f else 0.5f)
+            IconButton(modifier = Modifier
+                .alpha(if (undoVisibility) 1f else 0.5f)
                 .constrainAs(ivUndo) {
                     top.linkTo(ivRedo.top)
                     end.linkTo(ivRedo.start)
@@ -146,12 +145,15 @@ private fun Content(
             }
 
             DrawBox(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .constrainAs(drawBox) {
                         top.linkTo(ivRedo.bottom, 8.dp)
                         bottom.linkTo(parent.bottom, 30.dp)
                         height = Dimension.fillToConstraints
-                    }.padding(16.dp).background(Color.White, shape = RoundedCornerShape(8.dp)),
+                    }
+                    .padding(16.dp)
+                    .background(Color.White, shape = RoundedCornerShape(8.dp)),
                 drawController = drawController,
                 backgroundColor = Color.White,
                 bitmapCallback = { imageBitmap, error ->
@@ -166,16 +168,22 @@ private fun Content(
             }
 
         }
-        ConstraintLayout(modifier = Modifier.fillMaxWidth().height(125.dp).constrainAs(bottomView) {
-            bottom.linkTo(parent.bottom)
-        }.background(Color.White)) {
+        ConstraintLayout(modifier = Modifier
+            .fillMaxWidth()
+            .height(125.dp)
+            .constrainAs(bottomView) {
+                bottom.linkTo(parent.bottom)
+            }
+            .background(Color.White)) {
             val (ivCircle, colorList, ivPencil, textBrush, slider, sizeSlider) = createRefs()
-            LazyRow(modifier = Modifier.fillMaxWidth().constrainAs(colorList) {
-                top.linkTo(parent.top, 16.dp)
-                start.linkTo(parent.start, 16.dp)
-                end.linkTo(parent.end, 16.dp)
-                width = Dimension.fillToConstraints
-            }, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            LazyRow(modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(colorList) {
+                    top.linkTo(parent.top, 16.dp)
+                    start.linkTo(parent.start, 16.dp)
+                    end.linkTo(parent.end, 16.dp)
+                    width = Dimension.fillToConstraints
+                }, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 itemsIndexed(SketchColor.values()) { index, item ->
                     ItemColor(item, item == currentColor) {
                         currentColor = it

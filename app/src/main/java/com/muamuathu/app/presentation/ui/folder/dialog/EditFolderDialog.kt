@@ -36,8 +36,6 @@ import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.folder.ItemFolderColor
 import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
 
-const val KEY_UPDATE_FOLDER = "KEY_UPDATE_FOLDER"
-
 @Composable
 fun EditFolderDialog(
     folder: Folder,
@@ -48,7 +46,6 @@ fun EditFolderDialog(
     val eventHandler = initEventHandler()
     val viewModel: FolderViewModel = hiltViewModel()
     val coroutineScope = rememberCoroutineScope()
-
     DialogBase(eventHandler = eventHandler, onDismissRequest, properties) {
         Content(
             folder = folder,

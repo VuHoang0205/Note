@@ -41,13 +41,13 @@ import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
-import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
+import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 
 @Composable
 fun ScreenNewFolder(isChooseFolder: Boolean) {
     val eventHandler = initEventHandler()
     val viewModel: FolderViewModel = hiltViewModel()
-    val noteViewModel: NoteViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
+    val addNoteViewModel: AddNoteViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val colorList by remember { mutableStateOf(FolderColor.values().toList()) }
     val folderList by viewModel.entityFolderListState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
@@ -71,7 +71,7 @@ fun ScreenNewFolder(isChooseFolder: Boolean) {
 
         }, onDone = { folder ->
             if (isChooseFolder) {
-                noteViewModel.updateFolder(folder)
+                addNoteViewModel.updateFolder(folder)
             }
             eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         })

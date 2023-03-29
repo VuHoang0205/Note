@@ -39,7 +39,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
-import com.muamuathu.app.data.entity.EntityNote
+import com.muamuathu.app.domain.model.Note
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
@@ -73,7 +73,7 @@ fun ScreenNoteDetail(idNote: String) {
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun Content(
-    entityNote: EntityNote?,
+    entityNote: Note?,
     onBack: () -> Unit,
     onMoreSetting: () -> Unit,
     onPlayAudio: () -> Unit,
@@ -126,20 +126,15 @@ private fun Content(
                 }
             }
 
-            val avatars = avatar.split(",").toMutableList()
-            if (avatars.isEmpty()) {
-                avatars.add(avatar)
-            }
-
             HorizontalPager(state = pagerState,
-                count = avatars.size,
+                count = attachments.size,
                 modifier = Modifier
                     .fillMaxWidth()
                     .constrainAs(pagerAvatar) {
                         top.linkTo(topView.bottom)
                     }) { page ->
                 Image(
-                    painter = rememberAsyncImagePainter(avatars[page]),
+                    painter = rememberAsyncImagePainter(attachments[page]),
                     contentDescription = "avatar",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -147,7 +142,7 @@ private fun Content(
                         .height(280.dp)
                 )
             }
-            PagerIndicator(avatars.size,
+            PagerIndicator(attachments.size,
                 pagerState.currentPage,
                 modifier = Modifier.constrainAs(pagerIndicator) {
                     bottom.linkTo(pagerAvatar.bottom, 20.dp)
@@ -569,11 +564,10 @@ private fun ExpandedText(
 @Composable
 private fun PreviewContent() {
     AndroidThreeTen.init(LocalContext.current)
-    Content(EntityNote(
+    Content(Note(
         1,
         "Fun day with Friends $1",
         "Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new...",
-        "https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg,https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg",
         SystemClock.currentThreadTimeMillis(),
         attachments = listOf(
             "https://kenh14cdn.com/thumb_w/660/2020/7/17/brvn-15950048783381206275371.jpg",

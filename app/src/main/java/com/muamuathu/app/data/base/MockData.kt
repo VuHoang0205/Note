@@ -40,7 +40,6 @@ object MockData {
                     random.nextInt(Int.MAX_VALUE - 1).toLong(),
                     "Fun day with Friends $it",
                     "Come on, people now Smile on your bro everybody get together to try new...",
-                    avatar,
                     time))
             }
             emit(entityNoteList)
@@ -53,7 +52,6 @@ object MockData {
                 1,
                 "Fun day with Friends $1",
                 "Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new Come on, people now Smile on your bro everybody get together to try new...",
-                "https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg,https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg",
                 SystemClock.currentThreadTimeMillis(),
                 attachments = listOf("https://kenh14cdn.com/thumb_w/660/2020/7/17/brvn-15950048783381206275371.jpg",
                     "https://kenh14cdn.com/thumb_w/660/2020/7/17/brvn-15950048783381206275371.jpg",

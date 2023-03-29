@@ -18,9 +18,9 @@ typealias EmptyHandler = () -> Unit
 
 fun <T> CoroutineScope.observeResultFlow(
     stateFlow: StateFlow<ResultWrapper<T>>,
+    successHandler: SuccessHandler<T>? = null,
     errorHandler: ErrorHandler? = null,
     loadingHandler: LoadingHandler? = null,
-    successHandler: SuccessHandler<T>? = null,
 ) {
     launch {
         stateFlow.collect {

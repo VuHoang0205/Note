@@ -7,7 +7,10 @@ import androidx.lifecycle.ViewModel
 import com.muamuathu.app.data.base.MockData
 import com.muamuathu.app.data.base.MockData.getNote
 import com.muamuathu.app.data.entity.EntityNote
+import com.muamuathu.app.data.repository.JournalRepo
+import com.muamuathu.app.domain.mapper.toDomainModel
 import com.muamuathu.app.domain.model.Folder
+import com.muamuathu.app.domain.model.Note
 import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.common.ioLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +23,11 @@ import org.threeten.bp.ZonedDateTime
 import javax.inject.Inject
 
 @HiltViewModel
-class NoteViewModel @Inject constructor() : ViewModel() {
+class NoteViewModel @Inject constructor(private val repo: JournalRepo) : ViewModel() {
 
     private val dateListStateFlow = MutableStateFlow<List<ZonedDateTime>>(emptyList())
-    private val entityNoteListStateFlow = MutableStateFlow<MutableList<EntityNote>>(mutableListOf())
-    private val entityNoteSharedFlow = MutableStateFlow<EntityNote?>(null)
+    private val entityNoteListStateFlow = MutableStateFlow<List<Note>>(mutableListOf())
+    private val noteSharedFlow = MutableStateFlow<Note?>(null)
     var folder by mutableStateOf(Folder())
     var tags by mutableStateOf(emptyList<Tag>())
 
@@ -42,27 +45,24 @@ class NoteViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun getNoteList() = ioLaunch {
-        MockData.getNoteItemList().flowOn(Dispatchers.IO).collect {
+        repo.loadNote().collect {
             entityNoteListStateFlow.value = it
         }
     }
 
     fun removeNote(entityNote: EntityNote) = ioLaunch {
-        val newData = mutableListOf<EntityNote>()
-        newData.addAll(entityNoteListStateFlow.value)
-        newData.remove(entityNote)
-        entityNoteListStateFlow.value = newData
+
     }
 
     fun getNoteById(idNote: String) = ioLaunch {
         getNote().flowOn(Dispatchers.IO).collect {
-            entityNoteSharedFlow.value = it
+            noteSharedFlow.value = it.toDomainModel()
         }
     }
 
     fun bindDateListState() = dateListStateFlow.asStateFlow()
     fun bindNoteListState() = entityNoteListStateFlow.asStateFlow()
-    fun bindNote() = entityNoteSharedFlow.asSharedFlow()
+    fun bindNote() = noteSharedFlow.asSharedFlow()
 
     fun updateFolder(folder: Folder) {
         this.folder = folder

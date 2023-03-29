@@ -6,7 +6,7 @@ import androidx.room.*
 abstract class DaoBase<T> {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insert(entity: T)
+    abstract suspend fun insert(entity: T): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insert(entity: List<T>)

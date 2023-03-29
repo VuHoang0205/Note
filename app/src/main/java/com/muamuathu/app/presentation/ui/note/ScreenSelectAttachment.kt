@@ -40,7 +40,7 @@ import com.muamuathu.app.domain.model.FileInfo
 import com.muamuathu.app.presentation.components.topbar.Toolbar
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
-
+import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 import com.muamuathu.app.presentation.ui.note.viewModel.SelectFileViewModel
 
 
@@ -50,10 +50,11 @@ fun ScreenSelectAttachment(isSelectImage: Boolean) {
     val storagePermissionState = rememberPermissionState(
         android.Manifest.permission.READ_EXTERNAL_STORAGE
     )
-    val context = LocalContext.current
+    val context = LocalContext.current as ComponentActivity
     val eventHandler = initEventHandler()
 
-    val viewModel: SelectFileViewModel = hiltViewModel(context as ComponentActivity)
+    val viewModel: SelectFileViewModel = hiltViewModel()
+    val noteViewModel = hiltViewModel<AddNoteViewModel>(context)
 
     val mediaList by viewModel.bindMediaList().collectAsState(initial = mutableListOf())
 
@@ -69,7 +70,10 @@ fun ScreenSelectAttachment(isSelectImage: Boolean) {
 
     ContentUI(isSelectImage, storagePermissionState, mediaList, mediaSelectedList, onBack = {
         eventHandler.postNavEvent(NavEvent.PopBackStack(false))
-    }, onSave = {}, onClickItem = {
+    }, onSave = {
+        noteViewModel.updateAttachments(mediaSelectedList.map { it.data })
+        eventHandler.postNavEvent(NavEvent.PopBackStack())
+    }, onClickItem = {
         if (it.id != DEFAULT_ID) {
             if (mediaList.isNotEmpty()) {
                 if (mediaSelectedList.contains(it)) {

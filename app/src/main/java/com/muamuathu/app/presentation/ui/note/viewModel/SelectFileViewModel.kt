@@ -3,15 +3,14 @@ package com.muamuathu.app.presentation.ui.note.viewModel
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateOf
-import com.muamuathu.app.domain.model.FileInfo
 import com.muamuathu.app.data.repository.FileRepo
+import com.muamuathu.app.domain.model.FileInfo
 import com.muamuathu.app.presentation.common.BaseViewModel
-import com.muamuathu.common.ioLaunch
+import com.muamuathu.app.presentation.helper.ResultWrapper
+import com.muamuathu.app.presentation.helper.resultFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import java.io.File
 import javax.inject.Inject
 
@@ -21,10 +20,12 @@ class SelectFileViewModel @Inject constructor(private val fileRepo: FileRepo) : 
     private val allMediaStateFlow = MutableStateFlow<MutableList<FileInfo>>(mutableListOf())
     val pathDrawSketchStateFlow = mutableStateOf("")
 
-    fun loadMediaFile(isImage: Boolean) = ioLaunch {
-        fileRepo.loadMediaFile(isImage).onEach {
-            allMediaStateFlow.value = it.toMutableList()
-        }.collect()
+    fun loadMediaFile(isImage: Boolean) = resultFlow {
+        fileRepo.loadMediaFile(isImage).apply {
+            if (this is ResultWrapper.Success) {
+                allMediaStateFlow.value = value.toMutableList()
+            }
+        }
     }
 
     fun getOutputDirectory(context: Context): File {
@@ -34,10 +35,8 @@ class SelectFileViewModel @Inject constructor(private val fileRepo: FileRepo) : 
         return (if (mediaDir != null && mediaDir.exists()) mediaDir else context.filesDir)
     }
 
-    suspend fun saveImageDrawSketch(bitmap: Bitmap) = ioLaunch {
-        fileRepo.saveImageDrawSketch(bitmap).onEach {
-            pathDrawSketchStateFlow.value = it
-        }.collect()
+    fun saveImageDrawSketch(bitmap: Bitmap) = resultFlow {
+        fileRepo.saveImageDrawSketch(bitmap)
     }
 
     fun bindMediaList() = allMediaStateFlow.asSharedFlow()

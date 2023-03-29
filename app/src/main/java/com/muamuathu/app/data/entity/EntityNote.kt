@@ -9,7 +9,6 @@ data class EntityNote(
     val noteId: Long,
     val title: String,
     val content: String,
-    val avatar: String,
     val dateTime: Long,
     val attachments: List<String> = emptyList(),
 )

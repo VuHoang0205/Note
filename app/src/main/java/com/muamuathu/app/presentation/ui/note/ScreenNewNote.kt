@@ -3,7 +3,9 @@ package com.muamuathu.app.presentation.ui.note
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -15,6 +17,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -35,13 +38,14 @@ import androidx.lifecycle.Lifecycle
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Action
 import com.muamuathu.app.domain.model.Folder
-import com.muamuathu.app.domain.model.Note
+import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.formatFromPattern
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.helper.OnLifecycleEvent
-import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
+import com.muamuathu.app.presentation.helper.observeResultFlow
+import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 import java.util.*
 
 @Composable
@@ -50,29 +54,23 @@ fun ScreenNewNote() {
     val eventHandler = initEventHandler()
     val context = LocalContext.current as ComponentActivity
 
-    val viewModel = hiltViewModel<NoteViewModel>(context)
+    val viewModel = hiltViewModel<AddNoteViewModel>(context)
+    val coroutineScope = rememberCoroutineScope()
 
     val calendar: Calendar by remember {
         mutableStateOf(Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar)
     }
+    val dateTime by viewModel.dateTime.collectAsState()
+    val title by viewModel.title.collectAsState()
+    val content by viewModel.content.collectAsState()
+    val attachments by viewModel.attachments.collectAsState()
+    val tag by viewModel.tags.collectAsState()
+    val folder by viewModel.folder.collectAsState()
+    val enableSave by viewModel.isValidData.collectAsState()
 
-    var dateTime by remember { mutableStateOf(calendar.timeInMillis) }
-
-    val monthString by remember {
-        derivedStateOf {
-            dateTime.formatFromPattern("dd MMMM")
-        }
-    }
-    val yearString by remember {
-        derivedStateOf {
-            dateTime.formatFromPattern("yyyy, EEEE")
-        }
-    }
-    val timeString by remember {
-        derivedStateOf {
-            dateTime.formatFromPattern("hh:mm a")
-        }
-    }
+    val monthString by remember { derivedStateOf { dateTime.formatFromPattern("dd MMMM") } }
+    val yearString by remember { derivedStateOf { dateTime.formatFromPattern("yyyy, EEEE") } }
+    val timeString by remember { derivedStateOf { dateTime.formatFromPattern("hh:mm a") } }
 
     OnLifecycleEvent { _, event ->
         when (event) {
@@ -85,14 +83,25 @@ fun ScreenNewNote() {
 
     Content(
         monthString, yearString, timeString,
-        onInputTitle = {},
-        onInputContent = {},
-        folder = viewModel.folder,
+        folder = folder,
+        title = title,
+        content = content,
+        attachments = attachments.list,
+        tags = tag.list,
+        enableSave = enableSave,
+        onInputTitle = {
+            viewModel.updateTitle(it)
+        },
+        onInputContent = {
+            viewModel.updateContent(it)
+        },
         onClose = {
             eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         },
         onSave = {
-            // TODO: Save
+            coroutineScope.observeResultFlow(viewModel.saveNote(), successHandler = {
+                eventHandler.postNavEvent(NavEvent.PopBackStack(false))
+            })
         },
         onCalendar = {
             val dialog = DatePickerDialog(
@@ -101,7 +110,7 @@ fun ScreenNewNote() {
                     calendar.set(Calendar.YEAR, year)
                     calendar.set(Calendar.MONTH, month)
                     calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                    dateTime = calendar.timeInMillis
+                    viewModel.updateDateTime(calendar.timeInMillis)
                 },
                 calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
@@ -115,7 +124,7 @@ fun ScreenNewNote() {
                 { _, hourOfDay, minute ->
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                     calendar.set(Calendar.MINUTE, minute)
-                    dateTime = calendar.timeInMillis
+                    viewModel.updateDateTime(calendar.timeInMillis)
                 }, calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
                 false
@@ -153,9 +162,14 @@ private fun Content(
     monthString: String,
     yearString: String,
     timeString: String,
-    onInputTitle: (title: String) -> Unit,
-    onInputContent: (content: String) -> Unit,
     folder: Folder,
+    title: String,
+    content: String,
+    attachments: List<String>,
+    tags: List<Tag>,
+    enableSave: Boolean,
+    onInputTitle: (String) -> Unit,
+    onInputContent: (String) -> Unit,
     onClose: () -> Unit,
     onSave: () -> Unit,
     onCalendar: () -> Unit,
@@ -163,10 +177,6 @@ private fun Content(
     onTimePicker: () -> Unit,
     onActionClick: (action: Action) -> Unit,
 ) {
-
-    var title by remember { mutableStateOf("") }
-    var content by remember { mutableStateOf("") }
-    var note by remember { mutableStateOf(Note()) }
 
     ConstraintLayout(
         modifier = Modifier
@@ -203,7 +213,7 @@ private fun Content(
 
             IconButton(onClick = {
                 onSave()
-            }) {
+            }, enabled = enableSave, modifier = Modifier.alpha(if (enableSave) 1f else 0.5f)) {
                 Image(
                     painter = painterResource(R.drawable.ic_save),
                     contentDescription = "save"
@@ -213,7 +223,6 @@ private fun Content(
 
         ConstraintLayout(modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
             .constrainAs(contentView) {
                 top.linkTo(topView.bottom)
                 bottom.linkTo(lazyRowBottom.top)
@@ -355,8 +364,7 @@ private fun Content(
                     )
                 },
                 onValueChange = {
-                    title = it
-                    onInputTitle(title)
+                    onInputTitle(it)
                 },
                 textStyle = TextStyle(
                     fontSize = 16.sp,
@@ -384,12 +392,11 @@ private fun Content(
 
             val maxChar = 200
             TextField(
-                value = "Chỉ số trung bình công nghiệp Dow Jones hay Chỉ số bình quân công nghiệp Dow Jones (tiếng Anh: Dow Jones Industrial Average, viết tắt DJIA, còn gọi Dow 30, Dow Jones công nghiệp, hoặc Dow Jones; NYSE: DJI Lưu trữ 2008-10-26 tại Wayback Machine) là một trong vài chỉ số thị trường chứng khoán được tạo ra bởi Charles Dow, chủ báo The Wall Street Journal và đồng sáng lập viên của công ty Dow Jones & Company vào thế kỷ 19. Dow tập hợp chỉ số này để đánh giá khu vực công nghiệp của thị trường chứng khoán tại Hoa Kỳ. Nó là chỉ số Mỹ lâu đời thứ hai, chỉ sau Chỉ số Trung bình Vận tải Dow Jones, cũng do Dow tạo ra.\n",
+                value = content,
                 placeholder = { Text(stringResource(R.string.txt_write_more_here)) },
                 onValueChange = {
                     if (it.length < maxChar) {
-                        content = it
-                        onInputContent(content)
+                        onInputContent(it)
                     }
                 },
                 modifier = Modifier
@@ -415,88 +422,96 @@ private fun Content(
                 ),
             )
 
-            val limitItem: Int =
-                (((LocalConfiguration.current.screenWidthDp) / 70) - 0.5f).toInt()
-            val redundantItem = note.attachments.size - limitItem
-            val redundantItemString = if (note.attachments.size > limitItem) {
-                String.format(
-                    "%s (%d)",
-                    stringResource(R.string.txt_attachments),
-                    redundantItem
-                )
-            } else {
-                stringResource(R.string.txt_attachments)
-            }
-            Text(text = redundantItemString,
-                color = colorResource(R.color.gulf_blue),
-                fontSize = 17.sp,
-                modifier = Modifier.constrainAs(textAttachment) {
-                    top.linkTo(textContent.bottom, 12.dp)
-                    start.linkTo(parent.start, 16.dp)
-                }
-            )
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(lazyRowAttachMent) {
-                        top.linkTo(textAttachment.bottom, 12.dp)
-                        start.linkTo(topView.start)
-                    }, horizontalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                itemsIndexed(note.attachments.take(limitItem)) { index, path ->
-                    AttachmentsItem(
-                        path,
-                        index == limitItem - 1,
+            if (attachments.isNotEmpty()) {
+                val limitItem: Int =
+                    (((LocalConfiguration.current.screenWidthDp) / 70) - 0.5f).toInt()
+                val redundantItem = attachments.size - limitItem
+                val redundantItemString = if (attachments.size > limitItem) {
+                    String.format(
+                        "%s (%d)",
+                        stringResource(R.string.txt_attachments),
                         redundantItem
-                    ) { }
+                    )
+                } else {
+                    stringResource(R.string.txt_attachments)
                 }
-            }
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(columnTag) {
-                        top.linkTo(lazyRowAttachMent.bottom, 12.dp)
-                        start.linkTo(topView.start)
-                    }, elevation = 4.dp,
-                backgroundColor = Color.White,
-                shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
-            ) {
-                Column(
+                Text(text = redundantItemString,
+                    color = colorResource(R.color.gulf_blue),
+                    fontSize = 17.sp,
+                    modifier = Modifier.constrainAs(textAttachment) {
+                        top.linkTo(textContent.bottom, 12.dp)
+                        start.linkTo(parent.start, 16.dp)
+                    }
+                )
+                LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .constrainAs(lazyRowAttachMent) {
+                            top.linkTo(textAttachment.bottom, 12.dp)
+                            start.linkTo(topView.start)
+                        }, horizontalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    Text(
-                        text = stringResource(R.string.txt_tags),
-                        color = colorResource(R.color.gulf_blue),
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(8.dp)
-                    )
+                    itemsIndexed(attachments.take(limitItem)) { index, path ->
+                        AttachmentsItem(
+                            path,
+                            index == limitItem - 1,
+                            redundantItem
+                        ) { }
+                    }
+                }
+            }
 
-                    val strs = "tag,TAG".split(",").toTypedArray()
-                    LazyRow(
+            if (tags.isNotEmpty()) {
+                Card(
+                    modifier = Modifier
+                        .constrainAs(columnTag) {
+                            top.linkTo(if (attachments.isEmpty()) textContent.bottom else lazyRowAttachMent.bottom,
+                                12.dp)
+                            start.linkTo(parent.start, 16.dp)
+                            end.linkTo(parent.end, 16.dp)
+                            width = Dimension.fillToConstraints
+                        }, elevation = 1.dp,
+                    backgroundColor = Color.White,
+                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
+                ) {
+                    Column(
                         modifier = Modifier
-                            .padding(
-                                top = 4.dp,
-                                start = 8.dp,
-                                end = 8.dp,
-                                bottom = 10.dp
-                            )
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            .fillMaxWidth()
                     ) {
-                        items(strs) {
-                            TextButton(
-                                onClick = {},
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = colorResource(
-                                        R.color.royal_blue_2
-                                    )
-                                ),
-                                shape = RoundedCornerShape(100.dp),
-                                modifier = Modifier.height(25.dp),
-                                contentPadding = PaddingValues(3.dp)
-                            ) {
-                                Text(it, color = Color.White, textAlign = TextAlign.Center)
+                        Text(
+                            text = stringResource(R.string.txt_tags),
+                            color = colorResource(R.color.gulf_blue),
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(8.dp)
+                        )
+
+                        LazyRow(
+                            modifier = Modifier
+                                .padding(
+                                    top = 4.dp,
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    bottom = 10.dp
+                                )
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            itemsIndexed(tags) { _, tag ->
+                                TextButton(
+                                    onClick = {},
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = colorResource(
+                                            R.color.royal_blue_2
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(100.dp),
+                                    modifier = Modifier.height(25.dp),
+                                    contentPadding = PaddingValues(3.dp)
+                                ) {
+                                    Text(tag.name,
+                                        color = Color.White,
+                                        textAlign = TextAlign.Center)
+                                }
                             }
                         }
                     }
@@ -535,5 +550,21 @@ private fun Content(
 @Preview
 @Composable
 private fun PreviewContent() {
-    Content("", "", "", {}, {}, Folder(), {}, {}, {}, {}, {}, {})
+    Content("",
+        "",
+        "",
+        Folder(),
+        "",
+        "",
+        emptyList(),
+        emptyList(),
+        true,
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {})
 }

@@ -1,5 +1,6 @@
 package com.muamuathu.app.presentation.ui.note
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,7 +36,7 @@ import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.helper.observeResultFlow
-import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
+import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 import com.muamuathu.app.presentation.ui.note.viewModel.TagViewModel
 
 @Composable
@@ -42,7 +44,7 @@ fun ScreenAddTag() {
     val eventHandler = initEventHandler()
 
     val viewModel: TagViewModel = hiltViewModel()
-    val noteViewModel = hiltViewModel<NoteViewModel>()
+    val addNoteViewModel = hiltViewModel<AddNoteViewModel>(LocalContext.current as ComponentActivity)
     val coroutineScope = rememberCoroutineScope()
     val entityTagSelectedList = remember { mutableStateListOf<Tag>() }
     val tagList by viewModel.entityTagListState.collectAsState()
@@ -63,7 +65,7 @@ fun ScreenAddTag() {
         onAdd = {
             coroutineScope.observeResultFlow(viewModel.saveTag(Tag(name = it)))
         }, onDone = {
-            noteViewModel.updateTag(it)
+            addNoteViewModel.updateTag(it)
             eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         })
 }

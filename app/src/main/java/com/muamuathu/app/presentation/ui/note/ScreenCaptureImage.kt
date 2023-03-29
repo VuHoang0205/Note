@@ -39,7 +39,7 @@ import com.muamuathu.app.R
 import com.muamuathu.app.presentation.common.CheckAndRequestPermission
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
-
+import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 import com.muamuathu.app.presentation.ui.note.viewModel.SelectFileViewModel
 import java.io.File
 import java.text.SimpleDateFormat
@@ -53,9 +53,10 @@ const val FILE_NAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ScreenCaptureImage() {
-    val context = LocalContext.current
+    val context = LocalContext.current as ComponentActivity
     val eventHandler = initEventHandler()
-    val viewModel: SelectFileViewModel = hiltViewModel(context as ComponentActivity)
+    val viewModel = hiltViewModel<SelectFileViewModel>()
+    val noteViewModel = hiltViewModel<AddNoteViewModel>(context)
 
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
@@ -73,7 +74,7 @@ fun ScreenCaptureImage() {
 
         Content(viewModel.getOutputDirectory(context),
             onImageCaptured = {
-                Toast.makeText(context, "Capture Image: ${it.path}", Toast.LENGTH_LONG).show()
+                noteViewModel.updateAttachments(listOf(it.path.orEmpty()))
                 eventHandler.postNavEvent(NavEvent.PopBackStack())
             },
             onError = {
