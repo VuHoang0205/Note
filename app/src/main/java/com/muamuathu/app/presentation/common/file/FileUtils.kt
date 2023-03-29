@@ -7,7 +7,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
-fun getRealPathFromURI(uri: Uri, context: Context): String? {
+fun getRealPathFromUri(uri: Uri, context: Context): String {
     val returnCursor = context.contentResolver.query(uri, null, null, null, null)
     val nameIndex = returnCursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
     val sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE)
@@ -33,9 +33,9 @@ fun getRealPathFromURI(uri: Uri, context: Context): String? {
         }
         inputStream?.close()
         outputStream.close()
-    } catch (e: java.lang.Exception) {
+    } catch (_: java.lang.Exception) {
     } finally {
         returnCursor.close()
     }
-    return file.path
+    return file.absolutePath
 }

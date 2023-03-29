@@ -66,13 +66,16 @@ class AddNoteViewModel @Inject constructor(private val repo: JournalRepo) : View
     }
 
     fun saveNote() = resultFlow {
-        repo.saveNote(Note(
-            title = title.value,
-            content = content.value,
-            dateTime = dateTime.value,
-            attachments = attachments.value.list,
-            tags = tags.value.list
-        ))
+        repo.saveNote(
+            Note(
+                title = title.value,
+                content = content.value,
+                dateTime = dateTime.value,
+                attachments = attachments.value.list,
+                tags = tags.value.list,
+                folder = folder.value
+            )
+        )
     }
 
     fun clearReference() {
@@ -82,6 +85,6 @@ class AddNoteViewModel @Inject constructor(private val repo: JournalRepo) : View
         isValidData.value = false
         title.value = ""
         content.value = ""
-        dateTime.value = 0L
+        dateTime.value = Calendar.getInstance().timeInMillis
     }
 }

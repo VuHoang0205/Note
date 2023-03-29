@@ -7,4 +7,5 @@ data class Note(
     val dateTime: Long = 0L,
     val attachments: List<String> = emptyList(),
     val tags: List<Tag> = emptyList(),
+    val folder: Folder = Folder()
 )

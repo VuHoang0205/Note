@@ -9,7 +9,7 @@ import com.muamuathu.app.data.base.AppLog
 import com.muamuathu.app.data.constants.FILE_NAME_FORMAT
 import com.muamuathu.app.domain.model.DEFAULT_ID
 import com.muamuathu.app.domain.model.FileInfo
-import com.muamuathu.app.presentation.helper.ResultWrapper
+import com.muamuathu.app.presentation.common.file.getRealPathFromUri
 import com.muamuathu.app.presentation.helper.safeDataBaseCall
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -133,7 +133,7 @@ class FileRepoImpl @Inject constructor(@ApplicationContext private val context: 
         ""
     }
 
-    override suspend fun getRealPathFromURI(uri: Uri): ResultWrapper<String> {
-        return getRealPathFromURI(uri)
+    override suspend fun getPathFromUri(uri: Uri) = safeDataBaseCall {
+        getRealPathFromUri(uri, context)
     }
 }

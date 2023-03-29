@@ -458,8 +458,7 @@ private fun ItemNote(
                                     start.linkTo(textTitle.start)
                                 }, horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            val strs = "fun,family".split(",").toTypedArray()
-                            items(strs) {
+                            items(note.tags) {
                                 TextButton(
                                     onClick = {},
                                     colors = ButtonDefaults.buttonColors(
@@ -471,7 +470,7 @@ private fun ItemNote(
                                     modifier = Modifier.height(25.dp),
                                     contentPadding = PaddingValues(3.dp)
                                 ) {
-                                    Text(it, color = Color.White, textAlign = TextAlign.Center)
+                                    Text(it.name, color = Color.White, textAlign = TextAlign.Center)
                                 }
                             }
                         }
@@ -498,7 +497,7 @@ private fun ItemNote(
                         )
 
                         Text(
-                            text = "6 Images",
+                            text = note.attachments.size.toString() + " Images",
                             color = colorResource(R.color.gulf_blue),
                             fontSize = 11.sp,
                             textAlign = TextAlign.Center,
@@ -520,7 +519,7 @@ private fun ItemNote(
                         )
 
                         Text(
-                            text = "Guys Circle",
+                            text = note.folder.name,
                             color = colorResource(R.color.gulf_blue),
                             fontSize = 11.sp,
                             textAlign = TextAlign.Center,
@@ -558,7 +557,7 @@ private fun ItemNote(
                                 bottomStartPercent = 8
                             )
                         )
-                        .background(colorResource(R.color.royal_blue))
+                        .background(Color(note.folder.color))
                         .constrainAs(viewLine1) {
                             start.linkTo(parent.start)
                             top.linkTo(parent.top)

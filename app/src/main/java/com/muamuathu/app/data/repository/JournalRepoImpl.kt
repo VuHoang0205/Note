@@ -1,6 +1,7 @@
 package com.muamuathu.app.data.repository
 
 import com.muamuathu.app.data.JournalDatabase
+import com.muamuathu.app.data.entity.LinkFolderNote
 import com.muamuathu.app.data.entity.LinkNoteTag
 import com.muamuathu.app.domain.mapper.toDomainModel
 import com.muamuathu.app.domain.mapper.toEntityModel
@@ -46,6 +47,10 @@ class JournalRepoImpl @Inject constructor(private val database: JournalDatabase)
         if (note.tags.isNotEmpty()) {
             val linkNoteTags = note.tags.map { LinkNoteTag(tagId = it.tagId, noteId = idNote) }
             database.daoLinkTagNode().insert(linkNoteTags)
+        }
+        if (note.folder.name.isNotEmpty()) {
+            database.daoLinkFolderNote()
+                .insert(LinkFolderNote(folderId = note.folder.folderId, noteId = idNote))
         }
         return@safeDataBaseCall idNote
     }

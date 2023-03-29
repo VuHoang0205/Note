@@ -224,7 +224,7 @@ private fun Content(
         ConstraintLayout(modifier = Modifier
             .fillMaxWidth()
             .constrainAs(contentView) {
-                top.linkTo(topView.bottom)
+                top.linkTo(topView.bottom, 16.dp)
                 bottom.linkTo(lazyRowBottom.top)
                 height = Dimension.fillToConstraints
             }) {
@@ -233,7 +233,7 @@ private fun Content(
             Column(modifier = Modifier
                 .constrainAs(columnDate) {
                     top.linkTo(parent.top)
-                    start.linkTo(parent.start, 16.dp)
+                    start.linkTo(parent.start, 32.dp)
                 }
                 .padding(vertical = 10.dp)) {
                 Text(
@@ -465,8 +465,10 @@ private fun Content(
                 Card(
                     modifier = Modifier
                         .constrainAs(columnTag) {
-                            top.linkTo(if (attachments.isEmpty()) textContent.bottom else lazyRowAttachMent.bottom,
-                                12.dp)
+                            top.linkTo(
+                                if (attachments.isEmpty()) textContent.bottom else lazyRowAttachMent.bottom,
+                                12.dp
+                            )
                             start.linkTo(parent.start, 16.dp)
                             end.linkTo(parent.end, 16.dp)
                             width = Dimension.fillToConstraints
@@ -508,9 +510,11 @@ private fun Content(
                                     modifier = Modifier.height(25.dp),
                                     contentPadding = PaddingValues(3.dp)
                                 ) {
-                                    Text(tag.name,
+                                    Text(
+                                        tag.name,
                                         color = Color.White,
-                                        textAlign = TextAlign.Center)
+                                        textAlign = TextAlign.Center
+                                    )
                                 }
                             }
                         }

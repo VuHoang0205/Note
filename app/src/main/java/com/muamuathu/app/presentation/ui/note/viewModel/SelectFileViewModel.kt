@@ -2,6 +2,7 @@ package com.muamuathu.app.presentation.ui.note.viewModel
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import com.muamuathu.app.data.repository.FileRepo
 import com.muamuathu.app.domain.model.FileInfo
@@ -37,6 +38,10 @@ class SelectFileViewModel @Inject constructor(private val fileRepo: FileRepo) : 
 
     fun saveImageDrawSketch(bitmap: Bitmap) = resultFlow {
         fileRepo.saveImageDrawSketch(bitmap)
+    }
+
+    fun getRealPathFromUri(uri: Uri) = resultFlow {
+        fileRepo.getPathFromUri(uri)
     }
 
     fun bindMediaList() = allMediaStateFlow.asSharedFlow()
