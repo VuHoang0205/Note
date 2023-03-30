@@ -35,7 +35,7 @@ class JournalRepoImpl @Inject constructor(private val database: JournalDatabase)
     }
 
     override suspend fun updateFolder(folder: Folder) = safeDataBaseCall {
-        return@safeDataBaseCall database.daoFolder().update(folder.toEntityModel())
+        database.daoFolder().update(folder.toEntityModel())
     }
 
     override suspend fun deleteFolder(folder: Folder) {
@@ -53,5 +53,9 @@ class JournalRepoImpl @Inject constructor(private val database: JournalDatabase)
                 .insert(LinkFolderNote(folderId = note.folder.folderId, noteId = idNote))
         }
         return@safeDataBaseCall idNote
+    }
+
+    override suspend fun deleteNote(note: Note) = safeDataBaseCall {
+        database.daoNote().delete(note.toEntityModel())
     }
 }

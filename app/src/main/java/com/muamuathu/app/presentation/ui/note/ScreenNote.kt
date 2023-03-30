@@ -1,7 +1,6 @@
 package com.muamuathu.app.presentation.ui.note
 
 import android.app.DatePickerDialog
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,8 +9,6 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,10 +34,12 @@ import coil.compose.AsyncImage
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Note
+import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
 import com.muamuathu.app.presentation.graph.NavTarget
+import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 import de.charlex.compose.RevealDirection
 import de.charlex.compose.RevealSwipe
@@ -55,10 +54,11 @@ fun ScreenNote() {
 
     val eventHandler = initEventHandler()
     val context = LocalContext.current
-    val viewModel: NoteViewModel = hiltViewModel(context as ComponentActivity)
+    val viewModel: NoteViewModel = hiltViewModel()
+    val coroutineScope = rememberCoroutineScope()
 
-    val selectDateList by viewModel.bindDateListState().collectAsState(initial = emptyList())
-    val noteItemList by viewModel.bindNoteListState().collectAsState(initial = mutableListOf())
+    val selectDateList by viewModel.dateListStateFlow.collectAsState(initial = emptyList())
+    val noteItemList by viewModel.noteListStateFlow.collectAsState(initial = mutableListOf())
 
     var selectDate by remember { mutableStateOf(ZonedDateTime.now()) }
 
@@ -101,7 +101,7 @@ fun ScreenNote() {
                 )
             )
         }, onDeleteNoteItem = {
-//            viewModel.removeNote(it)
+            coroutineScope.observeResultFlow(viewModel.removeNote(it))
         }, onEditNoteItem = {
 
         })
@@ -128,41 +128,29 @@ private fun Content(
     ) {
         val (topView, contentView) = createRefs()
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-                .background(Color.White)
-                .padding(horizontal = 12.dp)
-                .constrainAs(topView) { top.linkTo(parent.top) },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            IconButton(onClick = {
-                onAdd()
-            }) {
-                Image(
-                    painter = painterResource(R.drawable.ic_add),
-                    contentDescription = "menu"
-                )
-            }
-
-            Text(
-                text = stringResource(R.string.txt_pronto_journal),
-                color = colorResource(R.color.gulf_blue),
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center
-            )
-
-            IconButton(onClick = {
-                onSearch()
-            }) {
+        TopBarBase(modifier = Modifier
+            .fillMaxWidth()
+            .height(70.dp)
+            .padding(horizontal = 12.dp)
+            .constrainAs(topView) { top.linkTo(parent.top) },
+            titleAlign = TextAlign.Center,
+            title = stringResource(R.string.txt_pronto_journal),
+            navigationIcon = {
+                IconButton(onClick = {
+                    onAdd()
+                }) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_add),
+                        contentDescription = null
+                    )
+                }
+            }, listRightIcon = listOf(Pair({
                 Image(
                     painter = painterResource(R.drawable.ic_search),
                     contentDescription = "search"
                 )
-            }
-        }
+            }, { onSearch() }))
+        )
 
         ConstraintLayout(modifier = Modifier
             .fillMaxSize()
@@ -176,7 +164,7 @@ private fun Content(
             TextButton(onClick = {
                 onCalendar(selectDate)
             }, modifier = Modifier.constrainAs(textDate) {
-                start.linkTo(parent.start, 4.dp)
+                start.linkTo(parent.start)
                 top.linkTo(parent.top)
             }) {
                 Text(
@@ -212,7 +200,7 @@ private fun Content(
                 .constrainAs(icCalendar) {
                     top.linkTo(textDate.top)
                     end.linkTo(parent.end, 6.dp)
-                    bottom.linkTo(textTotalJournal.bottom)
+                    bottom.linkTo(textTotalJournal.bottom, 8.dp)
                 }) {
                 Image(
                     painter = painterResource(R.drawable.ic_calendar),
@@ -390,7 +378,7 @@ private fun ItemNote(
         Card(
             colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
                 val (contentView1, viewLine1) = createRefs()
@@ -410,7 +398,6 @@ private fun ItemNote(
                             top.linkTo(parent.top)
                         }) {
                         val (imgAvatar, textTitle, textContent, lazyRowCategoryNote) = createRefs()
-
                         if (note.attachments.isNotEmpty()) {
                             AsyncImage(model = note.attachments[0],
                                 contentDescription = "avatar",
@@ -549,7 +536,7 @@ private fun ItemNote(
                     }
                 }
                 if (note.attachments.isEmpty()) {
-                    Divider(modifier = Modifier
+                    androidx.compose.material.Divider(modifier = Modifier
                         .width(8.dp)
                         .clip(
                             shape = RoundedCornerShape(

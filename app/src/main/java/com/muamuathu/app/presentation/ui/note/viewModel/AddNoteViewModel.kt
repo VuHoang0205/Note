@@ -2,6 +2,7 @@ package com.muamuathu.app.presentation.ui.note.viewModel
 
 import android.text.TextUtils
 import androidx.lifecycle.ViewModel
+import com.muamuathu.app.data.base.AppLog
 import com.muamuathu.app.data.repository.JournalRepo
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.Note
@@ -79,6 +80,7 @@ class AddNoteViewModel @Inject constructor(private val repo: JournalRepo) : View
     }
 
     fun clearReference() {
+        AppLog.e("LDALDLALD:")
         folder.value = Folder()
         tags.value = WrapList(emptyList())
         attachments.value = WrapList(emptyList())

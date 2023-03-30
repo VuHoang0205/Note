@@ -54,7 +54,7 @@ object Compose : Dependency() {
         liveData
     )
 
-    override fun debugImplementations() = listOf<String>(
+    override fun debugImplementations() = listOf(
         debugUi
     )
 }

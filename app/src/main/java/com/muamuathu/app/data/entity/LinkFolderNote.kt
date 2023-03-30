@@ -10,13 +10,11 @@ import androidx.room.PrimaryKey
         entity = EntityNote::class,
         parentColumns = ["noteId"],
         childColumns = ["noteId"],
-        onDelete = ForeignKey.CASCADE
     ),
     ForeignKey(
         entity = EntityFolder::class,
         parentColumns = ["folderId"],
         childColumns = ["folderId"],
-        onDelete = ForeignKey.CASCADE
     ),
 ])
 data class LinkFolderNote(
