@@ -1,9 +1,8 @@
 package com.muamuathu.app.presentation.components.bottomsheet
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.material3.BottomSheetScaffoldState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetValue
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -13,7 +12,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.EventHandler
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HandleBottomSheetDisplay(
     eventHandler: EventHandler,
@@ -23,17 +22,17 @@ fun HandleBottomSheetDisplay(
         is BottomSheetEvent.None -> LaunchedEffect(
             key1 = event.hashCode(),
             block = {
-                bottomState.bottomSheetState.hide()
+                bottomState.bottomSheetState.expand()
             })
         is BottomSheetEvent.Hide -> LaunchedEffect(
             key1 = event.hashCode(),
             block = {
                 event.onHide.invoke()
-                bottomState.bottomSheetState.hide()
+                bottomState.bottomSheetState.collapse()
             })
         is BottomSheetEvent.Custom -> LaunchedEffect(
             key1 = event.hashCode(), block = {
-                bottomState.bottomSheetState.show()
+                bottomState.bottomSheetState.expand()
             })
     }
 
@@ -76,12 +75,12 @@ private fun handleHideBottomSheet(
     eventHandler.postBottomSheetEvent(BottomSheetEvent.None)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class)
 fun handleBottomStateChange(
     eventHandler: EventHandler,
-    it: SheetValue
+    it: BottomSheetScaffoldState
 ): Boolean {
-    if (it == SheetValue.Hidden) {
+    if (it.bottomSheetState.isCollapsed) {
         handleHideBottomSheet(eventHandler)
     }
     return true
