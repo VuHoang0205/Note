@@ -3,6 +3,7 @@ package com.muamuathu.app.presentation.ui.note
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Action
 import com.muamuathu.app.domain.model.Folder
@@ -43,7 +43,6 @@ import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.formatFromPattern
 import com.muamuathu.app.presentation.graph.NavTarget
-import com.muamuathu.app.presentation.helper.OnLifecycleEvent
 import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 import java.util.*
@@ -72,13 +71,13 @@ fun ScreenNewNote() {
     val yearString by remember { derivedStateOf { dateTime.formatFromPattern("yyyy, EEEE") } }
     val timeString by remember { derivedStateOf { dateTime.formatFromPattern("hh:mm a") } }
 
-    OnLifecycleEvent { _, event ->
-        when (event) {
-            Lifecycle.Event.ON_DESTROY -> {
-                viewModel.clearReference()
-            }
-            else -> {}
-        }
+    fun onBackPress() {
+        viewModel.clearReference()
+        eventHandler.postNavEvent(NavEvent.PopBackStack(false))
+    }
+
+    BackHandler(true) {
+        onBackPress()
     }
 
     Content(
@@ -96,11 +95,11 @@ fun ScreenNewNote() {
             viewModel.updateContent(it)
         },
         onClose = {
-            eventHandler.postNavEvent(NavEvent.PopBackStack(false))
+            onBackPress()
         },
         onSave = {
             coroutineScope.observeResultFlow(viewModel.saveNote(), successHandler = {
-                eventHandler.postNavEvent(NavEvent.PopBackStack(false))
+                onBackPress()
             })
         },
         onCalendar = {
@@ -156,6 +155,7 @@ fun ScreenNewNote() {
         }
     )
 }
+
 
 @Composable
 private fun Content(
