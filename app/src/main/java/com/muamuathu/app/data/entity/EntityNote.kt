@@ -10,5 +10,5 @@ data class EntityNote(
     val title: String,
     val content: String,
     val dateTime: Long,
-    val attachments: List<String> = emptyList(),
+    val attachments: List<String>,
 )

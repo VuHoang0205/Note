@@ -37,10 +37,11 @@ object MockData {
                 val avatar =
                     if (it % 5 == 0) "" else "https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg"
                 entityNoteList.add(EntityNote(
+
                     random.nextInt(Int.MAX_VALUE - 1).toLong(),
                     "Fun day with Friends $it",
                     "Come on, people now Smile on your bro everybody get together to try new...",
-                    time))
+                    time, emptyList()))
             }
             emit(entityNoteList)
         }

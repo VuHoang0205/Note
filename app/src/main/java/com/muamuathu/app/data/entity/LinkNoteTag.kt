@@ -19,7 +19,7 @@ import androidx.room.PrimaryKey
 ])
 data class LinkNoteTag(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Long = 0L,
     val tagId: Long,
     val noteId: Long,
 )

@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.muamuathu.app.data.base.AppLog
 import com.muamuathu.app.data.base.MockData
 import com.muamuathu.app.data.base.MockData.getNote
 import com.muamuathu.app.data.repository.JournalRepo
@@ -44,6 +45,9 @@ class NoteViewModel @Inject constructor(private val repo: JournalRepo) : ViewMod
 
     private fun getNoteList() = ioLaunch {
         repo.loadNote().collect {
+            it.forEach {
+                AppLog.e("dlaldlasdl: $it")
+            }
             noteListStateFlow.value = it
         }
     }

@@ -14,12 +14,12 @@ data class EntityFolderInfo(
         entityColumn = "noteId",
         associateBy = Junction(LinkFolderNote::class)
     )
-    val notes: List<EntityNote> = emptyList(),
+    val notes: List<EntityNote>,
 
     @Relation(
         parentColumn = "folderId",
         entityColumn = "taskId",
         associateBy = Junction(LinkFolderTask::class)
     )
-    val task: List<EntityTask> = emptyList()
+    val task: List<EntityTask>,
 )

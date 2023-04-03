@@ -1,8 +1,6 @@
 package com.muamuathu.app.data.repository
 
 import com.muamuathu.app.data.JournalDatabase
-import com.muamuathu.app.data.entity.LinkFolderNote
-import com.muamuathu.app.data.entity.LinkNoteTag
 import com.muamuathu.app.domain.mapper.toDomainModel
 import com.muamuathu.app.domain.mapper.toEntityModel
 import com.muamuathu.app.domain.model.Folder
@@ -43,16 +41,7 @@ class JournalRepoImpl @Inject constructor(private val database: JournalDatabase)
     }
 
     override suspend fun saveNote(note: Note) = safeDataBaseCall {
-        val idNote = database.daoNote().insert(note.toEntityModel())
-        if (note.tags.isNotEmpty()) {
-            val linkNoteTags = note.tags.map { LinkNoteTag(tagId = it.tagId, noteId = idNote) }
-            database.daoLinkTagNode().insert(linkNoteTags)
-        }
-        if (note.folder.name.isNotEmpty()) {
-            database.daoLinkFolderNote()
-                .insert(LinkFolderNote(folderId = note.folder.folderId, noteId = idNote))
-        }
-        return@safeDataBaseCall idNote
+        return@safeDataBaseCall database.daoNote().saveNote(note)
     }
 
     override suspend fun deleteNote(note: Note) = safeDataBaseCall {

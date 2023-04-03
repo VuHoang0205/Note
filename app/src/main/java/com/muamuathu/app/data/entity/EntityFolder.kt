@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class EntityFolder(
     @PrimaryKey(autoGenerate = true)
-    val folderId: Long = 0,
-    var name: String = "",
-    var color: Long = 0,
+    val folderId: Long,
+    var name: String,
+    var color: Long,
 )

@@ -3,7 +3,7 @@ package deps
 object Room : Dependency() {
 
     object Versions {
-        const val room = "2.4.3"
+        const val room = "2.5.1"
     }
 
     private const val runtime = "androidx.room:room-runtime:${Versions.room}"
