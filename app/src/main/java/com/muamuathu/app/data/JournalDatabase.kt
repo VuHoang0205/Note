@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.Flow
         LinkNoteTag::class,
         EntityTag::class,
         EntityNote::class,
-        EntityNoteItem::class,
         EntityNoteItemMetaValue::class,
         EntityTask::class,
         EntitySubTask::class,
@@ -34,7 +33,6 @@ abstract class JournalDatabase : RoomDatabase() {
     abstract fun daoLinkFolderNote(): DaoLinkFolderNote
     abstract fun daoLinkFolderTask(): DaoLinkFolderTask
     abstract fun daoLinkTagNode(): DaoLinkTagNode
-    abstract fun daoNoteItem(): DaoNoteItem
     abstract fun daoNote(): DaoNote
     abstract fun daoNoteItemMetaValue(): DaoNoteItemMetaValue
     abstract fun daoSubTask(): DaoSubTask
