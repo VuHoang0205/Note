@@ -60,7 +60,7 @@ fun ScreenNote() {
 
     var selectDate by remember { mutableStateOf(ZonedDateTime.now()) }
 
-    LaunchedEffect(key1 = Unit, block = {
+    LaunchedEffect(key1 = selectDate, block = {
         viewModel.getCalenderList(selectDate)
         viewModel.getNoteList(selectDate.toInstant().toEpochMilli().getStartOfDay())
     })

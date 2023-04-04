@@ -26,27 +26,6 @@ object MockData {
         }
     }
 
-
-    suspend fun getNoteItemList(): Flow<MutableList<EntityNote>> {
-        return flow {
-            val entityNoteList = mutableListOf<EntityNote>()
-            val random = Random()
-            var time = SystemClock.currentThreadTimeMillis()
-            (0..17).toList().forEach {
-                time += TimeUnit.HOURS.toMillis(1)
-                val avatar =
-                    if (it % 5 == 0) "" else "https://hc.com.vn/i/ecommerce/media/ckeditor_3087086.jpg"
-                entityNoteList.add(EntityNote(
-
-                    random.nextInt(Int.MAX_VALUE - 1).toLong(),
-                    "Fun day with Friends $it",
-                    "Come on, people now Smile on your bro everybody get together to try new...",
-                    time, emptyList()))
-            }
-            emit(entityNoteList)
-        }
-    }
-
     suspend fun getNote(): Flow<EntityNote> {
         return flow {
             emit(EntityNote(

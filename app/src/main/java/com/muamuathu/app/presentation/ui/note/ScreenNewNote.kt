@@ -14,7 +14,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,8 +80,9 @@ fun ScreenNewNote() {
         onBackPress()
     }
 
-    Content(
-        monthString, yearString, timeString,
+    Content(monthString,
+        yearString,
+        timeString,
         folder = folder,
         title = title,
         content = content,
@@ -111,22 +112,22 @@ fun ScreenNewNote() {
                     calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                     viewModel.updateDateTime(calendar.timeInMillis)
                 },
-                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             )
             dialog.show()
-        }, onChooseFolder = {
+        },
+        onChooseFolder = {
             eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderChoose))
-        }, onTimePicker = {
+        },
+        onTimePicker = {
             val dialog = TimePickerDialog(
-                context,
-                { _, hourOfDay, minute ->
+                context, { _, hourOfDay, minute ->
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                     calendar.set(Calendar.MINUTE, minute)
                     viewModel.updateDateTime(calendar.timeInMillis)
-                }, calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-                false
+                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false
             )
             dialog.show()
         },
@@ -152,11 +153,11 @@ fun ScreenNewNote() {
                     eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteDrawSketch))
                 }
             }
-        }
-    )
+        })
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Content(
     monthString: String,
@@ -199,8 +200,7 @@ private fun Content(
                 onClose()
             }) {
                 Image(
-                    painter = painterResource(R.drawable.ic_close),
-                    contentDescription = "close"
+                    painter = painterResource(R.drawable.ic_close), contentDescription = "close"
                 )
             }
 
@@ -215,8 +215,7 @@ private fun Content(
                 onSave()
             }, enabled = enableSave, modifier = Modifier.alpha(if (enableSave) 1f else 0.5f)) {
                 Image(
-                    painter = painterResource(R.drawable.ic_save),
-                    contentDescription = "save"
+                    painter = painterResource(R.drawable.ic_save), contentDescription = "save"
                 )
             }
         }
@@ -258,8 +257,7 @@ private fun Content(
                 }
                 .size(24.dp)
                 .background(
-                    shape = CircleShape,
-                    color = colorResource(R.color.royal_blue)
+                    shape = CircleShape, color = colorResource(R.color.royal_blue)
                 ), onClick = {
                 onCalendar()
             }) {
@@ -282,8 +280,7 @@ private fun Content(
                 )
             }
 
-            Text(
-                text = timeString,
+            Text(text = timeString,
                 color = colorResource(R.color.gulf_blue),
                 fontSize = 12.sp,
                 textAlign = TextAlign.Center,
@@ -291,8 +288,7 @@ private fun Content(
                     top.linkTo(columnDate.top)
                     bottom.linkTo(columnDate.bottom)
                     end.linkTo(imgClock.start)
-                }
-            )
+                })
 
             Divider(modifier = Modifier
                 .fillMaxWidth()
@@ -321,8 +317,7 @@ private fun Content(
                             bottom.linkTo(parent.bottom)
                         })
 
-                Text(
-                    text = folder.name.ifEmpty { stringResource(R.string.txt_choose_folder) },
+                Text(text = folder.name.ifEmpty { stringResource(R.string.txt_choose_folder) },
                     color = colorResource(if (folder.name.isEmpty()) R.color.storm_grey else R.color.gulf_blue),
                     fontSize = 14.sp,
                     textAlign = TextAlign.End,
@@ -359,16 +354,14 @@ private fun Content(
                 value = title,
                 placeholder = {
                     Text(
-                        stringResource(R.string.txt_title),
-                        color = colorResource(R.color.gulf_blue)
+                        stringResource(R.string.txt_title), color = colorResource(R.color.gulf_blue)
                     )
                 },
                 onValueChange = {
                     onInputTitle(it)
                 },
                 textStyle = TextStyle(
-                    fontSize = 16.sp,
-                    color = colorResource(R.color.gulf_blue)
+                    fontSize = 16.sp, color = colorResource(R.color.gulf_blue)
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -380,8 +373,8 @@ private fun Content(
                         width = Dimension.fillToConstraints
                     },
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    cursorColor = MaterialTheme.colors.onSurface,
+                    containerColor = Color.Transparent,
+                    cursorColor = MaterialTheme.colorScheme.onSurface,
                     focusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -409,16 +402,15 @@ private fun Content(
                         width = Dimension.fillToConstraints
                     },
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    cursorColor = MaterialTheme.colors.onSurface,
+                    containerColor = Color.Transparent,
+                    cursorColor = MaterialTheme.colorScheme.onSurface,
                     focusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledTextColor = Color.Transparent,
                 ),
                 textStyle = TextStyle(
-                    fontSize = 14.sp,
-                    color = colorResource(R.color.storm_grey)
+                    fontSize = 14.sp, color = colorResource(R.color.storm_grey)
                 ),
             )
 
@@ -428,9 +420,7 @@ private fun Content(
                 val redundantItem = attachments.size - limitItem
                 val redundantItemString = if (attachments.size > limitItem) {
                     String.format(
-                        "%s (%d)",
-                        stringResource(R.string.txt_attachments),
-                        redundantItem
+                        "%s (%d)", stringResource(R.string.txt_attachments), redundantItem
                     )
                 } else {
                     stringResource(R.string.txt_attachments)
@@ -441,8 +431,7 @@ private fun Content(
                     modifier = Modifier.constrainAs(textAttachment) {
                         top.linkTo(textContent.bottom, 12.dp)
                         start.linkTo(parent.start, 16.dp)
-                    }
-                )
+                    })
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -453,9 +442,7 @@ private fun Content(
                 ) {
                     itemsIndexed(attachments.take(limitItem)) { index, path ->
                         AttachmentsItem(
-                            path,
-                            index == limitItem - 1,
-                            redundantItem
+                            path, index == limitItem - 1, redundantItem
                         ) { }
                     }
                 }
@@ -463,22 +450,21 @@ private fun Content(
 
             if (tags.isNotEmpty()) {
                 Card(
-                    modifier = Modifier
-                        .constrainAs(columnTag) {
-                            top.linkTo(
-                                if (attachments.isEmpty()) textContent.bottom else lazyRowAttachMent.bottom,
-                                12.dp
-                            )
-                            start.linkTo(parent.start, 16.dp)
-                            end.linkTo(parent.end, 16.dp)
-                            width = Dimension.fillToConstraints
-                        }, elevation = 1.dp,
-                    backgroundColor = Color.White,
+                    modifier = Modifier.constrainAs(columnTag) {
+                        top.linkTo(
+                            if (attachments.isEmpty()) textContent.bottom else lazyRowAttachMent.bottom,
+                            12.dp
+                        )
+                        start.linkTo(parent.start, 16.dp)
+                        end.linkTo(parent.end, 16.dp)
+                        width = Dimension.fillToConstraints
+                    },
+                    elevation = CardDefaults.cardElevation(1.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
                     shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             text = stringResource(R.string.txt_tags),
@@ -490,30 +476,21 @@ private fun Content(
                         LazyRow(
                             modifier = Modifier
                                 .padding(
-                                    top = 4.dp,
-                                    start = 8.dp,
-                                    end = 8.dp,
-                                    bottom = 10.dp
+                                    top = 4.dp, start = 8.dp, end = 8.dp, bottom = 10.dp
                                 )
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             itemsIndexed(tags) { _, tag ->
-                                TextButton(
-                                    onClick = {},
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = colorResource(
-                                            R.color.royal_blue_2
+                                Box(
+                                    modifier = Modifier
+                                        .background(
+                                            color = colorResource(id = R.color.royal_blue_2),
+                                            shape = RoundedCornerShape(16.dp)
                                         )
-                                    ),
-                                    shape = RoundedCornerShape(100.dp),
-                                    modifier = Modifier.height(25.dp),
-                                    contentPadding = PaddingValues(3.dp)
+                                        .padding(horizontal = 8.dp, vertical = 2.dp)
                                 ) {
-                                    Text(
-                                        tag.name,
-                                        color = Color.White,
-                                        textAlign = TextAlign.Center
+                                    androidx.compose.material3.Text(
+                                        tag.name, color = Color.White, textAlign = TextAlign.Center
                                     )
                                 }
                             }

@@ -10,7 +10,7 @@ fun EntityNoteInfo.toDomainModel() = Note(
     content = note.content,
     dateTime = note.dateTime,
     attachments = note.attachments,
-    tags = tags.map { it.toDomainModel() },
+    tags = tags?.map { it.toDomainModel() } ?: emptyList(),
     folder = folder.toDomainModel()
 )
 
