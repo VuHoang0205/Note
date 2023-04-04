@@ -9,12 +9,14 @@ import androidx.room.PrimaryKey
     ForeignKey(
         entity = EntityNote::class,
         parentColumns = arrayOf("noteId"),
-        childColumns = arrayOf("noteId")
+        childColumns = arrayOf("noteId"),
+        onDelete = ForeignKey.CASCADE
     ),
     ForeignKey(
         entity = EntityTag::class,
         parentColumns = arrayOf("tagId"),
-        childColumns = arrayOf("tagId")
+        childColumns = arrayOf("tagId"),
+        onDelete = ForeignKey.CASCADE
     )
 ])
 data class LinkNoteTag(

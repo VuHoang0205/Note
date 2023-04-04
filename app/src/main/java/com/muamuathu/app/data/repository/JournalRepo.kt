@@ -7,7 +7,7 @@ import com.muamuathu.app.presentation.helper.ResultWrapper
 import kotlinx.coroutines.flow.Flow
 
 interface JournalRepo {
-    suspend fun loadNote(): Flow<List<Note>>
+    suspend fun loadNote(): ResultWrapper<List<Note>>
     suspend fun loadFolders(): Flow<List<Folder>>
     suspend fun saveFolder(folder: Folder): ResultWrapper<Long>
     suspend fun loadTags(): Flow<List<Tag>>

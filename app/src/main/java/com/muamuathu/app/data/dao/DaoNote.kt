@@ -7,20 +7,19 @@ import com.muamuathu.app.data.entity.LinkNoteTag
 import com.muamuathu.app.data.entity.embedded.EntityNoteInfo
 import com.muamuathu.app.domain.mapper.toEntityModel
 import com.muamuathu.app.domain.model.Note
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class DaoNote : DaoBase<EntityNote>() {
     @Transaction
     @Query("SELECT * FROM EntityNote ORDER BY noteId DESC ")
-    abstract fun getNotes(): Flow<List<EntityNoteInfo>>
+    abstract fun getNotes(): List<EntityNoteInfo>
 
     @Query("select MAX(noteId) from EntityNote")
     abstract fun getMaxId(): Long
 
     @Transaction
     open suspend fun saveNote(note: Note): Long {
-        val idNote = getMaxId() + 1
+        val idNote = insert(note.toEntityModel())
         if (note.tags.isNotEmpty()) {
             val linkNoteTags = note.tags.map { LinkNoteTag(tagId = it.tagId, noteId = idNote) }
             insertLinkNoteTag(linkNoteTags)
@@ -28,8 +27,6 @@ abstract class DaoNote : DaoBase<EntityNote>() {
         if (note.folder.name.isNotEmpty()) {
             insertLinkFolderNote(LinkFolderNote(folderId = note.folder.folderId, noteId = idNote))
         }
-        note.noteId = idNote
-        insert(note.toEntityModel())
         return idNote
     }
 

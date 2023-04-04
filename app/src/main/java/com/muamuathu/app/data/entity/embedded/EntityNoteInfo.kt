@@ -12,7 +12,7 @@ data class EntityNoteInfo(
     @Relation(
         parentColumn = "noteId",
         entityColumn = "tagId",
-        associateBy = Junction(LinkNoteTag::class)
+        associateBy = Junction(LinkNoteTag::class),
     )
     val tags: List<EntityTag>,
 

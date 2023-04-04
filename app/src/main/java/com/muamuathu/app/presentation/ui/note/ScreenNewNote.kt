@@ -36,7 +36,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
-import com.muamuathu.app.data.base.AppLog
 import com.muamuathu.app.domain.model.Action
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.Tag
@@ -100,10 +99,7 @@ fun ScreenNewNote() {
         },
         onSave = {
             coroutineScope.observeResultFlow(viewModel.saveNote(), successHandler = {
-                AppLog.e("dlaldlad: $it")
                 onBackPress()
-            }, errorHandler = {
-                AppLog.e("dlaldlad: " + it?.localizedMessage)
             })
         },
         onCalendar = {

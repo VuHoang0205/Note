@@ -75,5 +75,8 @@
     <string name="save">Save</string>
     <string name="color">Color</string>
     <string name="capture_photo">Capture Photo</string>
+    <string name="confirm_delete">Confirm delete?</string>
+    <string name="message_delete_note">Are you sure want to delete all Note? This action cannot be undone.</string>
+    <string name="ok">OK</string>
 
 </resources>

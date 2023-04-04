@@ -56,7 +56,7 @@ fun ScreenNoteDetail(idNote: String) {
     val eventHandler = initEventHandler()
 
     viewModel.getNoteById(idNote)
-    val note by viewModel.noteSharedFlow.collectAsState(initial = null)
+    val note = Note()
 
     Content(note,
         onBack = {

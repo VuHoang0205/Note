@@ -34,15 +34,14 @@ import coil.compose.AsyncImage
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Note
+import com.muamuathu.app.presentation.components.dialog.JcDialog
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
 import com.muamuathu.app.presentation.graph.NavTarget
-import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
-import de.charlex.compose.RevealDirection
-import de.charlex.compose.RevealSwipe
+import de.charlex.compose.*
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import java.util.*
@@ -55,12 +54,16 @@ fun ScreenNote() {
     val eventHandler = initEventHandler()
     val context = LocalContext.current
     val viewModel: NoteViewModel = hiltViewModel()
-    val coroutineScope = rememberCoroutineScope()
 
     val selectDateList by viewModel.dateListStateFlow.collectAsState(initial = emptyList())
     val noteItemList by viewModel.noteListStateFlow.collectAsState(initial = mutableListOf())
 
     var selectDate by remember { mutableStateOf(ZonedDateTime.now()) }
+
+    LaunchedEffect(key1 = Unit, block = {
+        viewModel.getCalenderList(selectDate)
+        viewModel.getNoteList()
+    })
 
     Content(selectDate, selectDateList, noteItemList,
         onAdd = {
@@ -101,7 +104,7 @@ fun ScreenNote() {
                 )
             )
         }, onDeleteNoteItem = {
-            coroutineScope.observeResultFlow(viewModel.removeNote(it))
+            viewModel.removeNote(it)
         }, onEditNoteItem = {
 
         })
@@ -120,6 +123,14 @@ private fun Content(
     onDeleteNoteItem: (note: Note) -> Unit,
     onEditNoteItem: (note: Note) -> Unit,
 ) {
+
+    var showDeleteNoteDialog by remember {
+        mutableStateOf(false)
+    }
+
+    var note: Note? by remember {
+        mutableStateOf(null)
+    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -276,8 +287,26 @@ private fun Content(
                 itemsIndexed(noteItemList) { _, item ->
                     ItemNote(item,
                         { onNoteItem(item) },
-                        { onDeleteNoteItem(item) },
+                        {
+                            note = item
+                            showDeleteNoteDialog = true
+                        },
                         { onEditNoteItem(item) })
+                }
+            }
+
+            if (showDeleteNoteDialog) {
+                JcDialog(title = stringResource(id = R.string.confirm_delete),
+                    message = stringResource(id = R.string.message_delete_note),
+                    negativeButtonText = stringResource(id = R.string.cancel),
+                    positiveButtonText = stringResource(id = R.string.ok),
+                    onNegativeClicked = { showDeleteNoteDialog = false },
+                    onPositiveClicked = {
+                        note?.let {
+                            showDeleteNoteDialog = false
+                            onDeleteNoteItem(it)
+                        }
+                    }) {
                 }
             }
         }
@@ -332,10 +361,22 @@ private fun ItemNote(
     onDeleteNote: () -> Unit,
     onEditNote: () -> Unit,
 ) {
+
+    val swipeState: RevealState = rememberRevealState()
+    var isResetState by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = isResetState) {
+        if (isResetState) {
+            swipeState.reset()
+        }
+        isResetState = false
+    }
+
     RevealSwipe(
         backgroundCardEndColor = Color.White,
         directions = setOf(RevealDirection.EndToStart),
         maxRevealDp = 160.dp,
+        state = swipeState,
         onContentClick = { onNote() },
         hiddenContentEnd = {
             Row(
@@ -350,6 +391,7 @@ private fun ItemNote(
                         .weight(1f), contentAlignment = Alignment.Center
                 ) {
                     IconButton(onClick = {
+                        isResetState = true
                         onDeleteNote()
                     }) {
                         Image(
@@ -365,6 +407,7 @@ private fun ItemNote(
                         .weight(1f), contentAlignment = Alignment.Center
                 ) {
                     IconButton(onClick = {
+                        isResetState = true
                         onEditNote()
                     }) {
                         Image(
@@ -446,17 +489,10 @@ private fun ItemNote(
                                 }, horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(note.tags) {
-                                TextButton(
-                                    onClick = {},
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = colorResource(
-                                            R.color.royal_blue_2
-                                        )
-                                    ),
-                                    shape = RoundedCornerShape(100.dp),
-                                    modifier = Modifier.height(25.dp),
-                                    contentPadding = PaddingValues(3.dp)
-                                ) {
+                                Box(modifier = Modifier
+                                    .background(color = colorResource(id = R.color.royal_blue_2),
+                                        shape = RoundedCornerShape(16.dp))
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)) {
                                     Text(it.name, color = Color.White, textAlign = TextAlign.Center)
                                 }
                             }

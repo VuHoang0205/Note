@@ -49,7 +49,7 @@ abstract class JournalDatabase : RoomDatabase() {
         return daoTag().getTags()
     }
 
-    fun loadNotes(): Flow<List<EntityNoteInfo>> {
+    fun loadNotes(): List<EntityNoteInfo> {
         return daoNote().getNotes()
     }
 }

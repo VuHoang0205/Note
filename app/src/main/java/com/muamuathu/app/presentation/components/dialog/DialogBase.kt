@@ -1,12 +1,11 @@
 package com.muamuathu.app.presentation.components.dialog
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -77,4 +76,99 @@ fun DialogMessageContent(
 @Preview
 private fun DialogMessageStringContent() {
     DialogMessageContent("The dialog use string", "Test")
+}
+
+@Composable
+fun JcDialog(
+    title: String,
+    message: String,
+    neutralButtonText: String = "",
+    negativeButtonText: String,
+    positiveButtonText: String,
+    onNegativeClicked: () -> Unit,
+    onPositiveClicked: () -> Unit,
+    onNeutralClicked: () -> Unit = {},
+    onDismissRequest: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true
+        )
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.extraLarge,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 4.dp
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+            ) {
+
+                Text(
+                    modifier = Modifier,
+                    text = title,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    modifier = Modifier,
+                    text = message,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (neutralButtonText.isNotEmpty()) {
+                        Text(
+                            modifier = Modifier
+                                .clickable { onNeutralClicked() },
+                            text = neutralButtonText,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    if (negativeButtonText.isNotEmpty()) {
+                        Text(
+                            modifier = Modifier
+                                .clickable { onNegativeClicked() }
+                                .padding(horizontal = 12.dp, vertical = 10.dp),
+                            text = negativeButtonText,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Text(
+                        modifier = Modifier
+                            .clickable { onPositiveClicked() }
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        text = positiveButtonText,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+    }
 }
