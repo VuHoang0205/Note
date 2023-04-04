@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class JournalRepoImpl @Inject constructor(private val database: JournalDatabase) : JournalRepo {
-    override suspend fun loadNote() = safeDataBaseCall {
-        database.loadNotes().map { it.toDomainModel() }
+    override suspend fun loadNote(time: Long) = safeDataBaseCall {
+        database.daoNote().getNotes(time).map { it.toDomainModel() }
     }
 
     override suspend fun loadFolders(): Flow<List<Folder>> {

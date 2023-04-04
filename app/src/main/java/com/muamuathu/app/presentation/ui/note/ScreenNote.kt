@@ -62,7 +62,7 @@ fun ScreenNote() {
 
     LaunchedEffect(key1 = Unit, block = {
         viewModel.getCalenderList(selectDate)
-        viewModel.getNoteList()
+        viewModel.getNoteList(selectDate.toInstant().toEpochMilli().getStartOfDay())
     })
 
     Content(selectDate, selectDateList, noteItemList,

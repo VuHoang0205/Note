@@ -29,8 +29,8 @@ class NoteViewModel @Inject constructor(private val repo: JournalRepo) : ViewMod
         }
     }
 
-    fun getNoteList() = resultFlow {
-        repo.loadNote().apply {
+    fun getNoteList(time: Long) = resultFlow {
+        repo.loadNote(time).apply {
             if (this is ResultWrapper.Success) {
                 noteListStateFlow.tryEmit(value)
             }

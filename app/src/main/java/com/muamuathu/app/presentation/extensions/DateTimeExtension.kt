@@ -68,6 +68,11 @@ fun ZonedDateTime.isSameDay(zonedDateTime: ZonedDateTime): Boolean {
     return truncatedTo(ChronoUnit.DAYS).equals(zonedDateTime.truncatedTo(ChronoUnit.DAYS))
 }
 
+fun Long.getStartOfDay(): Long {
+    val local = this + TimeZone.getDefault().rawOffset
+    return this - (local % 86_400_000L)
+}
+
 
 
 
