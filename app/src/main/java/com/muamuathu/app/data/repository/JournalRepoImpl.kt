@@ -47,4 +47,8 @@ class JournalRepoImpl @Inject constructor(private val database: JournalDatabase)
     override suspend fun deleteNote(note: Note) = safeDataBaseCall {
         database.daoNote().delete(note.toEntityModel())
     }
+
+    override suspend fun getNoteById(idNote: Long) = safeDataBaseCall {
+        database.daoNote().getNoteByID(idNote).toDomainModel()
+    }
 }

@@ -16,4 +16,5 @@ interface JournalRepo {
     suspend fun deleteFolder(folder: Folder)
     suspend fun saveNote(note: Note): ResultWrapper<Long>
     suspend fun deleteNote(note: Note): ResultWrapper<Unit>
+    suspend fun getNoteById(idNote: Long): ResultWrapper<Note>
 }

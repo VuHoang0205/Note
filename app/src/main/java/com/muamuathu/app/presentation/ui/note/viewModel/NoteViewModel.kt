@@ -2,7 +2,6 @@ package com.muamuathu.app.presentation.ui.note.viewModel
 
 import androidx.lifecycle.ViewModel
 import com.muamuathu.app.data.base.MockData
-import com.muamuathu.app.data.base.MockData.getNote
 import com.muamuathu.app.data.repository.JournalRepo
 import com.muamuathu.app.domain.model.Note
 import com.muamuathu.app.presentation.helper.ResultWrapper
@@ -49,9 +48,7 @@ class NoteViewModel @Inject constructor(private val repo: JournalRepo) : ViewMod
         }
     }
 
-    fun getNoteById(idNote: String) = ioLaunch {
-        getNote().flowOn(Dispatchers.IO).collect {
-
-        }
+    fun getNoteById(idNote: Long) = resultFlow {
+        repo.getNoteById(idNote)
     }
 }

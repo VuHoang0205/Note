@@ -1,7 +1,6 @@
 package com.muamuathu.app.presentation.ui.note
 
 import android.os.SystemClock
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -43,6 +42,7 @@ import com.muamuathu.app.domain.model.Note
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
+import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -51,35 +51,39 @@ import org.threeten.bp.ZonedDateTime
 @Composable
 fun ScreenNoteDetail(idNote: String) {
 
-    val context = LocalContext.current
-    val viewModel: NoteViewModel = hiltViewModel(context as ComponentActivity)
+    val viewModel: NoteViewModel = hiltViewModel()
     val eventHandler = initEventHandler()
+    val coroutineScope = rememberCoroutineScope()
+    var note: Note by remember {
+        mutableStateOf(Note())
+    }
+    LaunchedEffect(key1 = Unit, block = {
+        coroutineScope.observeResultFlow(
+            viewModel.getNoteById(idNote.toLong()),
+            successHandler = { note = it })
+    })
 
-    viewModel.getNoteById(idNote)
-    val note = Note()
+    Content(note, onBack = {
+        eventHandler.postNavEvent(NavEvent.PopBackStack(false))
+    }, onMoreSetting = {
 
-    Content(note,
-        onBack = {
-            eventHandler.postNavEvent(NavEvent.PopBackStack(false))
-        }, onMoreSetting = {
+    }, onPlayAudio = {
 
-        }, onPlayAudio = {
+    }, onAttachments = {
 
-        }, onAttachments = {
-
-        })
+    })
 }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun Content(
-    entityNote: Note?,
+    note: Note?,
     onBack: () -> Unit,
     onMoreSetting: () -> Unit,
     onPlayAudio: () -> Unit,
     onAttachments: () -> Unit,
 ) {
-    entityNote?.apply {
+    note?.apply {
         val pagerState = rememberPagerState(0)
         ConstraintLayout(
             modifier = Modifier
@@ -104,8 +108,7 @@ private fun Content(
                     onBack()
                 }) {
                     Image(
-                        painter = painterResource(R.drawable.ic_back),
-                        contentDescription = "back"
+                        painter = painterResource(R.drawable.ic_back), contentDescription = "back"
                     )
                 }
 
@@ -164,11 +167,9 @@ private fun Content(
                         top.linkTo(parent.top)
                     }) {
                     val (textDay, columnDate, columnTime) = createRefs()
-                    Text(
-                        text = ZonedDateTime.ofInstant(
-                            Instant.ofEpochMilli(entityNote.dateTime),
-                            ZoneId.systemDefault()
-                        ).toDayOfMonth(),
+                    Text(text = ZonedDateTime.ofInstant(
+                        Instant.ofEpochMilli(note.dateTime), ZoneId.systemDefault()
+                    ).toDayOfMonth(),
                         color = colorResource(R.color.royal_blue_2),
                         fontSize = 34.sp,
                         textAlign = TextAlign.Center,
@@ -176,8 +177,7 @@ private fun Content(
                             top.linkTo(parent.top)
                             start.linkTo(parent.start)
                             bottom.linkTo(parent.bottom)
-                        }
-                    )
+                        })
 
                     Column(
                         modifier = Modifier.constrainAs(columnDate) {
@@ -252,18 +252,15 @@ private fun Content(
                     )
                 }
 
-                Text(
-                    text = title,
+                Text(text = title,
                     color = colorResource(R.color.gulf_blue),
                     fontSize = 20.sp,
                     modifier = Modifier.constrainAs(textTitle) {
                         top.linkTo(rowTag.bottom, 12.dp)
                         start.linkTo(parent.start)
-                    }
-                )
+                    })
 
-                ExpandedText(
-                    text = content.substring(0, entityNote.content.length / 2),
+                ExpandedText(text = content.substring(0, note.content.length / 2),
                     expandedText = content,
                     expandedTextButton = stringResource(R.string.txt_read_more),
                     shrinkTextButton = stringResource(R.string.txt_read_less),
@@ -344,7 +341,8 @@ private fun Content(
                         .constrainAs(tagView) {
                             top.linkTo(audioView.bottom, 16.dp)
                             start.linkTo(parent.start)
-                        }, elevation = 4.dp,
+                        },
+                    elevation = 4.dp,
                     backgroundColor = Color.White,
                     shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
                 ) {
@@ -361,13 +359,9 @@ private fun Content(
                         LazyRow(
                             modifier = Modifier
                                 .padding(
-                                    top = 4.dp,
-                                    start = 8.dp,
-                                    end = 8.dp,
-                                    bottom = 10.dp
+                                    top = 4.dp, start = 8.dp, end = 8.dp, bottom = 10.dp
                                 )
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(strs) {
                                 TextButton(
@@ -393,9 +387,7 @@ private fun Content(
                 val redundantItem = attachments.size - limitItem
                 val redundantItemString = if (attachments.size > limitItem) {
                     String.format(
-                        "%s (%d)",
-                        stringResource(R.string.txt_attachments),
-                        redundantItem
+                        "%s (%d)", stringResource(R.string.txt_attachments), redundantItem
                     )
                 } else {
                     stringResource(R.string.txt_attachments)
@@ -406,8 +398,7 @@ private fun Content(
                     modifier = Modifier.constrainAs(textAttachment) {
                         top.linkTo(tagView.bottom, 12.dp)
                         start.linkTo(parent.start)
-                    }
-                )
+                    })
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -418,9 +409,7 @@ private fun Content(
                 ) {
                     itemsIndexed(attachments.take(limitItem)) { index, path ->
                         AttachmentsItem(
-                            path,
-                            index == limitItem - 1,
-                            redundantItem
+                            path, index == limitItem - 1, redundantItem
                         ) { onAttachments() }
                     }
                 }
@@ -534,22 +523,13 @@ private fun ExpandedText(
             )
         }
 
-        ClickableText(
-            text = annotatedString,
-            softWrap = softWrap,
-            modifier = modifier,
-            onClick = {
-                annotatedString
-                    .getStringAnnotations(
-                        "expand_shrink_text_button",
-                        it,
-                        it
-                    )
-                    .firstOrNull()?.let { stringAnnotation ->
-                        isExpanded = stringAnnotation.item == expandedTextButton
-                    }
+        ClickableText(text = annotatedString, softWrap = softWrap, modifier = modifier, onClick = {
+            annotatedString.getStringAnnotations(
+                "expand_shrink_text_button", it, it
+            ).firstOrNull()?.let { stringAnnotation ->
+                isExpanded = stringAnnotation.item == expandedTextButton
             }
-        )
+        })
     } else {
         Text(
             text = expandedText,

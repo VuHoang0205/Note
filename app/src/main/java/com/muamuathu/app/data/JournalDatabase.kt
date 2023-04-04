@@ -7,7 +7,6 @@ import com.muamuathu.app.data.converters.Converters
 import com.muamuathu.app.data.dao.*
 import com.muamuathu.app.data.entity.*
 import com.muamuathu.app.data.entity.embedded.EntityFolderInfo
-import com.muamuathu.app.data.entity.embedded.EntityNoteInfo
 import kotlinx.coroutines.flow.Flow
 
 @Database(
@@ -45,9 +44,5 @@ abstract class JournalDatabase : RoomDatabase() {
 
     fun loadTags(): Flow<List<EntityTag>> {
         return daoTag().getTags()
-    }
-
-    fun loadNotes(): List<EntityNoteInfo> {
-        return daoNote().getNotes()
     }
 }
