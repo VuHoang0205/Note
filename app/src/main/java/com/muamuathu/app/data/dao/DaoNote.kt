@@ -35,4 +35,8 @@ abstract class DaoNote : DaoBase<EntityNote>() {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insertLinkNoteTag(linkNoteTags: List<LinkNoteTag>)
+
+    @Transaction
+    @Query("SELECT * FROM EntityNote WHERE startOfDay = :time tim ORDER BY noteId DESC ")
+    abstract fun getNotes(time: Long): List<EntityNoteInfo>
 }
