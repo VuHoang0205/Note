@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -92,7 +91,7 @@ class MainActivity : AppCompatActivity() {
             Box(modifier = Modifier
                 .fillMaxSize()
                 .padding(it)) {
-                NavGraph(navController, Modifier.padding(bottom = 270.dp))
+                NavGraph(navController, Modifier.fillMaxSize().padding(bottom = it.calculateBottomPadding()))
 
 //                if (sheetState.isVisible) {
 //                    ModalBottomSheet(
