@@ -489,12 +489,7 @@ private fun ItemNote(
                                 }, horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(note.tags) {
-                                Box(modifier = Modifier
-                                    .background(color = colorResource(id = R.color.royal_blue_2),
-                                        shape = RoundedCornerShape(16.dp))
-                                    .padding(horizontal = 8.dp, vertical = 2.dp)) {
-                                    Text(it.name, color = Color.White, textAlign = TextAlign.Center)
-                                }
+                                ItemTag(tag = it.name)
                             }
                         }
                     }

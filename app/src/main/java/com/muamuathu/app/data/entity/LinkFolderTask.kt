@@ -21,7 +21,7 @@ import androidx.room.PrimaryKey
 ])
 data class LinkFolderTask(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Long,
     val folderId: Long,
     val taskId: Long,
 )

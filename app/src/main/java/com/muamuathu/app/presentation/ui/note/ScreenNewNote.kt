@@ -139,9 +139,9 @@ fun ScreenNewNote() {
                 Action.OpenGallery -> {
                     eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddImage))
                 }
-                Action.AddTag -> {
-                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddTags))
-                }
+//                Action.AddTag -> {
+//                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddTags))
+//                }
 //                Action.AddAudio -> {}
 //                Action.OpenVideo -> {
 //                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddVideo))
@@ -153,6 +153,8 @@ fun ScreenNewNote() {
                     eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteDrawSketch))
                 }
             }
+        }, onTageClick = {
+            eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddTags))
         })
 }
 
@@ -177,6 +179,7 @@ private fun Content(
     onChooseFolder: () -> Unit,
     onTimePicker: () -> Unit,
     onActionClick: (action: Action) -> Unit,
+    onTageClick: () -> Unit,
 ) {
 
     ConstraintLayout(
@@ -311,7 +314,7 @@ private fun Content(
                     contentDescription = "folder",
                     colorFilter = ColorFilter.tint(colorResource(R.color.storm_grey)),
                     modifier = Modifier
-                        .padding(top = 16.dp, start = 16.dp, bottom = 16.dp)
+                        .padding(top = 24.dp, start = 16.dp, bottom = 24.dp)
                         .constrainAs(icFolder) {
                             top.linkTo(parent.top)
                             bottom.linkTo(parent.bottom)
@@ -447,10 +450,9 @@ private fun Content(
                     }
                 }
             }
-
-            if (tags.isNotEmpty()) {
-                Card(
-                    modifier = Modifier.constrainAs(columnTag) {
+            Card(
+                modifier = Modifier
+                    .constrainAs(columnTag) {
                         top.linkTo(
                             if (attachments.isEmpty()) textContent.bottom else lazyRowAttachMent.bottom,
                             12.dp
@@ -459,46 +461,66 @@ private fun Content(
                         end.linkTo(parent.end, 16.dp)
                         width = Dimension.fillToConstraints
                     },
-                    elevation = CardDefaults.cardElevation(1.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
+                elevation = CardDefaults.cardElevation(1.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
+            ) {
+                ConstraintLayout(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(minHeight = 70.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = stringResource(R.string.txt_tags),
-                            color = colorResource(R.color.gulf_blue),
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(8.dp)
-                        )
 
+                    val (textTag, lazyRow, btnAdd) = createRefs()
+
+                    Text(
+                        modifier = Modifier
+                            .constrainAs(textTag) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                if (tags.isEmpty()) centerVerticallyTo(parent)
+                            }
+                            .padding(vertical = 10.dp, horizontal = 8.dp),
+                        text = stringResource(R.string.txt_tags),
+                        color = colorResource(R.color.gulf_blue),
+                        fontSize = 14.sp,
+                    )
+
+                    if (tags.isNotEmpty()) {
                         LazyRow(
                             modifier = Modifier
-                                .padding(
-                                    top = 4.dp, start = 8.dp, end = 8.dp, bottom = 10.dp
-                                )
+                                .constrainAs(lazyRow) {
+                                    top.linkTo(textTag.bottom)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(btnAdd.start)
+                                    width = Dimension.fillToConstraints
+                                }
+                                .padding(vertical = 8.dp, horizontal = 8.dp)
                                 .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             itemsIndexed(tags) { _, tag ->
-                                Box(
-                                    modifier = Modifier
-                                        .background(
-                                            color = colorResource(id = R.color.royal_blue_2),
-                                            shape = RoundedCornerShape(16.dp)
-                                        )
-                                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                                ) {
-                                    androidx.compose.material3.Text(
-                                        tag.name, color = Color.White, textAlign = TextAlign.Center
-                                    )
-                                }
+                                ItemTag(tag = tag.name)
                             }
                         }
+                    }
+
+                    IconButton(
+                        modifier = Modifier
+                            .constrainAs(btnAdd) {
+                                centerVerticallyTo(parent)
+                                end.linkTo(parent.end)
+                            },
+                        onClick = { onTageClick() }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_plus),
+                            contentDescription = ""
+                        )
                     }
                 }
             }
         }
+
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -527,11 +549,24 @@ private fun Content(
     }
 }
 
+@Composable
+internal fun ItemTag(tag: String) {
+    Box(modifier = Modifier
+        .background(
+            color = colorResource(id = R.color.royal_blue_2),
+            shape = RoundedCornerShape(16.dp)
+        )
+        .padding(horizontal = 20.dp, vertical = 2.dp)
+    ) {
+        Text(tag, color = Color.White, textAlign = TextAlign.Center)
+    }
+}
 
 @Preview
 @Composable
 private fun PreviewContent() {
-    Content("",
+    Content(
+        "",
         "",
         "",
         Folder(),
@@ -547,5 +582,7 @@ private fun PreviewContent() {
         {},
         {},
         {},
-        {})
+        {},
+        {},
+    )
 }

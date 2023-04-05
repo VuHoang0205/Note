@@ -14,10 +14,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -89,8 +89,10 @@ class MainActivity : AppCompatActivity() {
                 AwareBottomBar(navController, tabs)
             },
         ) {
-            Box(modifier = Modifier.padding(it)) {
-                NavGraph(navController)
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(it)) {
+                NavGraph(navController, Modifier.padding(bottom = 270.dp))
 
 //                if (sheetState.isVisible) {
 //                    ModalBottomSheet(
@@ -116,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         val currentRoute = navBackStackEntry?.destination?.route
         val routes = remember { tabs.map { it.route } }
         if (currentRoute in routes) {
-            NavigationBar(containerColor = Color.White) {
+            NavigationBar(containerColor = colorResource(id = R.color.hawkes_blue)) {
                 tabs.forEach { tab ->
                     NavigationBarItem(icon = {
                         Icon(
@@ -149,8 +151,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Composable
-    fun NavGraph(navController: NavHostController) {
-        NavHost(navController, NavTarget.GraphNote.route) {
+    fun NavGraph(navController: NavHostController, modifier: Modifier) {
+        NavHost(
+            navController,
+            NavTarget.GraphNote.route,
+            modifier) {
 
 //            navigation(
 //                startDestination = NavTarget.Welcome.route,

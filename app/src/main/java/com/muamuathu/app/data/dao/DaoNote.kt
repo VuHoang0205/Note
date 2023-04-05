@@ -37,7 +37,7 @@ abstract class DaoNote : DaoBase<EntityNote>() {
     abstract fun insertLinkNoteTag(linkNoteTags: List<LinkNoteTag>)
 
     @Transaction
-    @Query("SELECT * FROM EntityNote AS N INNER JOIN LinkFolderNote AS F ON N.noteId==F.noteId LEFT JOIN LinkNoteTag AS T ON N.noteId==T.noteId WHERE N.startOfDay = :time  ORDER BY noteId DESC")
+    @Query("SELECT * FROM EntityNote AS N INNER JOIN LinkFolderNote AS F ON N.noteId==F.noteId LEFT JOIN LinkNoteTag AS T ON N.noteId==T.noteId WHERE N.startOfDay = :time GROUP BY N.noteId ORDER BY noteId DESC")
     abstract fun getNotes(time: Long): List<EntityNoteInfo>
 
     @Transaction
