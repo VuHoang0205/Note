@@ -7,10 +7,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Divider
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,7 +22,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,6 +37,7 @@ import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.ui.folder.dialog.EditFolderDialog
 import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
+import com.muamuathu.app.presentation.ui.note.SearchView
 
 @Composable
 fun ScreenFolder() {
@@ -65,8 +64,7 @@ fun ScreenFolder() {
         onAdd = {
             eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderAdd))
         },
-        onSearch = {},
-        onSearchFolder = {
+        onSearch = {
             viewModel.searchFolder(it)
         },
         onEdit = {
@@ -90,8 +88,7 @@ private fun Content(
     folderList: List<Folder>,
     query: String,
     onAdd: () -> Unit,
-    onSearch: () -> Unit,
-    onSearchFolder: (query: String) -> Unit,
+    onSearch: (query: String) -> Unit,
     onEdit: (Folder) -> Unit,
     onDelete: (Folder) -> Unit,
     onItemFolder: () -> Unit,
@@ -133,70 +130,13 @@ private fun Content(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-        Column(modifier = Modifier.constrainAs(searchView) {
+
+        SearchView(modifier = Modifier.constrainAs(searchView) {
             top.linkTo(topView.bottom, 16.dp)
             start.linkTo(parent.start, 16.dp)
             end.linkTo(parent.end, 16.dp)
             width = Dimension.fillToConstraints
-        }) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                elevation = 4.dp,
-            ) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    TextField(
-                        value = query,
-                        onValueChange = { value ->
-                            onSearchFolder(value)
-                        },
-                        label = {
-                            Text(stringResource(R.string.txt_search_folder_name))
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        textStyle = TextStyle(fontSize = 14.sp),
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .padding(15.dp)
-                                    .size(24.dp)
-                            )
-                        },
-                        trailingIcon = {
-                            if (!query.isEmpty()) {
-                                IconButton(
-                                    onClick = {
-                                        onSearchFolder("")
-                                    }
-                                ) {
-                                    Icon(
-                                        Icons.Default.Close,
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .padding(15.dp)
-                                            .size(24.dp)
-                                    )
-                                }
-                            }
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(4.dp),
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.White,
-                            textColor = colorResource(R.color.storm_grey),
-                            cursorColor = colorResource(R.color.storm_grey),
-                            leadingIconColor = colorResource(R.color.storm_grey),
-                            trailingIconColor = colorResource(R.color.storm_grey),
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent
-                        )
-                    )
-                }
-            }
-        }
+        }, label = R.string.txt_search_folder_name, query = query, onSearch = { onSearch(it) })
 
         LazyColumn(
             modifier = Modifier
@@ -328,7 +268,6 @@ private fun PreviewContent() {
         "",
         onAdd = {},
         onSearch = {},
-        onSearchFolder = {},
         onEdit = {},
         onDelete = {},
         onItemFolder = {})

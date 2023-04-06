@@ -12,7 +12,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -279,7 +280,7 @@ private fun Content(
                     .constrainAs(tabViewTask) {
                         top.linkTo(lazyRowCalendar.bottom, 16.dp)
                     }, contentColor = colorResource(R.color.royal_blue),
-                backgroundColor = colorResource(R.color.alice_blue)
+                containerColor = colorResource(R.color.alice_blue)
             ) {
                 tabItems.forEachIndexed { index, it ->
                     Tab(
@@ -401,9 +402,9 @@ fun ItemTask(
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
-            elevation = 4.dp,
+            elevation = CardDefaults.cardElevation(),
             shape = RoundedCornerShape(8.dp),
-            backgroundColor = Color.White
+            colors = CardDefaults.cardColors(Color.White)
         ) {
             Row(
                 modifier = Modifier
@@ -503,13 +504,13 @@ private fun ItemCalendar(
     onClickDate: () -> Unit,
 ) {
 
-    Card(backgroundColor = if (select) colorResource(R.color.royal_blue_2) else Color.White,
+    Card(colors = CardDefaults.cardColors(if (select) colorResource(R.color.royal_blue_2) else Color.White),
         modifier = Modifier
             .height(64.dp)
             .width(58.dp)
             .clickable {
                 onClickDate()
-            }, shape = RoundedCornerShape(8.dp), elevation = 4.dp
+            }, shape = RoundedCornerShape(8.dp), elevation = CardDefaults.cardElevation()
     ) {
         Column(verticalArrangement = Arrangement.Center) {
             Text(

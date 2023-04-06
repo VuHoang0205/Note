@@ -10,7 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -129,29 +129,44 @@ private fun Content(
                 }
             }
 
-            HorizontalPager(state = pagerState,
-                count = attachments.size,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(pagerAvatar) {
-                        top.linkTo(topView.bottom)
-                    }) { page ->
+            if (note.attachments.isNotEmpty()) {
+                HorizontalPager(state = pagerState,
+                    count = attachments.size,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(pagerAvatar) {
+                            top.linkTo(topView.bottom)
+                        }) { page ->
+                    Image(
+                        painter = rememberAsyncImagePainter(attachments[page]),
+                        contentDescription = "avatar",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(280.dp)
+                    )
+                }
+
+                PagerIndicator(attachments.size,
+                    pagerState.currentPage,
+                    modifier = Modifier.constrainAs(pagerIndicator) {
+                        bottom.linkTo(pagerAvatar.bottom, 20.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    })
+            } else {
                 Image(
-                    painter = rememberAsyncImagePainter(attachments[page]),
+                    painter = painterResource(id = R.drawable.ic_image_default),
                     contentDescription = "avatar",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(280.dp)
+                        .constrainAs(pagerAvatar) {
+                            top.linkTo(topView.bottom)
+                        }
                 )
             }
-            PagerIndicator(attachments.size,
-                pagerState.currentPage,
-                modifier = Modifier.constrainAs(pagerIndicator) {
-                    bottom.linkTo(pagerAvatar.bottom, 20.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                })
 
             ConstraintLayout(modifier = Modifier
                 .fillMaxWidth()
@@ -242,7 +257,7 @@ private fun Content(
                             .size(16.dp)
                             .padding(4.dp)
                             .clip(CircleShape)
-                            .background(Color.Blue)
+                            .background(Color(folder.color))
                     )
                     Text(
                         text = "tag",
@@ -273,77 +288,77 @@ private fun Content(
                             start.linkTo(parent.start)
                         })
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(audioView) {
-                            top.linkTo(textContent.bottom, 8.dp)
-                            start.linkTo(parent.start)
-                        },
-                    elevation = 4.dp,
-                    backgroundColor = Color.White,
-                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
-                ) {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Column(
-                            modifier = Modifier
-                                .padding(vertical = 8.dp, horizontal = 12.dp)
-                                .align(alignment = Alignment.CenterStart)
-                        ) {
-                            Text(
-                                text = "Audio",
-                                color = colorResource(R.color.gulf_blue),
-                                fontSize = 14.sp,
-                            )
-                            Row {
-                                Image(
-                                    painter = painterResource(R.drawable.ic_music),
-                                    contentDescription = "icon",
-                                )
-
-                                Divider(modifier = Modifier.size(3.dp))
-
-                                Text(
-                                    text = "Ed Sherran",
-                                    color = colorResource(R.color.gulf_blue),
-                                    fontSize = 11.sp,
-                                    modifier = Modifier.padding(start = 4.dp)
-                                )
-                            }
-                        }
-
-                        TextButton(
-                            onClick = {
-                                onPlayAudio()
-                            },
-                            modifier = Modifier
-                                .align(alignment = Alignment.CenterEnd)
-                                .padding(8.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.ic_play),
-                                contentDescription = "down",
-                                modifier = Modifier.align(alignment = Alignment.CenterVertically)
-                            )
-                            Text(
-                                text = stringResource(R.string.txt_play),
-                                color = colorResource(R.color.gulf_blue),
-                                fontSize = 14.sp,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(start = 6.dp)
-                            )
-                        }
-                    }
-                }
+//                Card(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .constrainAs(audioView) {
+//                            top.linkTo(textContent.bottom, 8.dp)
+//                            start.linkTo(parent.start)
+//                        },
+//                    elevation = 4.dp,
+//                    backgroundColor = Color.White,
+//                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
+//                ) {
+//                    Box(modifier = Modifier.fillMaxWidth()) {
+//                        Column(
+//                            modifier = Modifier
+//                                .padding(vertical = 8.dp, horizontal = 12.dp)
+//                                .align(alignment = Alignment.CenterStart)
+//                        ) {
+//                            Text(
+//                                text = "Audio",
+//                                color = colorResource(R.color.gulf_blue),
+//                                fontSize = 14.sp,
+//                            )
+//                            Row {
+//                                Image(
+//                                    painter = painterResource(R.drawable.ic_music),
+//                                    contentDescription = "icon",
+//                                )
+//
+//                                Divider(modifier = Modifier.size(3.dp))
+//
+//                                Text(
+//                                    text = "Ed Sherran",
+//                                    color = colorResource(R.color.gulf_blue),
+//                                    fontSize = 11.sp,
+//                                    modifier = Modifier.padding(start = 4.dp)
+//                                )
+//                            }
+//                        }
+//
+//                        TextButton(
+//                            onClick = {
+//                                onPlayAudio()
+//                            },
+//                            modifier = Modifier
+//                                .align(alignment = Alignment.CenterEnd)
+//                                .padding(8.dp)
+//                        ) {
+//                            Image(
+//                                painter = painterResource(R.drawable.ic_play),
+//                                contentDescription = "down",
+//                                modifier = Modifier.align(alignment = Alignment.CenterVertically)
+//                            )
+//                            Text(
+//                                text = stringResource(R.string.txt_play),
+//                                color = colorResource(R.color.gulf_blue),
+//                                fontSize = 14.sp,
+//                                textAlign = TextAlign.Center,
+//                                modifier = Modifier.padding(start = 6.dp)
+//                            )
+//                        }
+//                    }
+//                }
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .constrainAs(tagView) {
-                            top.linkTo(audioView.bottom, 16.dp)
+                            top.linkTo(textContent.bottom, 16.dp)
                             start.linkTo(parent.start)
                         },
-                    elevation = 4.dp,
-                    backgroundColor = Color.White,
+                    elevation = CardDefaults.cardElevation(),
+                    colors = CardDefaults.cardColors(Color.White),
                     shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
@@ -355,7 +370,6 @@ private fun Content(
                             modifier = Modifier.padding(8.dp)
                         )
 
-                        val strs = "tag,TAG".split(",").toTypedArray()
                         LazyRow(
                             modifier = Modifier
                                 .padding(
@@ -363,20 +377,8 @@ private fun Content(
                                 )
                                 .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            items(strs) {
-                                TextButton(
-                                    onClick = {},
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = colorResource(
-                                            R.color.royal_blue_2
-                                        )
-                                    ),
-                                    shape = RoundedCornerShape(100.dp),
-                                    modifier = Modifier.height(25.dp),
-                                    contentPadding = PaddingValues(3.dp)
-                                ) {
-                                    Text(it, color = Color.White, textAlign = TextAlign.Center)
-                                }
+                            items(tags) {
+                                ItemTag(tag = it.name)
                             }
                         }
                     }

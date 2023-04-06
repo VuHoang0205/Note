@@ -101,7 +101,7 @@ internal fun DialogBase(
         eventHandler.postDialogEvent(DialogEvent.None)
     }, properties = properties) {
         Card(
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            elevation = CardDefaults.cardElevation(),
             shape = RoundedCornerShape(12.dp)
         ) {
             content.invoke()

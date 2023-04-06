@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.muamuathu.app.presentation.ui.note
 
 import androidx.activity.ComponentActivity
@@ -9,7 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -130,7 +132,7 @@ private fun Content(
                         onAdd(tagName)
                         tagName = ""
                     }, shape = RoundedCornerShape(4.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(R.color.royal_blue))
+                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.royal_blue))
                     ) {
                         Text(
                             text = stringResource(R.string.add),
@@ -163,8 +165,8 @@ private fun Content(
                         width = Dimension.fillToConstraints
                     },
                 colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    cursorColor = MaterialTheme.colors.onSurface,
+                    containerColor = Color.Transparent,
+                    cursorColor = MaterialTheme.colorScheme.onSurface,
                     focusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,

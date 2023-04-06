@@ -461,7 +461,7 @@ private fun Content(
                         end.linkTo(parent.end, 16.dp)
                         width = Dimension.fillToConstraints
                     },
-                elevation = CardDefaults.cardElevation(1.dp),
+                elevation = CardDefaults.cardElevation(),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
             ) {

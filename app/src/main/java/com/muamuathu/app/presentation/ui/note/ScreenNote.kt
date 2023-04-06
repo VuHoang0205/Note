@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.muamuathu.app.presentation.ui.note
 
 import android.app.DatePickerDialog
@@ -9,6 +11,9 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +40,7 @@ import coil.compose.AsyncImage
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Note
+import com.muamuathu.app.domain.model.commons.WrapList
 import com.muamuathu.app.presentation.components.dialog.JcDialog
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
@@ -56,7 +63,7 @@ fun ScreenNote() {
     val viewModel: NoteViewModel = hiltViewModel()
 
     val selectDateList by viewModel.dateListStateFlow.collectAsState(initial = emptyList())
-    val noteItemList by viewModel.noteListStateFlow.collectAsState(initial = mutableListOf())
+    val noteItemList by viewModel.noteListStateFlow.collectAsState(initial = WrapList(mutableListOf()))
 
     var selectDate by remember { mutableStateOf(ZonedDateTime.now()) }
 
@@ -65,7 +72,7 @@ fun ScreenNote() {
         viewModel.getNoteList(selectDate.toInstant().toEpochMilli().getStartOfDay())
     })
 
-    Content(selectDate, selectDateList, noteItemList,
+    Content(selectDate, selectDateList, noteItemList.list,
         onAdd = {
             eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAdd))
         }, onSearch = {
@@ -329,7 +336,7 @@ private fun ItemCalendar(
                 onClickDate()
             },
         shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation()
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -421,7 +428,7 @@ private fun ItemNote(
         Card(
             colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            elevation = CardDefaults.cardElevation()
         ) {
             ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
                 val (contentView1, viewLine1) = createRefs()
@@ -567,7 +574,7 @@ private fun ItemNote(
                     }
                 }
                 if (note.attachments.isEmpty()) {
-                    androidx.compose.material.Divider(modifier = Modifier
+                    Divider(modifier = Modifier
                         .width(8.dp)
                         .clip(
                             shape = RoundedCornerShape(
@@ -583,6 +590,73 @@ private fun ItemNote(
                             height = Dimension.fillToConstraints
                         })
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchView(
+    modifier: Modifier,
+    label: Int,
+    query: String,
+    onSearch: (String) -> Unit,
+    onClose: () -> Unit = {},
+) {
+    Column(modifier = modifier) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(),
+        ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                TextField(
+                    value = query,
+                    onValueChange = { value ->
+                        onSearch(value)
+                    },
+                    label = {
+                        Text(stringResource(label))
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(fontSize = 14.sp),
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = "",
+                            modifier = Modifier
+                                .padding(15.dp)
+                                .size(24.dp)
+                        )
+                    },
+                    trailingIcon = {
+                        if (query.isNotEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    onClose()
+                                }
+                            ) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .padding(15.dp)
+                                        .size(24.dp)
+                                )
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(4.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.White,
+                        textColor = colorResource(R.color.storm_grey),
+                        cursorColor = colorResource(R.color.storm_grey),
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    )
+                )
             }
         }
     }

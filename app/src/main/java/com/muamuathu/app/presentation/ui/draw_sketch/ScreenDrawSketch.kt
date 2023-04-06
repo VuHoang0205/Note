@@ -10,7 +10,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.SketchColor
 import com.muamuathu.app.presentation.components.topbar.Toolbar
@@ -122,7 +121,8 @@ private fun Content(
                 height = Dimension.fillToConstraints
             }
             .padding(16.dp)
-            .background(Color.White, shape = RoundedCornerShape(8.dp)), elevation = 1.dp) {
+            .background(Color.White, shape = RoundedCornerShape(8.dp)),
+            elevation = CardDefaults.cardElevation()) {
             DrawBox(
                 modifier = Modifier.fillMaxSize(),
                 drawController = drawController,

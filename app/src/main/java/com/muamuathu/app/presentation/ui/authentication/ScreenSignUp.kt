@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.muamuathu.app.presentation.ui.authentication
 
 import android.text.TextUtils
@@ -9,10 +11,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -196,7 +198,7 @@ private fun Content(
                     onSignup(email)
                 }, modifier = Modifier.fillMaxWidth().height(50.dp),
                     enabled = isInputValid,
-                    colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(
+                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(
                         R.color.royal_blue)), shape = RoundedCornerShape(4.dp)) {
                     Text(text = stringResource(R.string.txt_sign_up),
                         color = colorResource(R.color.white),
