@@ -357,7 +357,7 @@ private fun Content(
                             top.linkTo(textContent.bottom, 16.dp)
                             start.linkTo(parent.start)
                         },
-                    elevation = CardDefaults.cardElevation(),
+                    elevation = CardDefaults.cardElevation(2.dp),
                     colors = CardDefaults.cardColors(Color.White),
                     shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
                 ) {

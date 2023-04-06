@@ -30,7 +30,7 @@
     <string name="done">Done</string>
 
     <string name="txt_folders">Folders</string>
-    <string name="txt_search_folder_name">"Search Folder Name "</string>
+    <string name="txt_search_folder_name">"Search Folder Name"</string>
     <string name="txt_add_new_folder">"Add New Folder"</string>
     <string name="txt_enter_folder_name">Enter Folder Name</string>
     <string name="txt_add">Add</string>
@@ -78,5 +78,5 @@
     <string name="confirm_delete">Confirm delete?</string>
     <string name="message_delete_note">Are you sure want to delete all Note? This action cannot be undone.</string>
     <string name="ok">OK</string>
-
+    <string name="txt_search_note_name">"Search Note Name"</string>
 </resources>

@@ -10,10 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +41,6 @@ fun ScreenFolder() {
     val eventHandler = initEventHandler()
     val viewModel: FolderViewModel = hiltViewModel()
     val wrapperList by viewModel.entityFolderListState.collectAsState()
-    val query by viewModel.query.collectAsState()
 
     @Composable
     fun loadData() {
@@ -60,7 +56,6 @@ fun ScreenFolder() {
     loadData()
 
     Content(wrapperList.list,
-        query,
         onAdd = {
             eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderAdd))
         },
@@ -86,13 +81,13 @@ fun ScreenFolder() {
 @Composable
 private fun Content(
     folderList: List<Folder>,
-    query: String,
     onAdd: () -> Unit,
     onSearch: (query: String) -> Unit,
     onEdit: (Folder) -> Unit,
     onDelete: (Folder) -> Unit,
     onItemFolder: () -> Unit,
 ) {
+    var query by remember { mutableStateOf("") }
 
     ConstraintLayout(
         modifier = Modifier
@@ -136,7 +131,10 @@ private fun Content(
             start.linkTo(parent.start, 16.dp)
             end.linkTo(parent.end, 16.dp)
             width = Dimension.fillToConstraints
-        }, label = R.string.txt_search_folder_name, query = query, onSearch = { onSearch(it) })
+        }, label = R.string.txt_search_folder_name, query = query, onSearch = {
+            query = it
+            onSearch(it)
+        })
 
         LazyColumn(
             modifier = Modifier
@@ -265,7 +263,6 @@ private fun ItemFolder(
 @Composable
 private fun PreviewContent() {
     Content(emptyList(),
-        "",
         onAdd = {},
         onSearch = {},
         onEdit = {},

@@ -18,7 +18,6 @@ class FolderViewModel @Inject constructor(private val repo: JournalRepo) : ViewM
         MutableStateFlow(ArrayList())
     val entityFolderListState: MutableStateFlow<WrapList<Folder>> =
         MutableStateFlow(WrapList(emptyList()))
-    var query: MutableStateFlow<String> = MutableStateFlow("")
 
     fun getFolderList() = ioLaunch {
         repo.loadFolders().collect {
@@ -28,7 +27,6 @@ class FolderViewModel @Inject constructor(private val repo: JournalRepo) : ViewM
     }
 
     fun searchFolder(textSearch: String) = ioLaunch {
-        query.value = textSearch
         if (entityFolderListOriginState.value.isNotEmpty()) {
             if (textSearch.isNotEmpty()) {
                 val folderList = entityFolderListOriginState.value.toMutableList()

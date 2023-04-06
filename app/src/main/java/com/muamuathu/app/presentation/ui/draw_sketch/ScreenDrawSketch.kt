@@ -122,7 +122,7 @@ private fun Content(
             }
             .padding(16.dp)
             .background(Color.White, shape = RoundedCornerShape(8.dp)),
-            elevation = CardDefaults.cardElevation()) {
+            elevation = CardDefaults.cardElevation(2.dp)) {
             DrawBox(
                 modifier = Modifier.fillMaxSize(),
                 drawController = drawController,

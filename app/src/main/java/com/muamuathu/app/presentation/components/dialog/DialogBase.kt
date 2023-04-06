@@ -29,7 +29,7 @@ internal fun DialogBase(
     Dialog(onDismissRequest = {
         onDismissRequest.invoke()
     }, properties = properties) {
-        Card(elevation = CardDefaults.cardElevation(), shape = RoundedCornerShape(12.dp)) {
+        Card(elevation = CardDefaults.cardElevation(2.dp), shape = RoundedCornerShape(12.dp)) {
             content.invoke()
         }
     }
@@ -103,7 +103,7 @@ fun JcDialog(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
-            elevation = CardDefaults.cardElevation()
+            elevation = CardDefaults.cardElevation(2.dp)
         ) {
             Column(
                 modifier = Modifier

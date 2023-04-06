@@ -38,7 +38,7 @@ fun JcDialog(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
-            elevation = CardDefaults.cardElevation()
+            elevation = CardDefaults.cardElevation(2.dp)
         ) {
             Column(
                 modifier = Modifier
