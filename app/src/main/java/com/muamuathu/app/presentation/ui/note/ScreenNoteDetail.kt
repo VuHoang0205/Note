@@ -39,6 +39,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Note
+import com.muamuathu.app.presentation.common.ItemTagNote
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
@@ -378,7 +379,7 @@ private fun Content(
                                 .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(tags) {
-                                ItemTag(tag = it.name)
+                                ItemTagNote(tag = it.name)
                             }
                         }
                     }

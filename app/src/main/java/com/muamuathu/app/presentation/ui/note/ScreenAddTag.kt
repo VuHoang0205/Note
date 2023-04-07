@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -17,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -34,6 +32,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Tag
+import com.muamuathu.app.presentation.common.ItemTag
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
@@ -226,56 +225,6 @@ private fun Content(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun ItemTag(
-    entityTag: Tag,
-    entityTagSelectedList: MutableList<Tag>,
-    itemClick: (Tag) -> Unit,
-) {
-
-    ConstraintLayout(modifier = Modifier
-        .fillMaxWidth()
-        .clickable {
-            itemClick(entityTag)
-        }
-        .height(50.dp)) {
-        val (imgTag, textName, checkBox) = createRefs()
-
-        Image(painter = painterResource(id = R.drawable.ic_tag),
-            contentDescription = null, contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(20.dp)
-                .constrainAs(imgTag) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    bottom.linkTo(parent.bottom)
-                })
-
-        Text(text = entityTag.name,
-            fontSize = 14.sp,
-            color = colorResource(id = R.color.gulf_blue),
-            modifier = Modifier.constrainAs(textName) {
-                top.linkTo(imgTag.top)
-                bottom.linkTo(imgTag.bottom)
-                start.linkTo(imgTag.end, 16.dp)
-                end.linkTo(checkBox.start)
-                width = Dimension.fillToConstraints
-            })
-        Checkbox(
-            checked = entityTagSelectedList.contains(entityTag),
-            colors = CheckboxDefaults.colors(
-                checkedColor = colorResource(R.color.royal_blue),
-                uncheckedColor = colorResource(R.color.storm_grey)),
-            modifier = Modifier.constrainAs(checkBox) {
-                top.linkTo(imgTag.top)
-                end.linkTo(parent.end)
-                bottom.linkTo(imgTag.bottom)
-            }, onCheckedChange = {
-                itemClick(entityTag)
-            })
     }
 }
 

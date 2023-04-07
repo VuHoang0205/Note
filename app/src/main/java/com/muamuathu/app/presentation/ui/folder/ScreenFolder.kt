@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.muamuathu.app.presentation.ui.folder
 
 import androidx.compose.foundation.Image
@@ -8,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -28,13 +31,13 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Folder
+import com.muamuathu.app.presentation.common.SearchView
 import com.muamuathu.app.presentation.event.DialogEvent
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.ui.folder.dialog.EditFolderDialog
 import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
-import com.muamuathu.app.presentation.ui.note.SearchView
 
 @Composable
 fun ScreenFolder() {
@@ -78,6 +81,7 @@ fun ScreenFolder() {
         })
 }
 
+@ExperimentalMaterial3Api
 @Composable
 private fun Content(
     folderList: List<Folder>,

@@ -91,7 +91,9 @@ class MainActivity : AppCompatActivity() {
             Box(modifier = Modifier
                 .fillMaxSize()
                 .padding(it)) {
-                NavGraph(navController, Modifier.fillMaxSize().padding(bottom = it.calculateBottomPadding()))
+                NavGraph(navController,
+                    Modifier
+                        .fillMaxSize())
 
 //                if (sheetState.isVisible) {
 //                    ModalBottomSheet(

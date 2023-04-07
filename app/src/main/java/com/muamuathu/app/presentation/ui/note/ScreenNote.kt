@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@file:OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 
 package com.muamuathu.app.presentation.ui.note
 
@@ -6,15 +6,10 @@ import android.app.DatePickerDialog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,7 +23,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,11 +36,16 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Note
 import com.muamuathu.app.domain.model.commons.WrapList
+import com.muamuathu.app.presentation.common.CalendarView
+import com.muamuathu.app.presentation.common.ItemTagNote
+import com.muamuathu.app.presentation.common.SearchView
 import com.muamuathu.app.presentation.components.dialog.JcDialog
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
-import com.muamuathu.app.presentation.extensions.*
+import com.muamuathu.app.presentation.extensions.getStartOfDay
+import com.muamuathu.app.presentation.extensions.indexOfDate
+import com.muamuathu.app.presentation.extensions.toHour
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 import de.charlex.compose.*
@@ -149,7 +148,6 @@ private fun Content(
     var showDeleteNoteDialog by remember { mutableStateOf(false) }
     var note: Note? by remember { mutableStateOf(null) }
     var enableSearchMode by remember { mutableStateOf(false) }
-    val dateString = selectDate.toDayOfMonth()
     val listState = rememberLazyListState()
     var query by remember { mutableStateOf("") }
 
@@ -198,11 +196,13 @@ private fun Content(
 
         ConstraintLayout(modifier = Modifier
             .fillMaxSize()
-            .padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 8.dp)
+            .padding(horizontal = 20.dp)
             .constrainAs(contentView) {
                 top.linkTo(topView.bottom)
+                bottom.linkTo(parent.bottom)
+                height = Dimension.fillToConstraints
             }) {
-            val (textDate, searchView, textTotalJournal, icCalendar, textYear, lazyRowCalendar, viewLine, lazyColumnNote) = createRefs()
+            val (calendarView, searchView, lazyColumnNote) = createRefs()
 
             if (enableSearchMode) {
                 SearchView(modifier = Modifier.constrainAs(searchView) {
@@ -221,103 +221,18 @@ private fun Content(
                         onSearchClose()
                     })
             } else {
-                TextButton(onClick = {
-                    onCalendar(selectDate)
-                }, modifier = Modifier.constrainAs(textDate) {
+                CalendarView(modifier = Modifier.constrainAs(calendarView) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
-                }) {
-                    Text(
-                        text = dateString,
-                        color = colorResource(R.color.gulf_blue),
-                        fontSize = 26.sp,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-
-                Text(
-                    text = String.format(
+                },
+                    textTotal = String.format(
                         "%d ${stringResource(R.string.txt_journals_today)}",
                         noteItemList.size
                     ),
-                    color = colorResource(R.color.storm_grey),
-                    fontSize = 13.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.constrainAs(textTotalJournal) {
-                        start.linkTo(textDate.start)
-                        top.linkTo(textDate.bottom, 8.dp)
-                    }
-                )
-
-                IconButton(onClick = {
-                    onCalendar(selectDate)
-                }, modifier = Modifier
-                    .size(33.dp)
-                    .background(
-                        shape = CircleShape,
-                        color = colorResource(R.color.catalina_blue)
-                    )
-                    .constrainAs(icCalendar) {
-                        top.linkTo(textDate.top)
-                        end.linkTo(parent.end, 6.dp)
-                        bottom.linkTo(textTotalJournal.bottom, 8.dp)
-                    }) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_calendar),
-                        contentDescription = "search"
-                    )
-                }
-
-                TextButton(
-                    onClick = {
-                        onCalendar(selectDate)
-                    },
-                    modifier = Modifier.constrainAs(textYear) {
-                        top.linkTo(icCalendar.top)
-                        bottom.linkTo(icCalendar.bottom)
-                        end.linkTo(icCalendar.start, 8.dp)
-                    },
-                ) {
-                    Text(
-                        text = selectDate.year.toString(),
-                        color = colorResource(id = R.color.gulf_blue),
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center,
-                    )
-
-                    Image(
-                        painter = painterResource(R.drawable.ic_down),
-                        contentDescription = "down",
-                        modifier = Modifier.align(alignment = Alignment.CenterVertically)
-                    )
-                }
-
-                LazyRow(
-                    state = listState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(lazyRowCalendar) {
-                            top.linkTo(textTotalJournal.bottom, 4.dp)
-                        },
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    itemsIndexed(dateList) { _, item ->
-                        ItemCalendar(date = item, select = item.isSameDay(selectDate)) {
-                            onSelectDate(item)
-                        }
-                    }
-                }
-
-                Image(painterResource(R.drawable.ic_bg_line_note_tab),
-                    contentDescription = "divider",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp)
-                        .constrainAs(viewLine) {
-                            top.linkTo(lazyRowCalendar.bottom)
-                        })
+                    dateList = dateList,
+                    onCalendar = onCalendar,
+                    onSelectDate = onSelectDate)
             }
-
 
             LazyColumn(
                 modifier = Modifier
@@ -326,9 +241,11 @@ private fun Content(
                         if (enableSearchMode) {
                             top.linkTo(searchView.bottom, 16.dp)
                         } else {
-                            top.linkTo(viewLine.bottom)
+                            top.linkTo(calendarView.bottom, 16.dp)
                         }
-                    }, verticalArrangement = Arrangement.spacedBy(14.dp)
+                        bottom.linkTo(parent.bottom)
+                        height = Dimension.fillToConstraints
+                    }, verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 itemsIndexed(noteItemList) { _, item ->
                     ItemNote(item,
@@ -355,46 +272,6 @@ private fun Content(
                     }) {
                 }
             }
-        }
-    }
-}
-
-
-@Composable
-private fun ItemCalendar(
-    date: ZonedDateTime,
-    select: Boolean,
-    onClickDate: () -> Unit,
-) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = if (select) colorResource(R.color.royal_blue_2) else Color.White),
-        modifier = Modifier
-            .height(64.dp)
-            .width(58.dp)
-            .clickable {
-                onClickDate()
-            },
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Text(
-                text = date.dayOfMonth.toString(),
-                color = if (select) Color.White else colorResource(R.color.gulf_blue),
-                fontSize = 22.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
-            )
-            Text(
-                text = date.toDayOfWeek(),
-                color = if (select) Color.White else colorResource(R.color.storm_grey),
-                fontSize = 12.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
-            )
         }
     }
 }
@@ -534,7 +411,7 @@ private fun ItemNote(
                                 }, horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(note.tags) {
-                                ItemTag(tag = it.name)
+                                ItemTagNote(tag = it.name)
                             }
                         }
                     }
@@ -628,73 +505,6 @@ private fun ItemNote(
                             height = Dimension.fillToConstraints
                         })
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun SearchView(
-    modifier: Modifier,
-    label: Int,
-    query: String,
-    onSearch: (String) -> Unit,
-    onClose: () -> Unit = {},
-) {
-    Column(modifier = modifier) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(2.dp),
-        ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                TextField(
-                    value = query,
-                    onValueChange = { value ->
-                        onSearch(value)
-                    },
-                    label = {
-                        Text(stringResource(label))
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = TextStyle(fontSize = 14.sp),
-                    leadingIcon = {
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = "",
-                            modifier = Modifier
-                                .padding(15.dp)
-                                .size(24.dp)
-                        )
-                    },
-                    trailingIcon = {
-                        if (query.isNotEmpty()) {
-                            IconButton(
-                                onClick = {
-                                    onClose()
-                                }
-                            ) {
-                                Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .padding(15.dp)
-                                        .size(24.dp)
-                                )
-                            }
-                        }
-                    },
-                    singleLine = true,
-                    shape = RoundedCornerShape(4.dp),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.White,
-                        textColor = colorResource(R.color.storm_grey),
-                        cursorColor = colorResource(R.color.storm_grey),
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    )
-                )
             }
         }
     }

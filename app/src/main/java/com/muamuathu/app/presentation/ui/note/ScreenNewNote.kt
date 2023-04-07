@@ -39,6 +39,7 @@ import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Action
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.Tag
+import com.muamuathu.app.presentation.common.ItemTagNote
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.formatFromPattern
@@ -499,7 +500,7 @@ private fun Content(
                                 .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             itemsIndexed(tags) { _, tag ->
-                                ItemTag(tag = tag.name)
+                                ItemTagNote(tag = tag.name)
                             }
                         }
                     }
@@ -546,19 +547,6 @@ private fun Content(
                 }
             }
         }
-    }
-}
-
-@Composable
-internal fun ItemTag(tag: String) {
-    Box(modifier = Modifier
-        .background(
-            color = colorResource(id = R.color.royal_blue_2),
-            shape = RoundedCornerShape(16.dp)
-        )
-        .padding(horizontal = 20.dp, vertical = 2.dp)
-    ) {
-        Text(tag, color = Color.White, textAlign = TextAlign.Center)
     }
 }
 
