@@ -86,22 +86,13 @@ private fun Content(
 ) {
     note?.apply {
         val pagerState = rememberPagerState(0)
-        ConstraintLayout(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .background(colorResource(R.color.alice_blue))
-        ) {
-
-            val (topView, pagerAvatar, pagerIndicator, contentView) = createRefs()
-
+        Column(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(70.dp)
                     .background(Color.White)
-                    .padding(horizontal = 12.dp)
-                    .constrainAs(topView) { top.linkTo(parent.top) },
+                    .padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -130,164 +121,173 @@ private fun Content(
                 }
             }
 
-            if (note.attachments.isNotEmpty()) {
-                HorizontalPager(state = pagerState,
-                    count = attachments.size,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(pagerAvatar) {
-                            top.linkTo(topView.bottom)
-                        }) { page ->
+            ConstraintLayout(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .background(colorResource(R.color.alice_blue))
+            ) {
+
+                val (topView, pagerAvatar, pagerIndicator, contentView) = createRefs()
+
+                if (note.attachments.isNotEmpty()) {
+                    HorizontalPager(state = pagerState,
+                        count = attachments.size,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .constrainAs(pagerAvatar) {
+                                top.linkTo(topView.bottom)
+                            }) { page ->
+                        Image(
+                            painter = rememberAsyncImagePainter(attachments[page]),
+                            contentDescription = "avatar",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(280.dp)
+                        )
+                    }
+
+                    PagerIndicator(attachments.size,
+                        pagerState.currentPage,
+                        modifier = Modifier.constrainAs(pagerIndicator) {
+                            bottom.linkTo(pagerAvatar.bottom, 20.dp)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        })
+                } else {
                     Image(
-                        painter = rememberAsyncImagePainter(attachments[page]),
+                        painter = painterResource(id = R.drawable.ic_image_default),
                         contentDescription = "avatar",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(280.dp)
+                            .constrainAs(pagerAvatar) {
+                                top.linkTo(topView.bottom)
+                            }
                     )
                 }
-
-                PagerIndicator(attachments.size,
-                    pagerState.currentPage,
-                    modifier = Modifier.constrainAs(pagerIndicator) {
-                        bottom.linkTo(pagerAvatar.bottom, 20.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    })
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_image_default),
-                    contentDescription = "avatar",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(280.dp)
-                        .constrainAs(pagerAvatar) {
-                            top.linkTo(topView.bottom)
-                        }
-                )
-            }
-
-            ConstraintLayout(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .constrainAs(contentView) {
-                    top.linkTo(pagerAvatar.bottom, 10.dp)
-                }) {
-                val (ctlTime, rowTag, textTitle, textContent, audioView, tagView, textAttachment, lazyRowAttachMent) = createRefs()
 
                 ConstraintLayout(modifier = Modifier
                     .fillMaxWidth()
-                    .constrainAs(ctlTime) {
-                        top.linkTo(parent.top)
+                    .padding(horizontal = 16.dp)
+                    .constrainAs(contentView) {
+                        top.linkTo(pagerAvatar.bottom, 10.dp)
                     }) {
-                    val (textDay, columnDate, columnTime) = createRefs()
-                    Text(text = ZonedDateTime.ofInstant(
-                        Instant.ofEpochMilli(note.dateTime), ZoneId.systemDefault()
-                    ).toDayOfMonth(),
-                        color = colorResource(R.color.royal_blue_2),
-                        fontSize = 34.sp,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.constrainAs(textDay) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            bottom.linkTo(parent.bottom)
-                        })
+                    val (ctlTime, rowTag, textTitle, textContent, audioView, tagView, textAttachment, lazyRowAttachMent) = createRefs()
 
-                    Column(
-                        modifier = Modifier.constrainAs(columnDate) {
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(textDay.end, 4.dp)
-                        },
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = dateTime.toMonth(),
-                            color = colorResource(R.color.catalina_blue),
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center,
-                        )
-
-                        Text(
-                            text = dateTime.toYearValue().toString(),
-                            color = colorResource(R.color.catalina_blue),
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-
-                    Column(
-                        modifier = Modifier.constrainAs(columnTime) {
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            end.linkTo(parent.end)
-                        },
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = dateTime.toDayOfWeekDetail(),
-                            color = colorResource(R.color.storm_grey),
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center,
-                        )
-
-                        Text(
-                            text = dateTime.toHour(),
-                            color = colorResource(R.color.storm_grey),
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-
-                Row(modifier = Modifier.constrainAs(rowTag) {
-                    top.linkTo(ctlTime.bottom)
-                    start.linkTo(parent.start)
-                }, verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_folder),
-                        contentDescription = "icon",
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .size(16.dp)
-                            .padding(4.dp)
-                            .clip(CircleShape)
-                            .background(Color(folder.color))
-                    )
-                    Text(
-                        text = "tag",
-                        color = colorResource(R.color.gulf_blue),
-                        fontSize = 11.sp,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-
-                Text(text = title,
-                    color = colorResource(R.color.gulf_blue),
-                    fontSize = 20.sp,
-                    modifier = Modifier.constrainAs(textTitle) {
-                        top.linkTo(rowTag.bottom, 12.dp)
-                        start.linkTo(parent.start)
-                    })
-
-                ExpandedText(text = content.substring(0, note.content.length / 2),
-                    expandedText = content,
-                    expandedTextButton = stringResource(R.string.txt_read_more),
-                    shrinkTextButton = stringResource(R.string.txt_read_less),
-                    expandedTextButtonStyle = TextStyle(colorResource(R.color.royal_blue)),
-                    shrinkTextButtonStyle = TextStyle(colorResource(R.color.royal_blue)),
-                    modifier = Modifier
+                    ConstraintLayout(modifier = Modifier
                         .fillMaxWidth()
-                        .constrainAs(textContent) {
-                            top.linkTo(textTitle.bottom)
+                        .constrainAs(ctlTime) {
+                            top.linkTo(parent.top)
+                        }) {
+                        val (textDay, columnDate, columnTime) = createRefs()
+                        Text(text = ZonedDateTime.ofInstant(
+                            Instant.ofEpochMilli(note.dateTime), ZoneId.systemDefault()
+                        ).toDayOfMonth(),
+                            color = colorResource(R.color.royal_blue_2),
+                            fontSize = 34.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.constrainAs(textDay) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                bottom.linkTo(parent.bottom)
+                            })
+
+                        Column(
+                            modifier = Modifier.constrainAs(columnDate) {
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(textDay.end, 4.dp)
+                            },
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = dateTime.toMonth(),
+                                color = colorResource(R.color.catalina_blue),
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center,
+                            )
+
+                            Text(
+                                text = dateTime.toYearValue().toString(),
+                                color = colorResource(R.color.catalina_blue),
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+
+                        Column(
+                            modifier = Modifier.constrainAs(columnTime) {
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                                end.linkTo(parent.end)
+                            },
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = dateTime.toDayOfWeekDetail(),
+                                color = colorResource(R.color.storm_grey),
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center,
+                            )
+
+                            Text(
+                                text = dateTime.toHour(),
+                                color = colorResource(R.color.storm_grey),
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    }
+
+                    Row(modifier = Modifier.constrainAs(rowTag) {
+                        top.linkTo(ctlTime.bottom)
+                        start.linkTo(parent.start)
+                    }, verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_folder),
+                            contentDescription = "icon",
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .padding(4.dp)
+                                .clip(CircleShape)
+                                .background(Color(folder.color))
+                        )
+                        Text(
+                            text = "tag",
+                            color = colorResource(R.color.gulf_blue),
+                            fontSize = 11.sp,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
+
+                    Text(text = title,
+                        color = colorResource(R.color.gulf_blue),
+                        fontSize = 20.sp,
+                        modifier = Modifier.constrainAs(textTitle) {
+                            top.linkTo(rowTag.bottom, 12.dp)
                             start.linkTo(parent.start)
                         })
+
+                    ExpandedText(text = content.substring(0, note.content.length / 2),
+                        expandedText = content,
+                        expandedTextButton = stringResource(R.string.txt_read_more),
+                        shrinkTextButton = stringResource(R.string.txt_read_less),
+                        expandedTextButtonStyle = TextStyle(colorResource(R.color.royal_blue)),
+                        shrinkTextButtonStyle = TextStyle(colorResource(R.color.royal_blue)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .constrainAs(textContent) {
+                                top.linkTo(textTitle.bottom)
+                                start.linkTo(parent.start)
+                            })
 
 //                Card(
 //                    modifier = Modifier
@@ -351,69 +351,73 @@ private fun Content(
 //                        }
 //                    }
 //                }
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(tagView) {
-                            top.linkTo(textContent.bottom, 16.dp)
-                            start.linkTo(parent.start)
-                        },
-                    elevation = CardDefaults.cardElevation(2.dp),
-                    colors = CardDefaults.cardColors(Color.White),
-                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .constrainAs(tagView) {
+                                top.linkTo(textContent.bottom, 16.dp)
+                                start.linkTo(parent.start)
+                            },
+                        elevation = CardDefaults.cardElevation(2.dp),
+                        colors = CardDefaults.cardColors(Color.White),
+                        shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
 
-                        Text(
-                            text = stringResource(R.string.txt_tags),
-                            color = colorResource(R.color.gulf_blue),
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(8.dp)
-                        )
+                            Text(
+                                text = stringResource(R.string.txt_tags),
+                                color = colorResource(R.color.gulf_blue),
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(8.dp)
+                            )
 
-                        LazyRow(
-                            modifier = Modifier
-                                .padding(
-                                    top = 4.dp, start = 8.dp, end = 8.dp, bottom = 10.dp
-                                )
-                                .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(tags) {
-                                ItemTagNote(tag = it.name)
+                            LazyRow(
+                                modifier = Modifier
+                                    .padding(
+                                        top = 4.dp, start = 8.dp, end = 8.dp, bottom = 10.dp
+                                    )
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(tags) {
+                                    ItemTagNote(tag = it.name)
+                                }
                             }
                         }
                     }
-                }
 
-                val limitItem: Int =
-                    (((LocalConfiguration.current.screenWidthDp) / 70) - 0.5f).toInt()
-                val redundantItem = attachments.size - limitItem
-                val redundantItemString = if (attachments.size > limitItem) {
-                    String.format(
-                        "%s (%d)", stringResource(R.string.txt_attachments), redundantItem
-                    )
-                } else {
-                    stringResource(R.string.txt_attachments)
-                }
-                Text(text = redundantItemString,
-                    color = colorResource(R.color.gulf_blue),
-                    fontSize = 16.sp,
-                    modifier = Modifier.constrainAs(textAttachment) {
-                        top.linkTo(tagView.bottom, 12.dp)
-                        start.linkTo(parent.start)
-                    })
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(lazyRowAttachMent) {
-                            top.linkTo(textAttachment.bottom, 12.dp)
-                            start.linkTo(topView.start)
-                        }, horizontalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    itemsIndexed(attachments.take(limitItem)) { index, path ->
-                        AttachmentsItem(
-                            path, index == limitItem - 1, redundantItem
-                        ) { onAttachments() }
+                    if (attachments.isNotEmpty()) {
+                        val limitItem: Int =
+                            (((LocalConfiguration.current.screenWidthDp) / 70) - 0.5f).toInt()
+                        val redundantItem = attachments.size - limitItem
+                        val redundantItemString = if (attachments.size > limitItem) {
+                            String.format(
+                                "%s (%d)", stringResource(R.string.txt_attachments), redundantItem
+                            )
+                        } else {
+                            stringResource(R.string.txt_attachments)
+                        }
+                        Text(text = redundantItemString,
+                            color = colorResource(R.color.gulf_blue),
+                            fontSize = 16.sp,
+                            modifier = Modifier.constrainAs(textAttachment) {
+                                top.linkTo(tagView.bottom, 12.dp)
+                                start.linkTo(parent.start)
+                            })
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .constrainAs(lazyRowAttachMent) {
+                                    top.linkTo(textAttachment.bottom, 12.dp)
+                                    start.linkTo(topView.start)
+                                }, horizontalArrangement = Arrangement.spacedBy(20.dp)
+                        ) {
+                            itemsIndexed(attachments.take(limitItem)) { index, path ->
+                                AttachmentsItem(
+                                    path, index == limitItem - 1, redundantItem
+                                ) { onAttachments() }
+                            }
+                        }
                     }
                 }
             }

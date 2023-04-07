@@ -230,6 +230,7 @@ private fun Content(
                         noteItemList.size
                     ),
                     dateList = dateList,
+                    lazyListState = listState,
                     onCalendar = onCalendar,
                     onSelectDate = onSelectDate)
             }

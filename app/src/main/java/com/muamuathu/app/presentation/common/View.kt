@@ -4,9 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -43,13 +43,13 @@ fun CalendarView(
     modifier: Modifier,
     textTotal: String,
     dateList: List<ZonedDateTime>,
+    lazyListState: LazyListState,
     onCalendar: (selectDate: ZonedDateTime?) -> Unit,
     onSelectDate: (selectDate: ZonedDateTime) -> Unit,
 ) {
 
     val selectDate by remember { mutableStateOf(ZonedDateTime.now()) }
     val dateString = selectDate.toDayOfMonth()
-    val listState = rememberLazyListState()
 
     ConstraintLayout(modifier = modifier) {
         val (textDate, textTotalJournal, icCalendar, textYear, lazyRowCalendar, viewLine) = createRefs()
@@ -122,7 +122,7 @@ fun CalendarView(
         }
 
         LazyRow(
-            state = listState,
+            state = lazyListState,
             modifier = Modifier
                 .fillMaxWidth()
                 .constrainAs(lazyRowCalendar) {

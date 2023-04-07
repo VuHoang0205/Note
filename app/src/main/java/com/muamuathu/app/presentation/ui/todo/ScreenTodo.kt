@@ -7,10 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
@@ -33,7 +31,10 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.EntityTask
-import com.muamuathu.app.presentation.extensions.*
+import com.muamuathu.app.presentation.common.CalendarView
+import com.muamuathu.app.presentation.extensions.indexOfDate
+import com.muamuathu.app.presentation.extensions.toDayOfWeek
+import com.muamuathu.app.presentation.extensions.toHour
 import com.muamuathu.app.presentation.ui.todo.viewModel.TodoViewModel
 import de.charlex.compose.*
 import org.threeten.bp.ZoneId
@@ -68,7 +69,9 @@ fun ScreenTodo() {
 
         }, onCalendar = {
             val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar
-            calendar.timeInMillis = it.toInstant().toEpochMilli()
+            if (it != null) {
+                calendar.timeInMillis = it.toInstant().toEpochMilli()
+            }
             val dialog = DatePickerDialog(
                 context,
                 { _, year, month, dayOfMonth ->
@@ -108,7 +111,7 @@ private fun Content(
     selectEntityTaskList: List<EntityTask>,
     onAdd: () -> Unit,
     onSort: () -> Unit,
-    onCalendar: (selectDate: ZonedDateTime) -> Unit,
+    onCalendar: (selectDate: ZonedDateTime?) -> Unit,
     onSelectDate: (selectDate: ZonedDateTime) -> Unit,
     onTaskItem: (selectEntityTask: EntityTask) -> Unit,
     onDeleteTaskItem: (selectEntityTask: EntityTask) -> Unit,
@@ -116,6 +119,8 @@ private fun Content(
 ) {
     val tabItems = listOf(Tabs.Tab1, Tabs.Tab2)
     var selectedTab by remember { mutableStateOf(0) }
+
+    val listState = rememberLazyListState()
     val tasks = if (selectedTab == TAB_1) {
         entityTaskList.filter {
             it.reminderType == 0
@@ -123,6 +128,14 @@ private fun Content(
     } else {
         entityTaskList.filter {
             it.reminderType == 1
+        }
+    }
+
+    val index = dateList.indexOfDate(selectDate)
+    if (index != -1) {
+        val offset = -LocalConfiguration.current.screenHeightDp / 2
+        LaunchedEffect(selectDate) {
+            listState.animateScrollToItem(index, offset)
         }
     }
 
@@ -176,109 +189,27 @@ private fun Content(
             .constrainAs(contentView) {
                 top.linkTo(topView.bottom)
             }) {
-            val (textDate, textTotalJournal, icCalendar, textYear, lazyRowCalendar, tabViewTask, lazyColumnTask) = createRefs()
+            val (calendarView, tabViewTask, lazyColumnTask) = createRefs()
 
-            val dateString: String = selectDate.toDayOfMonth()
-            TextButton(onClick = {
-                onCalendar(selectDate)
-            }, modifier = Modifier.constrainAs(textDate) {
-                start.linkTo(parent.start, 4.dp)
-                top.linkTo(parent.top)
-            }) {
-                Text(
-                    text = dateString,
-                    color = colorResource(R.color.gulf_blue),
-                    fontSize = 26.sp,
-                    textAlign = TextAlign.Center,
-                )
-            }
-
-            Text(
-                text = String.format(
+            CalendarView(modifier = Modifier.constrainAs(calendarView) {
+                start.linkTo(parent.start)
+                top.linkTo(topView.bottom)
+            },
+                textTotal = String.format(
                     "%d ${stringResource(R.string.txt_task_today)}",
                     tasks.size
                 ),
-                color = colorResource(R.color.storm_grey),
-                fontSize = 13.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.constrainAs(textTotalJournal) {
-                    start.linkTo(textDate.start)
-                    top.linkTo(textDate.bottom, 8.dp)
-                }
-            )
-
-            IconButton(onClick = {
-                onCalendar(selectDate)
-            }, modifier = Modifier
-                .size(33.dp)
-                .background(
-                    shape = CircleShape,
-                    color = colorResource(R.color.catalina_blue)
-                )
-                .constrainAs(icCalendar) {
-                    top.linkTo(textDate.top)
-                    end.linkTo(parent.end, 6.dp)
-                    bottom.linkTo(textTotalJournal.bottom)
-                }) {
-                Image(
-                    painter = painterResource(R.drawable.ic_calendar),
-                    contentDescription = "search"
-                )
-            }
-
-            TextButton(
-                onClick = {
-                    onCalendar(selectDate)
-                }, modifier = Modifier.constrainAs(textYear) {
-                    top.linkTo(icCalendar.top)
-                    bottom.linkTo(icCalendar.bottom)
-                    end.linkTo(icCalendar.start, 8.dp)
-                }) {
-                Text(
-                    text = selectDate.year.toString(),
-                    color = colorResource(R.color.gulf_blue),
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.Center,
-                )
-
-                Image(
-                    painter = painterResource(R.drawable.ic_down),
-                    contentDescription = "down",
-                    modifier = Modifier.align(alignment = Alignment.CenterVertically)
-                )
-            }
-
-            val listState = rememberLazyListState()
-            LazyRow(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(lazyRowCalendar) {
-                        top.linkTo(textTotalJournal.bottom, 16.dp)
-                    },
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                itemsIndexed(dateList) { _, item ->
-                    ItemCalendar(date = item, select = item.isSameDay(selectDate)) {
-                        onSelectDate(item)
-                    }
-                }
-            }
-
-            val index = dateList.indexOfDate(selectDate)
-            if (index != -1) {
-                val offset = -LocalConfiguration.current.screenHeightDp / 2
-                LaunchedEffect(selectDate) {
-                    listState.animateScrollToItem(index, offset)
-                }
-            }
+                dateList = dateList,
+                lazyListState = listState,
+                onCalendar = onCalendar,
+                onSelectDate = onSelectDate)
 
             TabRow(
                 selectedTabIndex = selectedTab,
                 modifier = Modifier
                     .fillMaxWidth()
                     .constrainAs(tabViewTask) {
-                        top.linkTo(lazyRowCalendar.bottom, 16.dp)
+                        top.linkTo(calendarView.bottom, 16.dp)
                     }, contentColor = colorResource(R.color.royal_blue),
                 containerColor = colorResource(R.color.alice_blue)
             ) {
