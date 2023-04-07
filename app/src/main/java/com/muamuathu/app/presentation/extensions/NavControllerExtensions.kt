@@ -5,10 +5,9 @@ import androidx.navigation.NavHostController
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.graph.NavTarget
 import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 fun NavController.navigateToWeb(url: String) {
-    val encodedUrl = URLEncoder.encode(url, StandardCharsets.UTF_8.toString())
+    val encodedUrl = URLEncoder.encode(url, Charsets.UTF_8.name())
     navigate(
         NavTarget.WebView.route.replace(
             "{${NavTarget.WEB_URL_KEY}}",
@@ -18,7 +17,7 @@ fun NavController.navigateToWeb(url: String) {
 }
 
 fun NavController.navigate(route: String, keyValue: Pair<String, String>) {
-    val encodedParam = URLEncoder.encode(keyValue.second, StandardCharsets.UTF_8.toString())
+    val encodedParam = URLEncoder.encode(keyValue.second,  Charsets.UTF_8.name())
     val newRoute = route.replace("{${keyValue.first}}", encodedParam)
     navigate(newRoute)
 }
