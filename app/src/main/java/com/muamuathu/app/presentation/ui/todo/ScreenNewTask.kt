@@ -1,4 +1,4 @@
-package com.muamuathu.app.presentation.ui.note
+package com.muamuathu.app.presentation.ui.todo
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -10,9 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,7 +20,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -36,25 +33,24 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
-import com.muamuathu.app.domain.model.Folder
-import com.muamuathu.app.domain.model.NoteAction
-import com.muamuathu.app.domain.model.Tag
-import com.muamuathu.app.presentation.common.ItemTagNote
+import com.muamuathu.app.domain.model.SubTask
+import com.muamuathu.app.domain.model.Task
+import com.muamuathu.app.domain.model.TaskAction
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.formatFromPattern
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.helper.observeResultFlow
-import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
+import com.muamuathu.app.presentation.ui.todo.viewModel.AddTodoViewModel
 import java.util.*
 
 @Composable
-fun ScreenNewNote() {
+fun ScreenNewTask() {
 
     val eventHandler = initEventHandler()
     val context = LocalContext.current as ComponentActivity
 
-    val viewModel = hiltViewModel<AddNoteViewModel>(context)
+    val viewModel = hiltViewModel<AddTodoViewModel>(context)
     val coroutineScope = rememberCoroutineScope()
 
     val calendar: Calendar by remember {
@@ -63,9 +59,7 @@ fun ScreenNewNote() {
     val dateTime by viewModel.dateTime.collectAsState()
     val title by viewModel.title.collectAsState()
     val content by viewModel.content.collectAsState()
-    val attachments by viewModel.attachments.collectAsState()
-    val tag by viewModel.tags.collectAsState()
-    val folder by viewModel.folder.collectAsState()
+    val task by viewModel.task.collectAsState()
     val enableSave by viewModel.isValidData.collectAsState()
 
     val monthString by remember { derivedStateOf { dateTime.formatFromPattern("dd MMMM") } }
@@ -84,11 +78,9 @@ fun ScreenNewNote() {
     Content(monthString,
         yearString,
         timeString,
-        folder = folder,
+        task = task,
         title = title,
         content = content,
-        attachments = attachments.list,
-        tags = tag.list,
         enableSave = enableSave,
         onInputTitle = {
             viewModel.updateTitle(it)
@@ -111,7 +103,7 @@ fun ScreenNewNote() {
                     calendar.set(Calendar.YEAR, year)
                     calendar.set(Calendar.MONTH, month)
                     calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                    viewModel.updateDateTime(calendar.timeInMillis)
+//                    viewModel.updateDateTime(calendar.timeInMillis)
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -127,34 +119,15 @@ fun ScreenNewNote() {
                 context, { _, hourOfDay, minute ->
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                     calendar.set(Calendar.MINUTE, minute)
-                    viewModel.updateDateTime(calendar.timeInMillis)
+//                    viewModel.updateDateTime(calendar.timeInMillis)
                 }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false
             )
             dialog.show()
         },
         onActionClick = {
-            when (it) {
-                NoteAction.OpenCamera -> {
-                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteCaptureImage))
-                }
-                NoteAction.OpenGallery -> {
-                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddImage))
-                }
-//                Action.AddTag -> {
-//                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddTags))
-//                }
-//                Action.AddAudio -> {}
-//                Action.OpenVideo -> {
-//                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddVideo))
-//                }
-                NoteAction.FileManager -> {
-                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NotePickImage))
-                }
-                NoteAction.DrawSketch -> {
-                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteDrawSketch))
-                }
-            }
-        }, onTageClick = {
+
+        },
+        onTageClick = {
             eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddTags))
         })
 }
@@ -166,11 +139,9 @@ private fun Content(
     monthString: String,
     yearString: String,
     timeString: String,
-    folder: Folder,
+    task: Task,
     title: String,
     content: String,
-    attachments: List<String>,
-    tags: List<Tag>,
     enableSave: Boolean,
     onInputTitle: (String) -> Unit,
     onInputContent: (String) -> Unit,
@@ -179,7 +150,7 @@ private fun Content(
     onCalendar: () -> Unit,
     onChooseFolder: () -> Unit,
     onTimePicker: () -> Unit,
-    onActionClick: (noteAction: NoteAction) -> Unit,
+    onActionClick: (action: TaskAction) -> Unit,
     onTageClick: () -> Unit,
 ) {
 
@@ -209,7 +180,7 @@ private fun Content(
             }
 
             Text(
-                text = stringResource(R.string.txt_add_new_journal),
+                text = stringResource(R.string.new_task),
                 color = colorResource(R.color.gulf_blue),
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center
@@ -321,8 +292,8 @@ private fun Content(
                             bottom.linkTo(parent.bottom)
                         })
 
-                Text(text = folder.name.ifEmpty { stringResource(R.string.txt_choose_folder) },
-                    color = colorResource(if (folder.name.isEmpty()) R.color.storm_grey else R.color.gulf_blue),
+                Text(text = task.name.ifEmpty { stringResource(R.string.txt_choose_folder) },
+                    color = colorResource(if (task.name.isEmpty()) R.color.storm_grey else R.color.gulf_blue),
                     fontSize = 14.sp,
                     textAlign = TextAlign.End,
                     modifier = Modifier.constrainAs(textChooseFolder) {
@@ -417,111 +388,67 @@ private fun Content(
                     fontSize = 14.sp, color = colorResource(R.color.storm_grey)
                 ),
             )
+        }
 
-            if (attachments.isNotEmpty()) {
-                val limitItem: Int =
-                    (((LocalConfiguration.current.screenWidthDp) / 70) - 0.5f).toInt()
-                val redundantItem = attachments.size - limitItem
-                val redundantItemString = if (attachments.size > limitItem) {
-                    String.format(
-                        "%s (%d)", stringResource(R.string.txt_attachments), redundantItem
-                    )
-                } else {
-                    stringResource(R.string.txt_attachments)
-                }
-                Text(text = redundantItemString,
-                    color = colorResource(R.color.gulf_blue),
-                    fontSize = 17.sp,
-                    modifier = Modifier.constrainAs(textAttachment) {
-                        top.linkTo(textContent.bottom, 12.dp)
-                        start.linkTo(parent.start, 16.dp)
-                    })
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(lazyRowAttachMent) {
-                            top.linkTo(textAttachment.bottom, 12.dp)
-                            start.linkTo(topView.start)
-                        }, horizontalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    itemsIndexed(attachments.take(limitItem)) { index, path ->
-                        AttachmentsItem(
-                            path, index == limitItem - 1, redundantItem
-                        ) { }
-                    }
-                }
-            }
-            Card(
+        if (task.subTasks.isNotEmpty()) {
+            Column(
                 modifier = Modifier
-                    .constrainAs(columnTag) {
-                        top.linkTo(
-                            if (attachments.isEmpty()) textContent.bottom else lazyRowAttachMent.bottom,
-                            12.dp
-                        )
-                        start.linkTo(parent.start, 16.dp)
-                        end.linkTo(parent.end, 16.dp)
-                        width = Dimension.fillToConstraints
-                    },
-                elevation = CardDefaults.cardElevation(2.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
+                    .padding(8.dp)
+                    .background(Color.White, shape = RoundedCornerShape(8.dp))
             ) {
-                ConstraintLayout(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .defaultMinSize(minHeight = 70.dp)
-                ) {
+                Text(
+                    text = stringResource(id = R.string.sub_tasks),
+                    color = colorResource(R.color.gulf_blue),
+                    fontSize = 14.sp
+                )
+                LazyRow(modifier = Modifier.fillMaxWidth()) {
+                    items(task.subTasks) {
+                        ItemSubTask(subTask = it) {
 
-                    val (textTag, lazyRow, btnAdd) = createRefs()
-
-                    Text(
-                        modifier = Modifier
-                            .constrainAs(textTag) {
-                                top.linkTo(parent.top)
-                                start.linkTo(parent.start)
-                                if (tags.isEmpty()) centerVerticallyTo(parent)
-                            }
-                            .padding(vertical = 10.dp, horizontal = 8.dp),
-                        text = stringResource(R.string.txt_tags),
-                        color = colorResource(R.color.gulf_blue),
-                        fontSize = 14.sp,
-                    )
-
-                    if (tags.isNotEmpty()) {
-                        LazyRow(
-                            modifier = Modifier
-                                .constrainAs(lazyRow) {
-                                    top.linkTo(textTag.bottom)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(btnAdd.start)
-                                    width = Dimension.fillToConstraints
-                                }
-                                .padding(vertical = 8.dp, horizontal = 8.dp)
-                                .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            itemsIndexed(tags) { _, tag ->
-                                ItemTagNote(tag = tag.name)
-                            }
                         }
                     }
+                }
+                Divider(color = Color.Gray, thickness = 0.5.dp)
 
-                    IconButton(
-                        modifier = Modifier
-                            .constrainAs(btnAdd) {
-                                centerVerticallyTo(parent)
-                                end.linkTo(parent.end)
-                            },
-                        onClick = { onTageClick() }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_plus),
-                            contentDescription = ""
-                        )
-                    }
+                TextButton(onClick = { /*TODO*/ }) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_plus),
+                        contentDescription = null
+                    )
+                    Text(
+                        text = stringResource(id = R.string.add_more_sub_task),
+                        color = colorResource(id = R.color.royal_blue),
+                        fontSize = 14.sp
+                    )
                 }
             }
         }
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .background(Color.White, shape = RoundedCornerShape(8.dp))
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.sub_tasks),
+                    color = colorResource(R.color.gulf_blue),
+                    fontSize = 14.sp
+                )
 
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_edit),
+                        contentDescription = null
+                    )
+                }
+            }
+
+            Row() {
+                
+            }
+        }
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -532,20 +459,49 @@ private fun Content(
                 )
                 .constrainAs(lazyRowBottom) {
                     bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start, 60.dp)
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
                 },
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            items(NoteAction.values()) {
+            items(TaskAction.values()) {
                 IconButton(onClick = {
                     onActionClick(it)
                 }, modifier = Modifier.padding(6.dp)) {
                     Image(painterResource(it.resource), contentDescription = null)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ItemSubTask(subTask: SubTask, onClose: () -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Image(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            painter = painterResource(id = R.drawable.ic_sub_task_small),
+            contentDescription = null
+        )
+
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterVertically)
+        ) {
+            Text(
+                text = subTask.name, color = colorResource(R.color.gulf_blue), fontSize = 14.sp
+            )
+            Text(
+                text = subTask.reminderTime.toString(),
+                color = colorResource(R.color.storm_grey),
+                fontSize = 12.sp
+            )
+        }
+        IconButton(onClick = { onClose() }) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_remove_subtask),
+                contentDescription = null
+            )
         }
     }
 }
@@ -557,11 +513,9 @@ private fun PreviewContent() {
         "",
         "",
         "",
-        Folder(),
+        Task(),
         "",
         "",
-        emptyList(),
-        emptyList(),
         true,
         {},
         {},

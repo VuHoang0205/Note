@@ -1,7 +1,6 @@
 package com.muamuathu.app.presentation.ui.todo
 
 import android.app.DatePickerDialog
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,7 +52,7 @@ sealed class Tabs(val tabName: Int) {
 fun ScreenTodo() {
 
     val context = LocalContext.current
-    val viewModel: TodoViewModel = hiltViewModel(context as ComponentActivity)
+    val viewModel: TodoViewModel = hiltViewModel()
 
     val dateList by viewModel.bindDateListState().collectAsState(initial = emptyList())
     val taskList by viewModel.bindTaskListState().collectAsState(initial = mutableListOf())
@@ -62,45 +61,38 @@ fun ScreenTodo() {
 
     val selectEntityTaskList: List<EntityTask> by remember { mutableStateOf(emptyList()) }
 
-    Content(selectDate, dateList, taskList, selectEntityTaskList,
-        onAdd = {
+    Content(selectDate, dateList, taskList, selectEntityTaskList, onAdd = {
 
-        }, onSort = {
+    }, onSort = {
 
-        }, onCalendar = {
-            val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar
-            if (it != null) {
-                calendar.timeInMillis = it.toInstant().toEpochMilli()
-            }
-            val dialog = DatePickerDialog(
-                context,
-                { _, year, month, dayOfMonth ->
-                    selectDate = ZonedDateTime.of(
-                        year,
-                        month,
-                        dayOfMonth,
-                        1,
-                        1,
-                        1,
-                        1,
-                        ZoneId.systemDefault()
-                    )
-                    viewModel.getCalenderList(selectDate)
-                },
-                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            dialog.show()
-        }, onSelectDate = {
-            selectDate = it
-            viewModel.getCalenderList(selectDate)
-        }, onTaskItem = {
+    }, onCalendar = {
+        val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar
+        if (it != null) {
+            calendar.timeInMillis = it.toInstant().toEpochMilli()
+        }
+        val dialog = DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                selectDate = ZonedDateTime.of(
+                    year, month, dayOfMonth, 1, 1, 1, 1, ZoneId.systemDefault()
+                )
+                viewModel.getCalenderList(selectDate)
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        dialog.show()
+    }, onSelectDate = {
+        selectDate = it
+        viewModel.getCalenderList(selectDate)
+    }, onTaskItem = {
 
-        }, onDeleteTaskItem = {
-            viewModel.removeTask(it)
-        }, onEditTaskItem = {
+    }, onDeleteTaskItem = {
+        viewModel.removeTask(it)
+    }, onEditTaskItem = {
 
-        })
+    })
 }
 
 @Composable
@@ -142,7 +134,6 @@ private fun Content(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 46.dp)
             .background(colorResource(R.color.alice_blue))
     ) {
         val (topView, contentView) = createRefs()
@@ -161,8 +152,7 @@ private fun Content(
                 onAdd()
             }) {
                 Image(
-                    painter = painterResource(R.drawable.ic_add),
-                    contentDescription = "menu"
+                    painter = painterResource(R.drawable.ic_add), contentDescription = "menu"
                 )
             }
 
@@ -177,32 +167,34 @@ private fun Content(
                 onSort()
             }) {
                 Image(
-                    painter = painterResource(R.drawable.ic_sort),
-                    contentDescription = "search"
+                    painter = painterResource(R.drawable.ic_sort), contentDescription = "search"
                 )
             }
         }
 
         ConstraintLayout(modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
             .constrainAs(contentView) {
                 top.linkTo(topView.bottom)
+                bottom.linkTo(parent.bottom)
+                height = Dimension.fillToConstraints
             }) {
             val (calendarView, tabViewTask, lazyColumnTask) = createRefs()
 
-            CalendarView(modifier = Modifier.constrainAs(calendarView) {
-                start.linkTo(parent.start)
-                top.linkTo(topView.bottom)
-            },
+            CalendarView(
+                modifier = Modifier.constrainAs(calendarView) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                },
                 textTotal = String.format(
-                    "%d ${stringResource(R.string.txt_task_today)}",
-                    tasks.size
+                    "%d ${stringResource(R.string.txt_task_today)}", tasks.size
                 ),
                 dateList = dateList,
                 lazyListState = listState,
                 onCalendar = onCalendar,
-                onSelectDate = onSelectDate)
+                onSelectDate = onSelectDate
+            )
 
             TabRow(
                 selectedTabIndex = selectedTab,
@@ -210,7 +202,8 @@ private fun Content(
                     .fillMaxWidth()
                     .constrainAs(tabViewTask) {
                         top.linkTo(calendarView.bottom, 16.dp)
-                    }, contentColor = colorResource(R.color.royal_blue),
+                    },
+                contentColor = colorResource(R.color.royal_blue),
                 containerColor = colorResource(R.color.alice_blue)
             ) {
                 tabItems.forEachIndexed { index, it ->
@@ -226,9 +219,7 @@ private fun Content(
                                     } else {
                                         tasks.size - tasks.size
                                     }
-                                ),
-                                fontSize = 13.sp,
-                                color = if (selectedTab == index) {
+                                ), fontSize = 13.sp, color = if (selectedTab == index) {
                                     colorResource(R.color.royal_blue)
                                 } else {
                                     colorResource(R.color.storm_grey)
@@ -241,13 +232,14 @@ private fun Content(
                 }
             }
 
-            LazyColumn(modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(lazyColumnTask) {
-                    top.linkTo(tabViewTask.bottom, 16.dp)
-                    bottom.linkTo(parent.bottom)
-                    height = Dimension.fillToConstraints
-                }, verticalArrangement = Arrangement.spacedBy(10.dp)
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(lazyColumnTask) {
+                        top.linkTo(tabViewTask.bottom, 16.dp)
+                        bottom.linkTo(parent.bottom)
+                        height = Dimension.fillToConstraints
+                    }, verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 itemsIndexed(tasks) { _, item ->
                     ItemTask(item, onTaskItem = {
@@ -284,8 +276,7 @@ fun ItemTask(
         isResetState = false
     }
 
-    RevealSwipe(
-        backgroundCardEndColor = Color.White,
+    RevealSwipe(backgroundCardEndColor = Color.White,
         directions = setOf(RevealDirection.EndToStart),
         maxRevealDp = 160.dp,
         state = swipeState,
@@ -300,7 +291,8 @@ fun ItemTask(
                     modifier = Modifier
                         .fillMaxHeight()
                         .background(colorResource(R.color.catalina_blue))
-                        .weight(1f), contentAlignment = Alignment.Center
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
                 ) {
                     IconButton(onClick = {
                         isResetState = true
@@ -316,7 +308,8 @@ fun ItemTask(
                     modifier = Modifier
                         .fillMaxHeight()
                         .background(colorResource(R.color.royal_blue))
-                        .weight(1f), contentAlignment = Alignment.Center
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
                 ) {
                     IconButton(onClick = {
                         isResetState = true
@@ -331,8 +324,7 @@ fun ItemTask(
             }
         }) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(2.dp),
             shape = RoundedCornerShape(8.dp),
             colors = CardDefaults.cardColors(Color.White)
@@ -379,7 +371,8 @@ fun ItemTask(
                         ) {
                             Image(
                                 painterResource(R.drawable.ic_priority),
-                                contentDescription = null, colorFilter = ColorFilter.tint(
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(
                                     colorResource(color)
                                 )
                             )
@@ -414,9 +407,7 @@ fun CircleCheckbox(
 ) {
 
     IconButton(
-        onClick = { onChecked() },
-        modifier = modifier,
-        enabled = enabled
+        onClick = { onChecked() }, modifier = modifier, enabled = enabled
     ) {
         Image(
             painter = if (selected) {
@@ -435,13 +426,16 @@ private fun ItemCalendar(
     onClickDate: () -> Unit,
 ) {
 
-    Card(colors = CardDefaults.cardColors(if (select) colorResource(R.color.royal_blue_2) else Color.White),
+    Card(
+        colors = CardDefaults.cardColors(if (select) colorResource(R.color.royal_blue_2) else Color.White),
         modifier = Modifier
             .height(64.dp)
             .width(58.dp)
             .clickable {
                 onClickDate()
-            }, shape = RoundedCornerShape(8.dp), elevation = CardDefaults.cardElevation(2.dp)
+            },
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(verticalArrangement = Arrangement.Center) {
             Text(
@@ -465,15 +459,5 @@ private fun ItemCalendar(
 @Preview
 @Composable
 private fun PreviewContent() {
-    Content(ZonedDateTime.now(),
-        emptyList(),
-        emptyList(),
-        emptyList(),
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {})
+    Content(ZonedDateTime.now(), emptyList(), emptyList(), emptyList(), {}, {}, {}, {}, {}, {}, {})
 }

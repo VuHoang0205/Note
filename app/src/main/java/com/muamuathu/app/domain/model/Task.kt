@@ -5,15 +5,16 @@ import com.muamuathu.app.R
 
 @Entity
 data class Task(
-    val taskId: Long,
-    val folderId: Long,
-    val name: String,
-    val description: String,
-    val startDate: Long,
-    val reminderTime: Long,
-    val reminderType: Int,
-    val reminderFrequent: Int,
-    val priority: Int,
+    val taskId: Long = 0L,
+    val folderId: Long = 0L,
+    val name: String = "",
+    val description: String = "",
+    val startDate: Long = 0L,
+    val reminderTime: Long = 0L,
+    val reminderType: Int = -1,
+    val reminderFrequent: Int = -1,
+    val priority: Int = -1,
+    var subTasks: List<SubTask> = listOf()
 ) {
     fun getPriorityTask(): PriorityTask {
         return when (priority) {

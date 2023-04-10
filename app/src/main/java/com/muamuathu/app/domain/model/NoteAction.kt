@@ -2,7 +2,7 @@ package com.muamuathu.app.domain.model
 
 import com.muamuathu.app.R
 
-enum class Action(val resource: Int) {
+enum class NoteAction(val resource: Int) {
     OpenCamera(R.drawable.ic_camera),
     OpenGallery(R.drawable.ic_gallery),
 //    AddTag(R.drawable.ic_tag),
