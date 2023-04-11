@@ -62,7 +62,7 @@ class AddNoteViewModel @Inject constructor(private val repo: JournalRepo) : View
                     && !TextUtils.isEmpty(folder.value.name)
                     && !TextUtils.isEmpty(title.value)
                     && !TextUtils.isEmpty(content.value)
-                    && tags.value.list.isNotEmpty()
+//                    && tags.value.list.isNotEmpty()
 
         )
     }
