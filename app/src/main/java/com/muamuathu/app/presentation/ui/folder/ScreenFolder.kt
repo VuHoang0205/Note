@@ -253,13 +253,12 @@ private fun ItemFolder(
         Divider(modifier = Modifier
             .width(4.dp)
             .clip(shape = RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp))
-            .background(Color(folder.color))
             .constrainAs(viewColor) {
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 height = Dimension.fillToConstraints
-            })
+            }, color = Color(folder.color))
     }
 }
 

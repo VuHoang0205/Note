@@ -18,7 +18,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -40,6 +39,7 @@ import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.NoteAction
 import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.common.ItemTagNote
+import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.formatFromPattern
@@ -190,39 +190,29 @@ private fun Content(
     ) {
         val (topView, contentView, lazyRowBottom) = createRefs()
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-                .background(Color.White)
-                .padding(horizontal = 12.dp)
-                .constrainAs(topView) { top.linkTo(parent.top) },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            IconButton(onClick = {
-                onClose()
-            }) {
+        TopBarBase(modifier = Modifier
+            .fillMaxWidth()
+            .height(70.dp)
+            .padding(horizontal = 12.dp)
+            .constrainAs(topView) { top.linkTo(parent.top) },
+            titleAlign = TextAlign.Center,
+            title = stringResource(R.string.txt_add_new_journal),
+            navigationIcon = {
+                IconButton(onClick = {
+                    onClose()
+                }) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = null
+                    )
+                }
+            }, listRightIcon = listOf(Triple({
                 Image(
-                    painter = painterResource(R.drawable.ic_close), contentDescription = "close"
+                    painter = painterResource(R.drawable.ic_save),
+                    contentDescription = "save"
                 )
-            }
-
-            Text(
-                text = stringResource(R.string.txt_add_new_journal),
-                color = colorResource(R.color.gulf_blue),
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center
-            )
-
-            IconButton(onClick = {
-                onSave()
-            }, enabled = enableSave, modifier = Modifier.alpha(if (enableSave) 1f else 0.5f)) {
-                Image(
-                    painter = painterResource(R.drawable.ic_save), contentDescription = "save"
-                )
-            }
-        }
+            }, { onSave() }, enableSave))
+        )
 
         ConstraintLayout(modifier = Modifier
             .fillMaxWidth()
@@ -236,7 +226,7 @@ private fun Content(
             Column(modifier = Modifier
                 .constrainAs(columnDate) {
                     top.linkTo(parent.top)
-                    start.linkTo(parent.start, 32.dp)
+                    start.linkTo(parent.start, 20.dp)
                 }
                 .padding(vertical = 10.dp)) {
                 Text(
@@ -257,7 +247,7 @@ private fun Content(
                 .constrainAs(imgCalendar) {
                     top.linkTo(columnDate.top)
                     bottom.linkTo(columnDate.bottom)
-                    start.linkTo(columnDate.end, 16.dp)
+                    start.linkTo(columnDate.end, 20.dp)
                 }
                 .size(24.dp)
                 .background(
@@ -315,7 +305,7 @@ private fun Content(
                     contentDescription = "folder",
                     colorFilter = ColorFilter.tint(colorResource(R.color.storm_grey)),
                     modifier = Modifier
-                        .padding(top = 24.dp, start = 16.dp, bottom = 24.dp)
+                        .padding(top = 24.dp, start = 20.dp, bottom = 24.dp)
                         .constrainAs(icFolder) {
                             top.linkTo(parent.top)
                             bottom.linkTo(parent.bottom)
@@ -434,7 +424,7 @@ private fun Content(
                     fontSize = 17.sp,
                     modifier = Modifier.constrainAs(textAttachment) {
                         top.linkTo(textContent.bottom, 12.dp)
-                        start.linkTo(parent.start, 16.dp)
+                        start.linkTo(parent.start, 20.dp)
                     })
                 LazyRow(
                     modifier = Modifier

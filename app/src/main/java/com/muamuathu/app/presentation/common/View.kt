@@ -52,7 +52,7 @@ fun CalendarView(
     val dateString = selectDate.toDayOfMonth()
 
     ConstraintLayout(modifier = modifier) {
-        val (textDate, textTotalJournal, icCalendar, textYear, lazyRowCalendar, viewLine) = createRefs()
+        val (textDate, textTotalJournal, icCalendar, textYear, lazyRowCalendar) = createRefs()
         TextButton(onClick = {
             onCalendar(selectDate)
         }, modifier = Modifier.constrainAs(textDate) {
@@ -73,7 +73,7 @@ fun CalendarView(
             fontSize = 13.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.constrainAs(textTotalJournal) {
-                start.linkTo(textDate.start)
+                start.linkTo(textDate.start,8.dp)
                 top.linkTo(textDate.bottom, 8.dp)
             }
         )

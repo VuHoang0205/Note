@@ -186,12 +186,12 @@ private fun Content(
                         contentDescription = null
                     )
                 }
-            }, listRightIcon = if (enableSearchMode) null else listOf(Pair({
+            }, listRightIcon = if (enableSearchMode) null else listOf(Triple({
                 Image(
                     painter = painterResource(R.drawable.ic_search),
                     contentDescription = "search"
                 )
-            }, { enableSearchMode = true }))
+            }, { enableSearchMode = true }, null))
         )
 
         ConstraintLayout(modifier = Modifier
@@ -498,13 +498,12 @@ private fun ItemNote(
                                 bottomStartPercent = 8
                             )
                         )
-                        .background(Color(note.folder.color))
                         .constrainAs(viewLine1) {
                             start.linkTo(parent.start)
                             top.linkTo(parent.top)
                             bottom.linkTo(parent.bottom)
                             height = Dimension.fillToConstraints
-                        })
+                        }, color = Color(note.folder.color))
                 }
             }
         }

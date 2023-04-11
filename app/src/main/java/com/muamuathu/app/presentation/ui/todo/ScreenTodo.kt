@@ -31,9 +31,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.EntityTask
 import com.muamuathu.app.presentation.common.CalendarView
+import com.muamuathu.app.presentation.event.NavEvent
+import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.indexOfDate
 import com.muamuathu.app.presentation.extensions.toDayOfWeek
 import com.muamuathu.app.presentation.extensions.toHour
+import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.ui.todo.viewModel.TodoViewModel
 import de.charlex.compose.*
 import org.threeten.bp.ZoneId
@@ -53,7 +56,7 @@ fun ScreenTodo() {
 
     val context = LocalContext.current
     val viewModel: TodoViewModel = hiltViewModel()
-
+    val eventHandler = initEventHandler()
     val dateList by viewModel.bindDateListState().collectAsState(initial = emptyList())
     val taskList by viewModel.bindTaskListState().collectAsState(initial = mutableListOf())
 
@@ -61,38 +64,39 @@ fun ScreenTodo() {
 
     val selectEntityTaskList: List<EntityTask> by remember { mutableStateOf(emptyList()) }
 
-    Content(selectDate, dateList, taskList, selectEntityTaskList, onAdd = {
+    Content(selectDate, dateList, taskList, selectEntityTaskList,
+        onAdd = {
+            eventHandler.postNavEvent(NavEvent.Action(NavTarget.TodoAdd))
+        }, onSort = {
 
-    }, onSort = {
+        }, onCalendar = {
+            val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar
+            if (it != null) {
+                calendar.timeInMillis = it.toInstant().toEpochMilli()
+            }
+            val dialog = DatePickerDialog(
+                context,
+                { _, year, month, dayOfMonth ->
+                    selectDate = ZonedDateTime.of(
+                        year, month, dayOfMonth, 1, 1, 1, 1, ZoneId.systemDefault()
+                    )
+                    viewModel.getCalenderList(selectDate)
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            )
+            dialog.show()
+        }, onSelectDate = {
+            selectDate = it
+            viewModel.getCalenderList(selectDate)
+        }, onTaskItem = {
 
-    }, onCalendar = {
-        val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar
-        if (it != null) {
-            calendar.timeInMillis = it.toInstant().toEpochMilli()
-        }
-        val dialog = DatePickerDialog(
-            context,
-            { _, year, month, dayOfMonth ->
-                selectDate = ZonedDateTime.of(
-                    year, month, dayOfMonth, 1, 1, 1, 1, ZoneId.systemDefault()
-                )
-                viewModel.getCalenderList(selectDate)
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        dialog.show()
-    }, onSelectDate = {
-        selectDate = it
-        viewModel.getCalenderList(selectDate)
-    }, onTaskItem = {
+        }, onDeleteTaskItem = {
+            viewModel.removeTask(it)
+        }, onEditTaskItem = {
 
-    }, onDeleteTaskItem = {
-        viewModel.removeTask(it)
-    }, onEditTaskItem = {
-
-    })
+        })
 }
 
 @Composable

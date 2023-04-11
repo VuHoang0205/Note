@@ -9,28 +9,28 @@ sealed class TopBarEvent {
     class Title(
         val title: String,
         val titleAlign: TextAlign = TextAlign.Center,
-        val rightList: List<Pair<@Composable () -> Unit, () -> Unit>> = emptyList()
+        val rightList: List<Triple<@Composable () -> Unit, () -> Unit, Boolean?>> = emptyList(),
     ) : TopBarEvent()
 
     class Back(
         val title: String,
         val titleAlign: TextAlign = TextAlign.Center,
-        val rightList: List<Pair<@Composable () -> Unit, () -> Unit>> = emptyList(),
-        val onBack: () -> Unit
+        val rightList: List<Triple<@Composable () -> Unit, () -> Unit, Boolean?>> = emptyList(),
+        val onBack: () -> Unit,
     ) : TopBarEvent()
 
     class Close(
         val title: String,
         val titleAlign: TextAlign = TextAlign.Center,
-        val rightList: List<Pair<@Composable () -> Unit, () -> Unit>> = emptyList(),
-        val onClose: () -> Unit
+        val rightList: List<Triple<@Composable () -> Unit, () -> Unit, Boolean?>> = emptyList(),
+        val onClose: () -> Unit,
     ) : TopBarEvent()
 
     class Home(
         val title: String,
         val titleAlign: TextAlign = TextAlign.Center,
-        val rightList: List<Pair<@Composable () -> Unit, () -> Unit>> = emptyList(),
-        val onHome: () -> Unit
+        val rightList: List<Triple<@Composable () -> Unit, () -> Unit, Boolean?>> = emptyList(),
+        val onHome: () -> Unit,
     ) : TopBarEvent()
 }
 

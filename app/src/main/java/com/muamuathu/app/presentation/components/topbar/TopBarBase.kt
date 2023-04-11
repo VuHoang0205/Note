@@ -25,7 +25,7 @@ fun TopBarBase(
     title: String,
     titleAlign: TextAlign,
     navigationIcon: @Composable (() -> Unit)?,
-    listRightIcon: (List<Pair<@Composable () -> Unit, () -> Unit>>)?,
+    listRightIcon: (List<Triple<@Composable () -> Unit, () -> Unit, Boolean?>>)?,
     backgroundColor: Color = Color.White,
 ) {
     TopAppBar(
@@ -89,7 +89,7 @@ fun TopBarBase(
                     bottom.linkTo(parent.bottom)
                 }) {
                     items(listRightIcon) {
-                        IconButton(onClick = it.second) {
+                        IconButton(onClick = it.second, enabled = it.third ?: true) {
                             it.first.invoke()
                         }
                     }
