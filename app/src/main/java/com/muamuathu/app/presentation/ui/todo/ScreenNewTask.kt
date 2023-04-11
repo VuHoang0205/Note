@@ -103,7 +103,7 @@ fun ScreenNewTask() {
                     calendar.set(Calendar.YEAR, year)
                     calendar.set(Calendar.MONTH, month)
                     calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-//                    viewModel.updateDateTime(calendar.timeInMillis)
+                    viewModel.updateDateTime(calendar.timeInMillis)
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -119,13 +119,16 @@ fun ScreenNewTask() {
                 context, { _, hourOfDay, minute ->
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                     calendar.set(Calendar.MINUTE, minute)
-//                    viewModel.updateDateTime(calendar.timeInMillis)
+                    viewModel.updateDateTime(calendar.timeInMillis)
                 }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false
             )
             dialog.show()
         },
         onActionClick = {
-
+            when (it) {
+                TaskAction.AddSubTask -> eventHandler.postNavEvent(NavEvent.Action(NavTarget.TodoAddSubTask))
+                else -> {}
+            }
         },
         onTageClick = {
             eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddTags))
@@ -467,7 +470,7 @@ private fun Content(
 }
 
 @Composable
-private fun ItemSubTask(subTask: SubTask, onClose: () -> Unit) {
+fun ItemSubTask(subTask: SubTask, onClose: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Image(
             modifier = Modifier.align(Alignment.CenterVertically),

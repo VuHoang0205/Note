@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.muamuathu.app.presentation.ui.note
+package com.muamuathu.app.presentation.ui.todo
 
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
@@ -31,28 +31,26 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
-import com.muamuathu.app.domain.model.Tag
-import com.muamuathu.app.presentation.common.ItemTag
+import com.muamuathu.app.domain.model.SubTask
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
-import com.muamuathu.app.presentation.helper.observeResultFlow
-import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
-import com.muamuathu.app.presentation.ui.note.viewModel.TagViewModel
+import com.muamuathu.app.presentation.ui.todo.viewModel.AddTodoViewModel
+import com.muamuathu.app.presentation.ui.todo.viewModel.SubTasksViewModel
 
 @Composable
-fun ScreenAddTag() {
+fun ScreenAddSubTask() {
     val eventHandler = initEventHandler()
 
-    val viewModel: TagViewModel = hiltViewModel()
-    val addNoteViewModel = hiltViewModel<AddNoteViewModel>(LocalContext.current as ComponentActivity)
+    val addNoteViewModel = hiltViewModel<AddTodoViewModel>(LocalContext.current as ComponentActivity)
+    val subTasksViewModel = hiltViewModel<SubTasksViewModel>()
     val coroutineScope = rememberCoroutineScope()
-    val tagSelectedList = remember { mutableStateListOf<Tag>() }
-    val tagList by viewModel.tagListState.collectAsState()
+    val tagSelectedList = remember { mutableStateListOf<SubTask>() }
+    val taskList by subTasksViewModel.subTaskFlow.collectAsState()
 
     Content(
-        tagSelectedList = tagSelectedList,
-        tagList = tagList,
+        taskSelectedList = tagSelectedList,
+        taskList = taskList,
         onItemClick = {
             if (tagSelectedList.contains(it)) {
                 tagSelectedList.remove(it)
@@ -64,25 +62,25 @@ fun ScreenAddTag() {
             eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         },
         onAdd = {
-            coroutineScope.observeResultFlow(viewModel.saveTag(Tag(name = it)))
+            subTasksViewModel.saveSubTask(SubTask())
         }, onDone = {
-            addNoteViewModel.updateTag(it)
             eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         })
 }
 
 @Composable
 private fun Content(
-    tagSelectedList: MutableList<Tag>,
-    tagList: List<Tag>,
-    onItemClick: (Tag) -> Unit,
+    taskSelectedList: MutableList<SubTask>,
+    taskList: List<SubTask>,
+    onItemClick: (SubTask) -> Unit,
     onClose: () -> Unit,
     onAdd: (String) -> Unit,
-    onDone: (MutableList<Tag>) -> Unit,
+    onDone: (MutableList<SubTask>) -> Unit,
 ) {
-    var tagName by remember { mutableStateOf("") }
+
+    var subTaskName by remember { mutableStateOf("") }
     val stateVisibility by remember {
-        derivedStateOf { tagName.isNotEmpty() }
+        derivedStateOf { subTaskName.isNotEmpty() }
     }
 
     ConstraintLayout(modifier = Modifier
@@ -90,7 +88,7 @@ private fun Content(
         .background(colorResource(R.color.alice_blue))) {
         val (topView, contentView) = createRefs()
 
-        TopBarBase(title = stringResource(id = R.string.tags),
+        TopBarBase(title = stringResource(id = R.string.sub_tasks),
             titleAlign = TextAlign.Center,
             navigationIcon = {
                 IconButton(onClick = {
@@ -118,7 +116,7 @@ private fun Content(
                     start.linkTo(lazyColumnFolder.start)
                 })
 
-            if (tagName.isNotEmpty()) {
+            if (subTaskName.isNotEmpty()) {
                 AnimatedVisibility(visible = stateVisibility, modifier = Modifier
                     .height(40.dp)
                     .width(100.dp)
@@ -128,8 +126,8 @@ private fun Content(
                         end.linkTo(lazyColumnFolder.end)
                     }) {
                     Button(onClick = {
-                        onAdd(tagName)
-                        tagName = ""
+                        onAdd(subTaskName)
+                        subTaskName = ""
                     }, shape = RoundedCornerShape(4.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.royal_blue))
                     ) {
@@ -145,13 +143,13 @@ private fun Content(
             }
 
             TextField(
-                value = tagName,
+                value = subTaskName,
                 placeholder = {
-                    Text(stringResource(R.string.add_new_tag), color = colorResource(
+                    Text(stringResource(R.string.add_sub_task), color = colorResource(
                         R.color.storm_grey))
                 },
                 onValueChange = {
-                    tagName = it
+                    subTaskName = it
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -192,22 +190,22 @@ private fun Content(
                 height = Dimension.fillToConstraints
             },
                 horizontalAlignment = Alignment.CenterHorizontally) {
-                itemsIndexed(tagList) { _, item ->
-                    ItemTag(item, tagSelectedList) {
-                        onItemClick(it)
+                itemsIndexed(taskList) { _, item ->
+                    ItemSubTask(item) {
+                        onItemClick(item)
                     }
                 }
             }
 
             TextButton(
-                enabled = tagSelectedList.isNotEmpty(),
+                enabled = taskSelectedList.isNotEmpty(),
                 onClick = {
-                    onDone(tagSelectedList)
+                    onDone(taskSelectedList)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .alpha(if (tagSelectedList.isNotEmpty()) 1f else 0.5f)
+                    .alpha(if (taskSelectedList.isNotEmpty()) 1f else 0.5f)
                     .background(
                         colorResource(R.color.royal_blue),
                         RoundedCornerShape(4.dp)

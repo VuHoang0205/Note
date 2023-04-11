@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TagViewModel @Inject constructor(private val repo: JournalRepo) : BaseViewModel() {
 
-    val entityTagListState: MutableStateFlow<List<Tag>> = MutableStateFlow(emptyList())
+    val tagListState: MutableStateFlow<List<Tag>> = MutableStateFlow(emptyList())
 
     init {
         loadTags()
@@ -24,7 +24,7 @@ class TagViewModel @Inject constructor(private val repo: JournalRepo) : BaseView
 
     private fun loadTags() = ioLaunch {
         repo.loadTags().collect {
-                entityTagListState.value = it
+                tagListState.value = it
             }
     }
 }

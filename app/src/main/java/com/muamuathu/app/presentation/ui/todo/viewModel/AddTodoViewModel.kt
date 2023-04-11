@@ -3,6 +3,7 @@ package com.muamuathu.app.presentation.ui.todo.viewModel
 import android.text.TextUtils
 import androidx.lifecycle.ViewModel
 import com.muamuathu.app.data.repository.JournalRepo
+import com.muamuathu.app.domain.model.SubTask
 import com.muamuathu.app.domain.model.Task
 import com.muamuathu.app.presentation.helper.ResultWrapper
 import com.muamuathu.app.presentation.helper.resultFlow
@@ -20,6 +21,8 @@ class AddTodoViewModel @Inject constructor(private val repo: JournalRepo) : View
     internal val content = MutableStateFlow("")
     internal val isValidData = MutableStateFlow(false)
 
+    val subTagListState: MutableStateFlow<List<SubTask>> = MutableStateFlow(emptyList())
+
     fun updateTitle(title: String) {
         this.title.tryEmit(title)
         checkValidData()
@@ -27,6 +30,11 @@ class AddTodoViewModel @Inject constructor(private val repo: JournalRepo) : View
 
     fun updateContent(content: String) {
         this.content.tryEmit(content)
+        checkValidData()
+    }
+
+    fun updateDateTime(time: Long) {
+        dateTime.tryEmit(time)
         checkValidData()
     }
 

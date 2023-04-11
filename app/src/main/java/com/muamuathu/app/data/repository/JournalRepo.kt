@@ -2,6 +2,7 @@ package com.muamuathu.app.data.repository
 
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.Note
+import com.muamuathu.app.domain.model.SubTask
 import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.helper.ResultWrapper
 import kotlinx.coroutines.flow.Flow
@@ -17,4 +18,6 @@ interface JournalRepo {
     suspend fun saveNote(note: Note): ResultWrapper<Long>
     suspend fun deleteNote(note: Note): ResultWrapper<Unit>
     suspend fun getNoteById(idNote: Long): ResultWrapper<Note>
+    suspend fun getSubTasks(): Flow<List<SubTask>>
+    suspend fun saveSubTask(subTask: SubTask): ResultWrapper<Long>
 }

@@ -41,6 +41,7 @@ sealed class NavTarget(val route: String) {
     object GraphTodo : NavTarget("todo/graph")
     object Todo : NavTarget("todo")
     object TodoAdd : NavTarget("todo/add")
+    object TodoAddSubTask : NavTarget("todo/add/subtask")
 
 
     object WebView : NavTarget("webView/{$WEB_URL_KEY}")

@@ -9,5 +9,6 @@ data class EntitySubTask(
     val subTaskId: Long = 0,
     val taskId: Long,
     val name: String,
+    val reminderTime: Long,
     val isDone: Boolean
 )

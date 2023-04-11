@@ -5,6 +5,7 @@ import com.muamuathu.app.domain.mapper.toDomainModel
 import com.muamuathu.app.domain.mapper.toEntityModel
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.Note
+import com.muamuathu.app.domain.model.SubTask
 import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.helper.safeDataBaseCall
 import kotlinx.coroutines.flow.Flow
@@ -50,5 +51,13 @@ class JournalRepoImpl @Inject constructor(private val database: JournalDatabase)
 
     override suspend fun getNoteById(idNote: Long) = safeDataBaseCall {
         database.daoNote().getNoteByID(idNote).toDomainModel()
+    }
+
+    override suspend fun getSubTasks(): Flow<List<SubTask>> {
+        return database.daoSubTask().getSubTasks().map { it.map { it.toDomainModel() } }
+    }
+
+    override suspend fun saveSubTask(subTask: SubTask) = safeDataBaseCall {
+        database.daoSubTask().insert(subTask.toEntityModel())
     }
 }
