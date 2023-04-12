@@ -5,20 +5,20 @@ import com.muamuathu.app.data.entity.embedded.EntityFolderInfo
 import com.muamuathu.app.domain.model.Folder
 
 fun EntityFolderInfo.toDomainModel() = Folder(
-    folderId = folder.folderId,
+    folderId = folder.id,
     name = folder.name,
     color = folder.color,
     noteList = notes.map { it.toDomainModel() },
 )
 
 fun EntityFolder.toDomainModel() = Folder(
-    folderId = folderId,
+    folderId = id,
     name = name,
     color = color,
 )
 
 fun Folder.toEntityModel() = EntityFolder(
-    folderId = folderId,
+    id = folderId,
     name = name,
     color = color
 )

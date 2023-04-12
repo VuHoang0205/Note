@@ -46,7 +46,7 @@ object MockData {
             val random = Random()
             (0..20).toList().forEach {
                 entityFolderList.add(EntityFolder(
-                    folderId = random.nextLong(),
+                    id = random.nextLong(),
                     name = "$it+Fun day with Friends",
                     color = 1
                 ))

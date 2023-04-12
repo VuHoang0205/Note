@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class EntitySubTask(
     @PrimaryKey(autoGenerate = true)
-    val subTaskId: Long = 0,
+    val id: Long = 0,
     val taskId: Long,
     val name: String,
     val reminderTime: Long,

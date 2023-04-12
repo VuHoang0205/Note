@@ -4,7 +4,7 @@ import com.muamuathu.app.data.entity.EntitySubTask
 import com.muamuathu.app.domain.model.SubTask
 
 fun EntitySubTask.toDomainModel() = SubTask(
-    subTaskId = subTaskId,
+    subTaskId = id,
     taskId = taskId,
     name = name,
     reminderTime = reminderTime,
@@ -12,7 +12,7 @@ fun EntitySubTask.toDomainModel() = SubTask(
 )
 
 fun SubTask.toEntityModel() = EntitySubTask(
-    subTaskId = subTaskId,
+    id = subTaskId,
     taskId = taskId,
     name = name,
     reminderTime = reminderTime,

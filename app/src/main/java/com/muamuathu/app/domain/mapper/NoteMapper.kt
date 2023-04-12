@@ -5,7 +5,7 @@ import com.muamuathu.app.data.entity.embedded.EntityNoteInfo
 import com.muamuathu.app.domain.model.Note
 
 fun EntityNoteInfo.toDomainModel() = Note(
-    noteId = note.noteId,
+    noteId = note.id,
     title = note.title,
     content = note.content,
     dateTime = note.dateTime,
@@ -15,7 +15,7 @@ fun EntityNoteInfo.toDomainModel() = Note(
 )
 
 fun EntityNote.toDomainModel() = Note(
-    noteId = noteId,
+    noteId = id,
     title = title,
     content = content,
     dateTime = dateTime,
@@ -23,7 +23,7 @@ fun EntityNote.toDomainModel() = Note(
 )
 
 fun Note.toEntityModel() = EntityNote(
-    noteId = noteId,
+    id = noteId,
     title = title,
     content = content,
     dateTime = dateTime,

@@ -9,6 +9,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 abstract class DaoSubTask : DaoBase<EntitySubTask>() {
     @Transaction
-    @Query("SELECT * FROM EntitySubTask ORDER BY subTaskId DESC ")
+    @Query("SELECT * FROM EntitySubTask ORDER BY id DESC ")
     abstract fun getSubTasks(): Flow<List<EntitySubTask>>
 }

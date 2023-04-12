@@ -11,6 +11,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 abstract class DaoFolder : DaoBase<EntityFolder>() {
     @Transaction
-    @Query("SELECT * FROM EntityFolder ORDER BY folderId DESC ")
+    @Query("SELECT * FROM EntityFolder ORDER BY id DESC ")
     abstract fun getFolders(): Flow<List<EntityFolderInfo>>
 }

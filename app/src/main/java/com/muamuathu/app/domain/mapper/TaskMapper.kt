@@ -4,7 +4,7 @@ import com.muamuathu.app.data.entity.EntityTask
 import com.muamuathu.app.domain.model.Task
 
 fun EntityTask.toDomainModel() = Task(
-    taskId = taskId,
+    taskId = id,
     folderId = noteId,
     name = name,
     description = description,
@@ -16,7 +16,7 @@ fun EntityTask.toDomainModel() = Task(
 )
 
 fun Task.toEntityModel() = EntityTask(
-    taskId = taskId,
+    id = taskId,
     noteId = folderId,
     name = name,
     description = description,

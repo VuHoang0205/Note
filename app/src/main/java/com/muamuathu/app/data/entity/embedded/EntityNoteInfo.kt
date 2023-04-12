@@ -10,16 +10,24 @@ data class EntityNoteInfo(
     val note: EntityNote,
 
     @Relation(
-        parentColumn = "noteId",
-        entityColumn = "tagId",
-        associateBy = Junction(LinkNoteTag::class),
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(
+            LinkNoteTag::class,
+            parentColumn = "noteId",
+            entityColumn = "tagId",
+        ),
     )
     val tags: List<EntityTag>,
 
     @Relation(
-        parentColumn = "noteId",
-        entityColumn = "folderId",
-        associateBy = Junction(LinkFolderNote::class)
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(
+            LinkFolderNote::class,
+            parentColumn = "noteId",
+            entityColumn = "folderId",
+        )
     )
     val folder: EntityFolder,
 )

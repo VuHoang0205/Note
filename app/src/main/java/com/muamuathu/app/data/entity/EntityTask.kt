@@ -1,23 +1,13 @@
 package com.muamuathu.app.data.entity
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.muamuathu.app.R
 
-@Entity(
-    indices = [Index("noteId"), Index("taskId", unique = true)],
-    foreignKeys = [ForeignKey(
-        entity = EntityNote::class,
-        parentColumns = ["noteId"],
-        childColumns = ["noteId"],
-        onDelete = ForeignKey.CASCADE,
-    )]
-)
+@Entity
 data class EntityTask(
     @PrimaryKey(autoGenerate = true)
-    val taskId: Long,
+    val id: Long,
     val noteId: Long,
     val name: String,
     val description: String,

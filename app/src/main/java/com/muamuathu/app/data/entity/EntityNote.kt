@@ -7,7 +7,7 @@ import com.muamuathu.app.presentation.extensions.getStartOfDay
 @Entity
 data class EntityNote(
     @PrimaryKey(autoGenerate = true)
-    val noteId: Long,
+    val id: Long,
     val title: String,
     val content: String,
     val dateTime: Long,

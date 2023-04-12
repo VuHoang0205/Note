@@ -11,10 +11,10 @@ import com.muamuathu.app.domain.model.Note
 @Dao
 abstract class DaoNote : DaoBase<EntityNote>() {
     @Transaction
-    @Query("SELECT * FROM EntityNote ORDER BY noteId DESC ")
+    @Query("SELECT * FROM EntityNote ORDER BY id DESC ")
     abstract fun getNotes(): List<EntityNoteInfo>
 
-    @Query("select MAX(noteId) from EntityNote")
+    @Query("select MAX(id) from EntityNote")
     abstract fun getMaxId(): Long
 
     @Transaction
@@ -37,10 +37,10 @@ abstract class DaoNote : DaoBase<EntityNote>() {
     abstract fun insertLinkNoteTag(linkNoteTags: List<LinkNoteTag>)
 
     @Transaction
-    @Query("SELECT * FROM EntityNote AS N INNER JOIN LinkFolderNote AS F ON N.noteId==F.noteId LEFT JOIN LinkNoteTag AS T ON N.noteId==T.noteId WHERE N.startOfDay = :time GROUP BY N.noteId ORDER BY noteId DESC")
+    @Query("SELECT * FROM EntityNote AS N INNER JOIN LinkFolderNote AS F ON N.id==F.noteId LEFT JOIN LinkNoteTag AS T ON N.id==T.noteId WHERE N.startOfDay = :time GROUP BY N.id ORDER BY id DESC")
     abstract fun getNotes(time: Long): List<EntityNoteInfo>
 
     @Transaction
-    @Query("SELECT * FROM EntityNote AS N INNER JOIN LinkFolderNote AS F ON N.noteId==F.noteId LEFT JOIN LinkNoteTag AS T ON N.noteId==T.noteId WHERE N.noteId = :id  ORDER BY noteId DESC")
+    @Query("SELECT * FROM EntityNote AS N INNER JOIN LinkFolderNote AS F ON N.id==F.noteId LEFT JOIN LinkNoteTag AS T ON N.id==T.noteId WHERE N.id = :id  ORDER BY id DESC")
     abstract fun getNoteByID(id: Long): EntityNoteInfo
 }

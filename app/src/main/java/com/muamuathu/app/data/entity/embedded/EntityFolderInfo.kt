@@ -10,16 +10,24 @@ data class EntityFolderInfo(
     val folder: EntityFolder,
 
     @Relation(
-        parentColumn = "folderId",
-        entityColumn = "noteId",
-        associateBy = Junction(LinkFolderNote::class)
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(
+            LinkFolderNote::class,
+            parentColumn = "folderId",
+            entityColumn = "noteId"
+        )
     )
     val notes: List<EntityNote>,
 
     @Relation(
-        parentColumn = "folderId",
-        entityColumn = "taskId",
-        associateBy = Junction(LinkFolderTask::class)
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(
+            LinkFolderTask::class,
+            parentColumn = "folderId",
+            entityColumn = "taskId",
+        )
     )
     val task: List<EntityTask>,
 )

@@ -4,11 +4,11 @@ import com.muamuathu.app.data.entity.EntityTag
 import com.muamuathu.app.domain.model.Tag
 
 fun EntityTag.toDomainModel() = Tag(
-    tagId = tagId,
+    tagId = id,
     name = name,
 )
 
 fun Tag.toEntityModel() = EntityTag(
-    tagId = tagId,
+    id = tagId,
     name = name,
 )
