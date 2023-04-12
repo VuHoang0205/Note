@@ -2,10 +2,10 @@
 
 package com.muamuathu.app.presentation.ui.todo
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,74 +32,86 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.SubTask
+import com.muamuathu.app.presentation.common.TimePicker
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
-import com.muamuathu.app.presentation.ui.todo.viewModel.AddTodoViewModel
+import com.muamuathu.app.presentation.extensions.formatFromPattern
 import com.muamuathu.app.presentation.ui.todo.viewModel.SubTasksViewModel
+import java.util.*
 
 @Composable
 fun ScreenAddSubTask() {
-    val eventHandler = initEventHandler()
 
-    val addNoteViewModel = hiltViewModel<AddTodoViewModel>(LocalContext.current as ComponentActivity)
+    val eventHandler = initEventHandler()
     val subTasksViewModel = hiltViewModel<SubTasksViewModel>()
-    val coroutineScope = rememberCoroutineScope()
     val tagSelectedList = remember { mutableStateListOf<SubTask>() }
     val taskList by subTasksViewModel.subTaskFlow.collectAsState()
+    var time by remember { mutableStateOf(0L) }
+    val timeString = if (time > 0) time.formatFromPattern("hh:mm a") else stringResource(id = R.string.select_a_due_time)
+    var subTaskName by remember { mutableStateOf("") }
 
-    Content(
-        taskSelectedList = tagSelectedList,
-        taskList = taskList,
-        onItemClick = {
-            if (tagSelectedList.contains(it)) {
-                tagSelectedList.remove(it)
-            } else {
-                tagSelectedList.add(it)
-            }
-        },
-        onClose = {
-            eventHandler.postNavEvent(NavEvent.PopBackStack(false))
-        },
-        onAdd = {
-            subTasksViewModel.saveSubTask(SubTask())
-        }, onDone = {
-            eventHandler.postNavEvent(NavEvent.PopBackStack(false))
-        })
+    var isShowTimePicker by remember { mutableStateOf(false) }
+
+//    if (isShowTimePicker) {
+//        TimePicker(value = if (time > 0) timeString else "", onValueChange = {
+//            time = it
+//            isShowTimePicker = false
+//        })
+//    }
+
+    Content(taskSelectedList = tagSelectedList, taskList = taskList, time = timeString, subTaskName = subTaskName, onValueChange = {
+        subTaskName = it
+    }, onTimePicker = {
+        isShowTimePicker = true
+    }, onItemClick = {
+        if (tagSelectedList.contains(it)) {
+            tagSelectedList.remove(it)
+        } else {
+            tagSelectedList.add(it)
+        }
+    }, onClose = {
+        eventHandler.postNavEvent(NavEvent.PopBackStack(false))
+    }, onAdd = {
+        val subTask = SubTask(name = subTaskName, reminderTime = time)
+        subTasksViewModel.saveSubTask(subTask)
+    }, onDone = {
+        eventHandler.postNavEvent(NavEvent.PopBackStack(false))
+    })
 }
 
 @Composable
 private fun Content(
     taskSelectedList: MutableList<SubTask>,
     taskList: List<SubTask>,
+    time: String,
+    subTaskName: String,
+    onValueChange: (String) -> Unit,
+    onTimePicker: () -> Unit,
     onItemClick: (SubTask) -> Unit,
     onClose: () -> Unit,
-    onAdd: (String) -> Unit,
+    onAdd: () -> Unit,
     onDone: (MutableList<SubTask>) -> Unit,
 ) {
 
-    var subTaskName by remember { mutableStateOf("") }
-    val stateVisibility by remember {
-        derivedStateOf { subTaskName.isNotEmpty() }
-    }
+    val stateVisibility by remember { derivedStateOf { subTaskName.isNotEmpty() } }
 
-    ConstraintLayout(modifier = Modifier
-        .fillMaxSize()
-        .background(colorResource(R.color.alice_blue))) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.alice_blue))
+    ) {
         val (topView, contentView) = createRefs()
 
-        TopBarBase(title = stringResource(id = R.string.sub_tasks),
-            titleAlign = TextAlign.Center,
-            navigationIcon = {
-                IconButton(onClick = {
-                    onClose()
-                }) {
-                    Image(painter = painterResource(R.drawable.ic_close),
-                        contentDescription = "close")
-                }
-            },
-            listRightIcon = null,
-            modifier = Modifier.constrainAs(topView) { top.linkTo(parent.top) })
+        TopBarBase(title = stringResource(id = R.string.sub_tasks), titleAlign = TextAlign.Center, navigationIcon = {
+            IconButton(onClick = {
+                onClose()
+            }) {
+                Image(
+                    painter = painterResource(R.drawable.ic_close), contentDescription = "close"
+                )
+            }
+        }, listRightIcon = null, modifier = Modifier.constrainAs(topView) { top.linkTo(parent.top) })
 
         ConstraintLayout(modifier = Modifier
             .fillMaxWidth()
@@ -108,13 +120,11 @@ private fun Content(
                 bottom.linkTo(parent.bottom, 30.dp)
                 height = Dimension.fillToConstraints
             }) {
-            val (imgPlus, textFieldInput, btnAdd, viewLine, lazyColumnFolder, btnDone) = createRefs()
-            Image(painterResource(R.drawable.ic_plus),
-                null,
-                modifier = Modifier.constrainAs(imgPlus) {
-                    top.linkTo(parent.top)
-                    start.linkTo(lazyColumnFolder.start)
-                })
+            val (imgPlus, textFieldInput, btnAdd, viewLine, rowTime, lazyColumnFolder, btnDone) = createRefs()
+            Image(painterResource(R.drawable.ic_plus), null, modifier = Modifier.constrainAs(imgPlus) {
+                top.linkTo(parent.top)
+                start.linkTo(lazyColumnFolder.start)
+            })
 
             if (subTaskName.isNotEmpty()) {
                 AnimatedVisibility(visible = stateVisibility, modifier = Modifier
@@ -125,18 +135,13 @@ private fun Content(
                         bottom.linkTo(imgPlus.bottom)
                         end.linkTo(lazyColumnFolder.end)
                     }) {
-                    Button(onClick = {
-                        onAdd(subTaskName)
-                        subTaskName = ""
-                    }, shape = RoundedCornerShape(4.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.royal_blue))
+                    Button(
+                        onClick = {
+                            onAdd()
+                        }, shape = RoundedCornerShape(4.dp), colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.royal_blue))
                     ) {
                         Text(
-                            text = stringResource(R.string.add),
-                            fontSize = 14.sp,
-                            modifier = Modifier.wrapContentWidth(Alignment.CenterHorizontally),
-                            color = Color.White,
-                            textAlign = TextAlign.Center
+                            text = stringResource(R.string.add), fontSize = 14.sp, modifier = Modifier.wrapContentWidth(Alignment.CenterHorizontally), color = Color.White, textAlign = TextAlign.Center
                         )
                     }
                 }
@@ -145,11 +150,14 @@ private fun Content(
             TextField(
                 value = subTaskName,
                 placeholder = {
-                    Text(stringResource(R.string.add_sub_task), color = colorResource(
-                        R.color.storm_grey))
+                    Text(
+                        stringResource(R.string.add_sub_task), color = colorResource(
+                            R.color.storm_grey
+                        )
+                    )
                 },
                 onValueChange = {
-                    subTaskName = it
+                    onValueChange(it)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -169,27 +177,47 @@ private fun Content(
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledTextColor = Color.Transparent,
                 ),
-                textStyle = TextStyle(fontSize = 14.sp,
-                    color = colorResource(R.color.gulf_blue)),
+                textStyle = TextStyle(
+                    fontSize = 14.sp, color = colorResource(R.color.gulf_blue)
+                ),
             )
+
+            Row(modifier = Modifier
+                .constrainAs(rowTime) {
+                    start.linkTo(imgPlus.start)
+                    top.linkTo(textFieldInput.bottom, 20.dp)
+                }
+                .clickable { onTimePicker() }, verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painterResource(R.drawable.ic_clock), null, colorFilter = ColorFilter.tint(
+                        colorResource(
+                            id = R.color.royal_blue
+                        )
+                    )
+                )
+
+                Text(modifier = Modifier.padding(start = 16.dp), text = time, fontSize = 14.sp, color = colorResource(id = R.color.storm_grey))
+            }
 
             Spacer(modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp)
                 .background(colorResource(R.color.link_water))
                 .constrainAs(viewLine) {
-                    top.linkTo(textFieldInput.bottom, 4.dp)
+                    top.linkTo(rowTime.bottom, 8.dp)
                 })
 
-            LazyColumn(modifier = Modifier.constrainAs(lazyColumnFolder) {
-                start.linkTo(parent.start, 16.dp)
-                end.linkTo(parent.end, 16.dp)
-                top.linkTo(viewLine.bottom, 16.dp)
-                bottom.linkTo(btnDone.top)
-                width = Dimension.fillToConstraints
-                height = Dimension.fillToConstraints
-            },
-                horizontalAlignment = Alignment.CenterHorizontally) {
+            LazyColumn(
+                modifier = Modifier.constrainAs(lazyColumnFolder) {
+                    start.linkTo(parent.start, 16.dp)
+                    end.linkTo(parent.end, 16.dp)
+                    top.linkTo(viewLine.bottom, 16.dp)
+                    bottom.linkTo(btnDone.top)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                }, horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 itemsIndexed(taskList) { _, item ->
                     ItemSubTask(item) {
                         onItemClick(item)
@@ -197,25 +225,21 @@ private fun Content(
                 }
             }
 
-            TextButton(
-                enabled = taskSelectedList.isNotEmpty(),
-                onClick = {
-                    onDone(taskSelectedList)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .alpha(if (taskSelectedList.isNotEmpty()) 1f else 0.5f)
-                    .background(
-                        colorResource(R.color.royal_blue),
-                        RoundedCornerShape(4.dp)
-                    )
-                    .constrainAs(btnDone) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(lazyColumnFolder.start)
-                        end.linkTo(lazyColumnFolder.end)
-                        width = Dimension.fillToConstraints
-                    }) {
+            TextButton(enabled = taskSelectedList.isNotEmpty(), onClick = {
+                onDone(taskSelectedList)
+            }, modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .alpha(if (taskSelectedList.isNotEmpty()) 1f else 0.5f)
+                .background(
+                    colorResource(R.color.royal_blue), RoundedCornerShape(4.dp)
+                )
+                .constrainAs(btnDone) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(lazyColumnFolder.start)
+                    end.linkTo(lazyColumnFolder.end)
+                    width = Dimension.fillToConstraints
+                }) {
                 Text(
                     text = stringResource(R.string.done).toUpperCase(Locale.current),
                     color = Color.White,
@@ -229,5 +253,5 @@ private fun Content(
 @Preview
 @Composable
 private fun PreviewContent() {
-    Content(mutableListOf(), emptyList(), {}, {}, {}, {})
+    Content(mutableListOf(), emptyList(), "", "", {}, {}, {}, {}, {}, {})
 }

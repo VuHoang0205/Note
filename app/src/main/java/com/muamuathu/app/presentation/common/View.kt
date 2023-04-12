@@ -1,5 +1,7 @@
 package com.muamuathu.app.presentation.common
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,7 +38,10 @@ import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.extensions.isSameDay
 import com.muamuathu.app.presentation.extensions.toDayOfMonth
 import com.muamuathu.app.presentation.extensions.toDayOfWeek
+import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalTime
 import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.DateTimeFormatter
 
 
 @Composable
@@ -67,24 +73,17 @@ fun CalendarView(
             )
         }
 
-        Text(
-            text = textTotal,
-            color = colorResource(R.color.storm_grey),
-            fontSize = 13.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.constrainAs(textTotalJournal) {
-                start.linkTo(textDate.start,8.dp)
-                top.linkTo(textDate.bottom, 8.dp)
-            }
-        )
+        Text(text = textTotal, color = colorResource(R.color.storm_grey), fontSize = 13.sp, textAlign = TextAlign.Center, modifier = Modifier.constrainAs(textTotalJournal) {
+            start.linkTo(textDate.start, 8.dp)
+            top.linkTo(textDate.bottom, 8.dp)
+        })
 
         IconButton(onClick = {
             onCalendar(selectDate)
         }, modifier = Modifier
             .size(33.dp)
             .background(
-                shape = CircleShape,
-                color = colorResource(R.color.catalina_blue)
+                shape = CircleShape, color = colorResource(R.color.catalina_blue)
             )
             .constrainAs(icCalendar) {
                 top.linkTo(textDate.top)
@@ -92,8 +91,7 @@ fun CalendarView(
                 bottom.linkTo(textTotalJournal.bottom, 8.dp)
             }) {
             Image(
-                painter = painterResource(R.drawable.ic_calendar),
-                contentDescription = "search"
+                painter = painterResource(R.drawable.ic_calendar), contentDescription = "search"
             )
         }
 
@@ -115,20 +113,16 @@ fun CalendarView(
             )
 
             Image(
-                painter = painterResource(R.drawable.ic_down),
-                contentDescription = "down",
-                modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                painter = painterResource(R.drawable.ic_down), contentDescription = "down", modifier = Modifier.align(alignment = Alignment.CenterVertically)
             )
         }
 
         LazyRow(
-            state = lazyListState,
-            modifier = Modifier
+            state = lazyListState, modifier = Modifier
                 .fillMaxWidth()
                 .constrainAs(lazyRowCalendar) {
                     top.linkTo(textTotalJournal.bottom, 4.dp)
-                },
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                }, horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(dateList) { _, item ->
                 ItemCalendar(date = item, select = item.isSameDay(selectDate)) {
@@ -155,19 +149,15 @@ private fun ItemCalendar(
     onClickDate: () -> Unit,
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = if (select) colorResource(R.color.royal_blue_2) else Color.White),
-        modifier = Modifier
+        colors = CardDefaults.cardColors(containerColor = if (select) colorResource(R.color.royal_blue_2) else Color.White), modifier = Modifier
             .height(56.dp)
             .width(42.dp)
             .clickable {
                 onClickDate()
-            },
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
+            }, shape = RoundedCornerShape(8.dp), elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
+            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()
         ) {
             Text(
                 text = date.dayOfMonth.toString(),
@@ -199,57 +189,40 @@ fun SearchView(
 ) {
     Column(modifier = modifier) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(2.dp),
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
-                TextField(
-                    value = query,
-                    onValueChange = { value ->
-                        onSearch(value)
-                    },
-                    label = {
-                        Text(stringResource(label))
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = TextStyle(fontSize = 14.sp),
-                    leadingIcon = {
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = "",
-                            modifier = Modifier
-                                .padding(15.dp)
-                                .size(24.dp)
-                        )
-                    },
-                    trailingIcon = {
-                        if (query.isNotEmpty()) {
-                            IconButton(
-                                onClick = {
-                                    onClose()
-                                }
-                            ) {
-                                Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .padding(15.dp)
-                                        .size(24.dp)
-                                )
-                            }
-                        }
-                    },
-                    singleLine = true,
-                    shape = RoundedCornerShape(4.dp),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.White,
-                        textColor = colorResource(R.color.storm_grey),
-                        cursorColor = colorResource(R.color.storm_grey),
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
+                TextField(value = query, onValueChange = { value ->
+                    onSearch(value)
+                }, label = {
+                    Text(stringResource(label))
+                }, modifier = Modifier.fillMaxWidth(), textStyle = TextStyle(fontSize = 14.sp), leadingIcon = {
+                    Icon(
+                        Icons.Default.Search, contentDescription = "", modifier = Modifier
+                            .padding(15.dp)
+                            .size(24.dp)
                     )
+                }, trailingIcon = {
+                    if (query.isNotEmpty()) {
+                        IconButton(onClick = {
+                            onClose()
+                        }) {
+                            Icon(
+                                Icons.Default.Close, contentDescription = "", modifier = Modifier
+                                    .padding(15.dp)
+                                    .size(24.dp)
+                            )
+                        }
+                    }
+                }, singleLine = true, shape = RoundedCornerShape(4.dp), colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.White,
+                    textColor = colorResource(R.color.storm_grey),
+                    cursorColor = colorResource(R.color.storm_grey),
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                )
                 )
             }
         }
@@ -271,50 +244,79 @@ fun ItemTag(
         .height(50.dp)) {
         val (imgTag, textName, checkBox) = createRefs()
 
-        Image(painter = painterResource(id = R.drawable.ic_tag),
-            contentDescription = null, contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(20.dp)
-                .constrainAs(imgTag) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    bottom.linkTo(parent.bottom)
-                })
+        Image(painter = painterResource(id = R.drawable.ic_tag), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier
+            .size(20.dp)
+            .constrainAs(imgTag) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                bottom.linkTo(parent.bottom)
+            })
 
-        Text(text = entityTag.name,
-            fontSize = 14.sp,
-            color = colorResource(id = R.color.gulf_blue),
-            modifier = Modifier.constrainAs(textName) {
-                top.linkTo(imgTag.top)
-                bottom.linkTo(imgTag.bottom)
-                start.linkTo(imgTag.end, 16.dp)
-                end.linkTo(checkBox.start)
-                width = Dimension.fillToConstraints
-            })
-        Checkbox(
-            checked = entityTagSelectedList.contains(entityTag),
-            colors = CheckboxDefaults.colors(
-                checkedColor = colorResource(R.color.royal_blue),
-                uncheckedColor = colorResource(R.color.storm_grey)),
-            modifier = Modifier.constrainAs(checkBox) {
-                top.linkTo(imgTag.top)
-                end.linkTo(parent.end)
-                bottom.linkTo(imgTag.bottom)
-            }, onCheckedChange = {
-                itemClick(entityTag)
-            })
+        Text(text = entityTag.name, fontSize = 14.sp, color = colorResource(id = R.color.gulf_blue), modifier = Modifier.constrainAs(textName) {
+            top.linkTo(imgTag.top)
+            bottom.linkTo(imgTag.bottom)
+            start.linkTo(imgTag.end, 16.dp)
+            end.linkTo(checkBox.start)
+            width = Dimension.fillToConstraints
+        })
+        Checkbox(checked = entityTagSelectedList.contains(entityTag), colors = CheckboxDefaults.colors(
+            checkedColor = colorResource(R.color.royal_blue), uncheckedColor = colorResource(R.color.storm_grey)
+        ), modifier = Modifier.constrainAs(checkBox) {
+            top.linkTo(imgTag.top)
+            end.linkTo(parent.end)
+            bottom.linkTo(imgTag.bottom)
+        }, onCheckedChange = {
+            itemClick(entityTag)
+        })
     }
 }
 
 @Composable
 fun ItemTagNote(tag: String) {
-    Box(modifier = Modifier
-        .background(
-            color = colorResource(id = R.color.royal_blue_2),
-            shape = RoundedCornerShape(16.dp)
-        )
-        .padding(horizontal = 20.dp, vertical = 2.dp)
+    Box(
+        modifier = Modifier
+            .background(
+                color = colorResource(id = R.color.royal_blue_2), shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 20.dp, vertical = 2.dp)
     ) {
         Text(tag, color = Color.White, textAlign = TextAlign.Center)
     }
+}
+
+@Composable
+fun TimePicker(
+    value: String,
+    onValueChange: (String) -> Unit,
+    pattern: String = "HH:mm",
+    is24HourView: Boolean = true,
+) {
+    val formatter = DateTimeFormatter.ofPattern(pattern)
+    val time = if (value.isNotBlank()) LocalTime.parse(value, formatter) else LocalTime.now()
+    TimePickerDialog(
+        LocalContext.current,
+        { timePicker, hour, minute -> onValueChange(LocalTime.of(hour, minute).toString()) },
+        time.hour,
+        time.minute,
+        is24HourView,
+    ).show()
+}
+
+@Composable
+fun DatePicker(
+    value: String,
+    onValueChange: (String) -> Unit = {},
+    pattern: String = "yyyy-MM-dd",
+) {
+    val formatter = DateTimeFormatter.ofPattern(pattern)
+    val date = if (value.isNotBlank()) LocalDate.parse(value, formatter) else LocalDate.now()
+    DatePickerDialog(
+        LocalContext.current,
+        { _, year, month, dayOfMonth ->
+            onValueChange(LocalDate.of(year, month + 1, dayOfMonth).toString())
+        },
+        date.year,
+        date.monthValue - 1,
+        date.dayOfMonth,
+    ).show()
 }

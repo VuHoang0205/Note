@@ -305,7 +305,7 @@ private fun Content(
                     contentDescription = "folder",
                     colorFilter = ColorFilter.tint(colorResource(R.color.storm_grey)),
                     modifier = Modifier
-                        .padding(top = 24.dp, start = 20.dp, bottom = 24.dp)
+                        .padding(top = 24.dp, start = 20.dp, bottom = 16.dp)
                         .constrainAs(icFolder) {
                             top.linkTo(parent.top)
                             bottom.linkTo(parent.bottom)
@@ -441,72 +441,75 @@ private fun Content(
                     }
                 }
             }
-            Card(
-                modifier = Modifier
-                    .constrainAs(columnTag) {
-                        top.linkTo(
-                            if (attachments.isEmpty()) textContent.bottom else lazyRowAttachMent.bottom,
-                            12.dp
-                        )
-                        start.linkTo(parent.start, 16.dp)
-                        end.linkTo(parent.end, 16.dp)
-                        width = Dimension.fillToConstraints
-                    },
-                elevation = CardDefaults.cardElevation(2.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
-            ) {
-                ConstraintLayout(
+            if (tags.isNotEmpty()) {
+                Card(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .defaultMinSize(minHeight = 70.dp)
+                        .constrainAs(columnTag) {
+                            top.linkTo(
+                                if (attachments.isEmpty()) textContent.bottom else lazyRowAttachMent.bottom,
+                                12.dp
+                            )
+                            start.linkTo(parent.start, 16.dp)
+                            end.linkTo(parent.end, 16.dp)
+                            width = Dimension.fillToConstraints
+                        },
+                    elevation = CardDefaults.cardElevation(2.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
                 ) {
-
-                    val (textTag, lazyRow, btnAdd) = createRefs()
-
-                    Text(
+                    ConstraintLayout(
                         modifier = Modifier
-                            .constrainAs(textTag) {
-                                top.linkTo(parent.top)
-                                start.linkTo(parent.start)
-                                if (tags.isEmpty()) centerVerticallyTo(parent)
-                            }
-                            .padding(vertical = 10.dp, horizontal = 8.dp),
-                        text = stringResource(R.string.txt_tags),
-                        color = colorResource(R.color.gulf_blue),
-                        fontSize = 14.sp,
-                    )
+                            .fillMaxWidth()
+                            .defaultMinSize(minHeight = 70.dp)
+                    ) {
 
-                    if (tags.isNotEmpty()) {
-                        LazyRow(
+                        val (textTag, lazyRow, btnAdd) = createRefs()
+
+                        Text(
                             modifier = Modifier
-                                .constrainAs(lazyRow) {
-                                    top.linkTo(textTag.bottom)
+                                .constrainAs(textTag) {
+                                    top.linkTo(parent.top)
                                     start.linkTo(parent.start)
-                                    end.linkTo(btnAdd.start)
-                                    width = Dimension.fillToConstraints
+                                    if (tags.isEmpty()) centerVerticallyTo(parent)
                                 }
-                                .padding(vertical = 8.dp, horizontal = 8.dp)
-                                .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            itemsIndexed(tags) { _, tag ->
-                                ItemTagNote(tag = tag.name)
+                                .padding(vertical = 10.dp, horizontal = 8.dp),
+                            text = stringResource(R.string.txt_tags),
+                            color = colorResource(R.color.gulf_blue),
+                            fontSize = 14.sp,
+                        )
+
+                        if (tags.isNotEmpty()) {
+                            LazyRow(
+                                modifier = Modifier
+                                    .constrainAs(lazyRow) {
+                                        top.linkTo(textTag.bottom)
+                                        start.linkTo(parent.start)
+                                        end.linkTo(btnAdd.start)
+                                        width = Dimension.fillToConstraints
+                                    }
+                                    .padding(vertical = 8.dp, horizontal = 8.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                itemsIndexed(tags) { _, tag ->
+                                    ItemTagNote(tag = tag.name)
+                                }
                             }
                         }
-                    }
 
-                    IconButton(
-                        modifier = Modifier
-                            .constrainAs(btnAdd) {
-                                centerVerticallyTo(parent)
-                                end.linkTo(parent.end)
-                            },
-                        onClick = { onTageClick() }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_plus),
-                            contentDescription = ""
-                        )
+                        IconButton(
+                            modifier = Modifier
+                                .constrainAs(btnAdd) {
+                                    centerVerticallyTo(parent)
+                                    end.linkTo(parent.end)
+                                },
+                            onClick = { onTageClick() }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_plus),
+                                contentDescription = ""
+                            )
+                        }
                     }
                 }
             }
@@ -515,18 +518,15 @@ private fun Content(
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 10.dp)
+                .padding(vertical = 10.dp, horizontal = 20.dp)
                 .background(
                     shape = RoundedCornerShape(topStartPercent = 8, bottomStartPercent = 8),
                     color = Color.White
                 )
                 .constrainAs(lazyRowBottom) {
                     bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start, 60.dp)
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
                 },
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             items(NoteAction.values()) {

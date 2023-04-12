@@ -279,7 +279,7 @@ private fun Content(
                     contentDescription = "folder",
                     colorFilter = ColorFilter.tint(colorResource(R.color.storm_grey)),
                     modifier = Modifier
-                        .padding(top = 24.dp, start = 16.dp, bottom = 24.dp)
+                        .padding(top = 24.dp, start = 16.dp, bottom = 16.dp)
                         .constrainAs(icFolder) {
                             top.linkTo(parent.top)
                             bottom.linkTo(parent.bottom)
