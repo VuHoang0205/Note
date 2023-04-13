@@ -37,12 +37,12 @@ fun Long.toDayOfWeekDetail(): String {
 }
 
 fun ZonedDateTime.toDayOfWeek(): String {
-    return format(DateTimeFormatter.ofPattern("E",Locale.getDefault()))
+    return format(DateTimeFormatter.ofPattern("E", Locale.getDefault()))
 }
 
 
 fun ZonedDateTime.toDayOfMonth(): String {
-    return format(DateTimeFormatter.ofPattern("dd MMM",Locale.getDefault()))
+    return format(DateTimeFormatter.ofPattern("dd MMM", Locale.getDefault()))
 }
 
 fun Long.formatFromPattern(pattern: String): String {
@@ -71,6 +71,16 @@ fun ZonedDateTime.isSameDay(zonedDateTime: ZonedDateTime): Boolean {
 fun Long.getStartOfDay(): Long {
     val local = this + TimeZone.getDefault().rawOffset
     return this - (local % 86_400_000L)
+}
+
+fun String.toTimeInMillis(format: String): Long {
+    try {
+        val sdf = SimpleDateFormat(format, Locale.getDefault())
+        val date = sdf.parse(this)
+        return date?.time ?: 0L
+    } catch (e: Exception) {
+        return 0L
+    }
 }
 
 

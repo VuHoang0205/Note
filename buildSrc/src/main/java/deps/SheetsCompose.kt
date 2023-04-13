@@ -2,7 +2,7 @@ package deps
 
 object SheetsCompose : Dependency() {
     object Versions {
-        const val sheets_compose = "v1.1.1"
+        const val sheets_compose = "1.1.1"
     }
 
     private const val core = "com.maxkeppeler.sheets-compose-dialogs:core:${Versions.sheets_compose}"

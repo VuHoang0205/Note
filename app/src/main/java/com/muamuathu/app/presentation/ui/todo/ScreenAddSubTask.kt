@@ -2,8 +2,6 @@
 
 package com.muamuathu.app.presentation.ui.todo
 
-import android.app.TimePickerDialog
-import android.widget.TimePicker
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,12 +30,14 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+import com.maxkeppeler.sheets.clock.ClockDialog
+import com.maxkeppeler.sheets.clock.models.ClockSelection
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.SubTask
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
-import com.muamuathu.app.presentation.extensions.formatFromPattern
 import com.muamuathu.app.presentation.ui.todo.viewModel.SubTasksViewModel
 import java.util.*
 
@@ -48,21 +48,12 @@ fun ScreenAddSubTask() {
     val subTasksViewModel = hiltViewModel<SubTasksViewModel>()
     val tagSelectedList = remember { mutableStateListOf<SubTask>() }
     val taskList by subTasksViewModel.subTaskFlow.collectAsState()
-    var time by remember { mutableStateOf(0L) }
-    val timeString = if (time > 0) time.formatFromPattern("hh:mm a") else stringResource(id = R.string.select_a_due_time)
     var subTaskName by remember { mutableStateOf("") }
 
-    var isShowTimePicker by remember { mutableStateOf(false) }
 
-    if (isShowTimePicker) {
-       
-    }
-
-    Content(taskSelectedList = tagSelectedList, taskList = taskList, time = timeString, subTaskName = subTaskName, onValueChange = {
+    Content(taskSelectedList = tagSelectedList, taskList = taskList, subTaskName = subTaskName, onValueChange = {
         subTaskName = it
-    }, onTimePicker = {
-        isShowTimePicker = true
-    }, onItemClick = {
+    }, onTimePicker = {}, onItemClick = {
         if (tagSelectedList.contains(it)) {
             tagSelectedList.remove(it)
         } else {
@@ -71,7 +62,7 @@ fun ScreenAddSubTask() {
     }, onClose = {
         eventHandler.postNavEvent(NavEvent.PopBackStack(false))
     }, onAdd = {
-        val subTask = SubTask(name = subTaskName, reminderTime = time)
+        val subTask = SubTask(name = subTaskName)
         subTasksViewModel.saveSubTask(subTask)
     }, onDone = {
         eventHandler.postNavEvent(NavEvent.PopBackStack(false))
@@ -82,7 +73,6 @@ fun ScreenAddSubTask() {
 private fun Content(
     taskSelectedList: MutableList<SubTask>,
     taskList: List<SubTask>,
-    time: String,
     subTaskName: String,
     onValueChange: (String) -> Unit,
     onTimePicker: () -> Unit,
@@ -93,6 +83,8 @@ private fun Content(
 ) {
 
     val stateVisibility by remember { derivedStateOf { subTaskName.isNotEmpty() } }
+    var isShowTimePicker by remember { mutableStateOf(false) }
+    val state = rememberUseCaseState()
 
     ConstraintLayout(
         modifier = Modifier
@@ -119,6 +111,7 @@ private fun Content(
                 height = Dimension.fillToConstraints
             }) {
             val (imgPlus, textFieldInput, btnAdd, viewLine, rowTime, lazyColumnFolder, btnDone) = createRefs()
+
             Image(painterResource(R.drawable.ic_plus), null, modifier = Modifier.constrainAs(imgPlus) {
                 top.linkTo(parent.top)
                 start.linkTo(lazyColumnFolder.start)
@@ -185,7 +178,11 @@ private fun Content(
                     start.linkTo(imgPlus.start)
                     top.linkTo(textFieldInput.bottom, 20.dp)
                 }
-                .clickable { onTimePicker() }, verticalAlignment = Alignment.CenterVertically
+                .clickable {
+                    state.show()
+                    isShowTimePicker = true
+                    onTimePicker()
+                }, verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
                     painterResource(R.drawable.ic_clock), null, colorFilter = ColorFilter.tint(
@@ -195,7 +192,7 @@ private fun Content(
                     )
                 )
 
-                Text(modifier = Modifier.padding(start = 16.dp), text = time, fontSize = 14.sp, color = colorResource(id = R.color.storm_grey))
+                Text(modifier = Modifier.padding(start = 16.dp), text = "time", fontSize = 14.sp, color = colorResource(id = R.color.storm_grey))
             }
 
             Spacer(modifier = Modifier
@@ -245,11 +242,16 @@ private fun Content(
                 )
             }
         }
+
+        ClockDialog(state = state,
+            selection = ClockSelection.HoursMinutesSeconds { h, m, s ->
+
+            })
     }
 }
 
 @Preview
 @Composable
 private fun PreviewContent() {
-    Content(mutableListOf(), emptyList(), "", "", {}, {}, {}, {}, {}, {})
+    Content(mutableListOf(), emptyList(), "", {}, {}, {}, {}, {}, {})
 }
