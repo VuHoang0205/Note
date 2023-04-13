@@ -5,15 +5,15 @@ object SheetsCompose : Dependency() {
         const val sheets_compose = "v1.1.1"
     }
 
-    private const val core = "com.airbnb.android:lottie:${Versions.sheets_compose}"
-    private const val calendar = "com.airbnb.android:lottie:calendar :${Versions.sheets_compose}"
-    private const val clock = "com.airbnb.android:lottie:clock :${Versions.sheets_compose}"
-    private const val option = "com.airbnb.android:lottie:option :${Versions.sheets_compose}"
-    private const val list = "com.airbnb.android:lottie:list :${Versions.sheets_compose}"
-    private const val input = "com.airbnb.android:lottie:input :${Versions.sheets_compose}"
+    private const val core = "com.maxkeppeler.sheets-compose-dialogs:core:${Versions.sheets_compose}"
+    private const val calendar = "com.maxkeppeler.sheets-compose-dialogs:calendar:${Versions.sheets_compose}"
+    private const val clock = "com.maxkeppeler.sheets-compose-dialogs:clock:${Versions.sheets_compose}"
+    private const val option = "com.maxkeppeler.sheets-compose-dialogs:option:${Versions.sheets_compose}"
+    private const val list = "com.maxkeppeler.sheets-compose-dialogs:list:${Versions.sheets_compose}"
+    private const val input = "com.maxkeppeler.sheets-compose-dialogs:input:${Versions.sheets_compose}"
 
 
-    override fun implementations() = listOf<String>(
+    override fun implementations() = listOf(
         core,
         calendar,
         clock,

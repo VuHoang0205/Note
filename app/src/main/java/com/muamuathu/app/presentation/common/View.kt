@@ -1,7 +1,5 @@
 package com.muamuathu.app.presentation.common
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,10 +35,7 @@ import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.extensions.isSameDay
 import com.muamuathu.app.presentation.extensions.toDayOfMonth
 import com.muamuathu.app.presentation.extensions.toDayOfWeek
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalTime
 import org.threeten.bp.ZonedDateTime
-import org.threeten.bp.format.DateTimeFormatter
 
 
 @Composable
@@ -282,41 +276,4 @@ fun ItemTagNote(tag: String) {
     ) {
         Text(tag, color = Color.White, textAlign = TextAlign.Center)
     }
-}
-
-@Composable
-fun TimePicker(
-    value: String,
-    onValueChange: (String) -> Unit,
-    pattern: String = "HH:mm",
-    is24HourView: Boolean = true,
-) {
-    val formatter = DateTimeFormatter.ofPattern(pattern)
-    val time = if (value.isNotBlank()) LocalTime.parse(value, formatter) else LocalTime.now()
-    TimePickerDialog(
-        LocalContext.current,
-        { timePicker, hour, minute -> onValueChange(LocalTime.of(hour, minute).toString()) },
-        time.hour,
-        time.minute,
-        is24HourView,
-    ).show()
-}
-
-@Composable
-fun DatePicker(
-    value: String,
-    onValueChange: (String) -> Unit = {},
-    pattern: String = "yyyy-MM-dd",
-) {
-    val formatter = DateTimeFormatter.ofPattern(pattern)
-    val date = if (value.isNotBlank()) LocalDate.parse(value, formatter) else LocalDate.now()
-    DatePickerDialog(
-        LocalContext.current,
-        { _, year, month, dayOfMonth ->
-            onValueChange(LocalDate.of(year, month + 1, dayOfMonth).toString())
-        },
-        date.year,
-        date.monthValue - 1,
-        date.dayOfMonth,
-    ).show()
 }

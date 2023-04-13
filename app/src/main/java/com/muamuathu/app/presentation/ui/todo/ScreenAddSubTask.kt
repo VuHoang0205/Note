@@ -2,6 +2,8 @@
 
 package com.muamuathu.app.presentation.ui.todo
 
+import android.app.TimePickerDialog
+import android.widget.TimePicker
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,7 +34,6 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.SubTask
-import com.muamuathu.app.presentation.common.TimePicker
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
@@ -53,12 +54,9 @@ fun ScreenAddSubTask() {
 
     var isShowTimePicker by remember { mutableStateOf(false) }
 
-//    if (isShowTimePicker) {
-//        TimePicker(value = if (time > 0) timeString else "", onValueChange = {
-//            time = it
-//            isShowTimePicker = false
-//        })
-//    }
+    if (isShowTimePicker) {
+       
+    }
 
     Content(taskSelectedList = tagSelectedList, taskList = taskList, time = timeString, subTaskName = subTaskName, onValueChange = {
         subTaskName = it
