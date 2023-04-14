@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.marosseleng.compose.material3.datetimepickers.time.ui.dialog.TimePickerDialog
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.SubTask
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
@@ -54,25 +55,7 @@ fun ScreenAddSubTask() {
     Content(taskSelectedList = tagSelectedList, taskList = taskList, timeString = timeString, subTaskName = subTaskName, onValueChange = {
         subTaskName = it
     }, onTimePicker = {
-//        val dialog = TimePickerDialog(
-//            context,
-//            { _, hourOfDay, min ->
-//                selectDate = ZonedDateTime.of(
-//                    selectDate.year,
-//                    selectDate.monthValue,
-//                    selectDate.dayOfMonth,
-//                    hourOfDay,
-//                    min,
-//                    selectDate.second,
-//                    selectDate.nano,
-//                    ZoneId.systemDefault()
-//                )
-//                timeString = selectDate.toEpochSecond().formatFromPattern("hh:ss")
-//            },
-//            selectDate.hour, selectDate.minute,
-//            true
-//        )
-//        dialog.show()
+        timeString = it
     }, onItemClick = {
         if (tagSelectedList.contains(it)) {
             tagSelectedList.remove(it)
@@ -96,7 +79,7 @@ private fun Content(
     timeString: String,
     subTaskName: String,
     onValueChange: (String) -> Unit,
-    onTimePicker: () -> Unit,
+    onTimePicker: (String) -> Unit,
     onItemClick: (SubTask) -> Unit,
     onClose: () -> Unit,
     onAdd: () -> Unit,
@@ -104,6 +87,7 @@ private fun Content(
 ) {
 
     val stateVisibility by remember { derivedStateOf { subTaskName.isNotEmpty() } }
+    var isShowTimePicker by remember { mutableStateOf(false) }
 
     ConstraintLayout(
         modifier = Modifier
@@ -160,11 +144,7 @@ private fun Content(
             TextField(
                 value = subTaskName,
                 placeholder = {
-                    Text(
-                        stringResource(R.string.add_sub_task), color = colorResource(
-                            R.color.storm_grey
-                        )
-                    )
+                    Text(stringResource(R.string.add_sub_task), color = colorResource(R.color.storm_grey))
                 },
                 onValueChange = {
                     onValueChange(it)
@@ -187,34 +167,26 @@ private fun Content(
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledTextColor = Color.Transparent,
                 ),
-                textStyle = TextStyle(
-                    fontSize = 14.sp, color = colorResource(R.color.gulf_blue)
-                ),
+                textStyle = TextStyle(fontSize = 14.sp, color = colorResource(R.color.gulf_blue)),
             )
 
             Row(modifier = Modifier
                 .constrainAs(rowTime) {
                     start.linkTo(imgPlus.start)
-                    top.linkTo(textFieldInput.bottom, 20.dp)
+                    top.linkTo(textFieldInput.bottom, 16.dp)
                 }
                 .clickable {
-                    onTimePicker()
+                    isShowTimePicker = true
                 }, verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painterResource(R.drawable.ic_clock), null, colorFilter = ColorFilter.tint(
-                        colorResource(
-                            id = R.color.royal_blue
-                        )
-                    )
-                )
-
-                Text(modifier = Modifier.padding(start = 16.dp),
+                Image(painterResource(R.drawable.ic_clock), null, colorFilter = ColorFilter.tint(colorResource(id = R.color.royal_blue)))
+                Text(
+                    modifier = Modifier.padding(start = 16.dp),
                     text = timeString.ifEmpty { stringResource(id = R.string.select_a_due_time) },
                     fontSize = 14.sp,
-                    color = colorResource(id = R.color.storm_grey))
+                    color = colorResource(id = R.color.storm_grey)
+                )
             }
-
             Spacer(modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp)
@@ -261,6 +233,12 @@ private fun Content(
                     fontSize = 14.sp,
                 )
             }
+        }
+        if (isShowTimePicker) {
+            TimePickerDialog(onDismissRequest = { isShowTimePicker = false }, onTimeChange = {
+                isShowTimePicker = false
+                onTimePicker(it.toString())
+            })
         }
     }
 }

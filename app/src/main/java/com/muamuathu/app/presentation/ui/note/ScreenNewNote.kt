@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -21,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -193,7 +193,6 @@ private fun Content(
         TopBarBase(modifier = Modifier
             .fillMaxWidth()
             .height(70.dp)
-            .padding(horizontal = 12.dp)
             .constrainAs(topView) { top.linkTo(parent.top) },
             titleAlign = TextAlign.Center,
             title = stringResource(R.string.txt_add_new_journal),
@@ -226,7 +225,7 @@ private fun Content(
             Column(modifier = Modifier
                 .constrainAs(columnDate) {
                     top.linkTo(parent.top)
-                    start.linkTo(parent.start, 20.dp)
+                    start.linkTo(parent.start)
                 }
                 .padding(vertical = 10.dp)) {
                 Text(
@@ -247,15 +246,13 @@ private fun Content(
                 .constrainAs(imgCalendar) {
                     top.linkTo(columnDate.top)
                     bottom.linkTo(columnDate.bottom)
-                    start.linkTo(columnDate.end, 20.dp)
-                }
-                .size(24.dp)
-                .background(
-                    shape = CircleShape, color = colorResource(R.color.royal_blue)
-                ), onClick = {
+                    start.linkTo(columnDate.end, 2.dp)
+                }, onClick = {
                 onCalendar()
             }) {
                 Image(
+                    modifier = Modifier.size(32.dp),
+                    contentScale = ContentScale.Crop,
                     painter = painterResource(R.drawable.ic_calendar),
                     contentDescription = "calendar",
                 )

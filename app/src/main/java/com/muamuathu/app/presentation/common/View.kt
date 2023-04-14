@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -52,52 +51,23 @@ fun CalendarView(
     val dateString = selectDate.toDayOfMonth()
 
     ConstraintLayout(modifier = modifier) {
-        val (textDate, textTotalJournal, icCalendar, textYear, lazyRowCalendar) = createRefs()
-        TextButton(onClick = {
-            onCalendar(selectDate)
-        }, modifier = Modifier.constrainAs(textDate) {
+        val (columnDate, rowCalendar, lazyRowCalendar) = createRefs()
+        Column(modifier = Modifier.constrainAs(columnDate) {
             start.linkTo(parent.start)
-            top.linkTo(parent.top)
-        }) {
-            Text(
-                text = dateString,
-                color = colorResource(R.color.gulf_blue),
-                fontSize = 26.sp,
-                textAlign = TextAlign.Center,
-            )
+            top.linkTo(parent.top, 16.dp)
+        }, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(text = dateString, color = colorResource(R.color.gulf_blue), fontSize = 26.sp)
+            Text(text = textTotal, color = colorResource(R.color.storm_grey), fontSize = 13.sp)
         }
-
-        Text(text = textTotal, color = colorResource(R.color.storm_grey), fontSize = 13.sp, textAlign = TextAlign.Center, modifier = Modifier.constrainAs(textTotalJournal) {
-            start.linkTo(textDate.start, 8.dp)
-            top.linkTo(textDate.bottom, 8.dp)
-        })
-
-        IconButton(onClick = {
-            onCalendar(selectDate)
-        }, modifier = Modifier
-            .size(33.dp)
-            .background(
-                shape = CircleShape, color = colorResource(R.color.catalina_blue)
-            )
-            .constrainAs(icCalendar) {
-                top.linkTo(textDate.top)
-                end.linkTo(parent.end, 6.dp)
-                bottom.linkTo(textTotalJournal.bottom, 8.dp)
-            }) {
-            Image(
-                painter = painterResource(R.drawable.ic_calendar), contentDescription = "search"
-            )
-        }
-
-        TextButton(
-            onClick = {
+        Row(modifier = Modifier
+            .clickable {
                 onCalendar(selectDate)
-            },
-            modifier = Modifier.constrainAs(textYear) {
-                top.linkTo(icCalendar.top)
-                bottom.linkTo(icCalendar.bottom)
-                end.linkTo(icCalendar.start, 8.dp)
-            },
+            }
+            .constrainAs(rowCalendar) {
+                end.linkTo(parent.end)
+                top.linkTo(columnDate.top)
+                bottom.linkTo(columnDate.bottom)
+            }, verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = selectDate.year.toString(),
@@ -105,17 +75,15 @@ fun CalendarView(
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
             )
-
-            Image(
-                painter = painterResource(R.drawable.ic_down), contentDescription = "down", modifier = Modifier.align(alignment = Alignment.CenterVertically)
-            )
+            Image(painter = painterResource(R.drawable.ic_down), contentDescription = "down", modifier = Modifier.align(alignment = Alignment.CenterVertically))
+            Image(painter = painterResource(R.drawable.ic_calendar), contentScale = ContentScale.Crop, modifier = Modifier.size(32.dp), contentDescription = "search")
         }
 
         LazyRow(
             state = lazyListState, modifier = Modifier
                 .fillMaxWidth()
                 .constrainAs(lazyRowCalendar) {
-                    top.linkTo(textTotalJournal.bottom, 4.dp)
+                    top.linkTo(columnDate.bottom, 16.dp)
                 }, horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(dateList) { _, item ->
@@ -124,15 +92,6 @@ fun CalendarView(
                 }
             }
         }
-
-//        Image(painterResource(R.drawable.ic_bg_line_note_tab),
-//            contentDescription = "divider",
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(start = 16.dp)
-//                .constrainAs(viewLine) {
-//                    top.linkTo(lazyRowCalendar.bottom)
-//                })
     }
 }
 

@@ -172,7 +172,6 @@ private fun Content(
         TopBarBase(modifier = Modifier
             .fillMaxWidth()
             .height(70.dp)
-            .padding(horizontal = 12.dp)
             .constrainAs(topView) { top.linkTo(parent.top) },
             titleAlign = TextAlign.Center,
             title = stringResource(R.string.txt_pronto_journal),
@@ -220,10 +219,11 @@ private fun Content(
                         onSearchClose()
                     })
             } else {
-                CalendarView(modifier = Modifier.constrainAs(calendarView) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                },
+                CalendarView(
+                    modifier = Modifier.constrainAs(calendarView) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                    },
                     textTotal = String.format(
                         "%d ${stringResource(R.string.txt_journals_today)}",
                         noteItemList.size
@@ -231,7 +231,8 @@ private fun Content(
                     dateList = dateList,
                     lazyListState = listState,
                     onCalendar = onCalendar,
-                    onSelectDate = onSelectDate)
+                    onSelectDate = onSelectDate
+                )
             }
 
             LazyColumn(
@@ -502,7 +503,8 @@ private fun ItemNote(
                             top.linkTo(parent.top)
                             bottom.linkTo(parent.bottom)
                             height = Dimension.fillToConstraints
-                        }, color = Color(note.folder.color))
+                        }, color = Color(note.folder.color)
+                    )
                 }
             }
         }
@@ -512,7 +514,7 @@ private fun ItemNote(
 @Preview
 @Composable
 private fun PreviewContent() {
-    
+
     Content(ZonedDateTime.now(),
         emptyList(),
         emptyList(),
