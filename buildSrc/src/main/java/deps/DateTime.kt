@@ -9,6 +9,6 @@ object DateTime : Dependency() {
     private const val date = "com.jakewharton.threetenabp:threetenabp:${Versions.date}"
 
     override fun implementations() = listOf(
-        date
+        date,
     )
 }

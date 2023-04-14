@@ -84,8 +84,7 @@ dependencies {
         deps.Ads,
         deps.Billing,
         deps.RevealSwipe,
-        deps.DateTime,
-        deps.SheetsCompose
+        deps.DateTimePicker,
     )
 }
 

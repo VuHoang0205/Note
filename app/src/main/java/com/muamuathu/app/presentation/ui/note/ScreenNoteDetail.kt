@@ -19,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,7 +35,6 @@ import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Note
 import com.muamuathu.app.presentation.common.ItemTagNote
@@ -45,9 +43,9 @@ import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.*
 import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
-import org.threeten.bp.Instant
-import org.threeten.bp.ZoneId
-import org.threeten.bp.ZonedDateTime
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @Composable
 fun ScreenNoteDetail(idNote: String) {
@@ -550,7 +548,7 @@ private fun ExpandedText(
 @Preview
 @Composable
 private fun PreviewContent() {
-    AndroidThreeTen.init(LocalContext.current)
+    
     Content(Note(
         1,
         "Fun day with Friends $1",

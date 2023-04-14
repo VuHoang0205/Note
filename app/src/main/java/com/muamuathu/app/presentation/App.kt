@@ -1,7 +1,6 @@
 package com.muamuathu.app.presentation
 
 import android.app.Application
-import com.jakewharton.threetenabp.AndroidThreeTen
 import com.muamuathu.app.BuildConfig
 import com.muamuathu.feature.purchase.Billing
 import dagger.hilt.android.HiltAndroidApp
@@ -16,7 +15,6 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        AndroidThreeTen.init(this)
         setupLog()
     }
 

@@ -35,7 +35,7 @@ import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.extensions.isSameDay
 import com.muamuathu.app.presentation.extensions.toDayOfMonth
 import com.muamuathu.app.presentation.extensions.toDayOfWeek
-import org.threeten.bp.ZonedDateTime
+import java.time.ZonedDateTime
 
 
 @Composable

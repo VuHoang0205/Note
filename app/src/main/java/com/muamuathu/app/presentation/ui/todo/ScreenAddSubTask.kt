@@ -2,7 +2,6 @@
 
 package com.muamuathu.app.presentation.ui.todo
 
-import android.app.TimePickerDialog
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,10 +36,8 @@ import com.muamuathu.app.domain.model.SubTask
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
-import com.muamuathu.app.presentation.extensions.formatFromPattern
 import com.muamuathu.app.presentation.ui.todo.viewModel.SubTasksViewModel
-import org.threeten.bp.ZoneId
-import org.threeten.bp.ZonedDateTime
+import java.time.ZonedDateTime
 
 @Composable
 fun ScreenAddSubTask() {
@@ -57,25 +54,25 @@ fun ScreenAddSubTask() {
     Content(taskSelectedList = tagSelectedList, taskList = taskList, timeString = timeString, subTaskName = subTaskName, onValueChange = {
         subTaskName = it
     }, onTimePicker = {
-        val dialog = TimePickerDialog(
-            context,
-            { _, hourOfDay, min ->
-                selectDate = ZonedDateTime.of(
-                    selectDate.year,
-                    selectDate.monthValue,
-                    selectDate.dayOfMonth,
-                    hourOfDay,
-                    min,
-                    selectDate.second,
-                    selectDate.nano,
-                    ZoneId.systemDefault()
-                )
-                timeString = selectDate.toEpochSecond().formatFromPattern("hh:ss")
-            },
-            selectDate.hour, selectDate.minute,
-            true
-        )
-        dialog.show()
+//        val dialog = TimePickerDialog(
+//            context,
+//            { _, hourOfDay, min ->
+//                selectDate = ZonedDateTime.of(
+//                    selectDate.year,
+//                    selectDate.monthValue,
+//                    selectDate.dayOfMonth,
+//                    hourOfDay,
+//                    min,
+//                    selectDate.second,
+//                    selectDate.nano,
+//                    ZoneId.systemDefault()
+//                )
+//                timeString = selectDate.toEpochSecond().formatFromPattern("hh:ss")
+//            },
+//            selectDate.hour, selectDate.minute,
+//            true
+//        )
+//        dialog.show()
     }, onItemClick = {
         if (tagSelectedList.contains(it)) {
             tagSelectedList.remove(it)
