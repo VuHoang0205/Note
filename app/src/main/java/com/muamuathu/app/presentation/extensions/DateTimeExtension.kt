@@ -73,13 +73,14 @@ fun Long.getStartOfDay(): Long {
     return this - (local % 86_400_000L)
 }
 
+const val FORMAT_TIME_PICKER="hh:mm:ss"
 fun String.toTimeInMillis(format: String): Long {
-    try {
+    return try {
         val sdf = SimpleDateFormat(format, Locale.getDefault())
         val date = sdf.parse(this)
-        return date?.time ?: 0L
+        date?.time ?: 0L
     } catch (e: Exception) {
-        return 0L
+        0L
     }
 }
 
