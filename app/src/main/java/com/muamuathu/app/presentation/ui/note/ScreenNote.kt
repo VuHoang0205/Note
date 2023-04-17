@@ -194,7 +194,7 @@ private fun Content(
 
         ConstraintLayout(modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp)
+            .padding(horizontal = 16.dp)
             .constrainAs(contentView) {
                 top.linkTo(topView.bottom)
                 bottom.linkTo(parent.bottom)
@@ -223,6 +223,7 @@ private fun Content(
                     modifier = Modifier.constrainAs(calendarView) {
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)
+                        width = Dimension.fillToConstraints
                     },
                     textTotal = String.format(
                         "%d ${stringResource(R.string.txt_journals_today)}",

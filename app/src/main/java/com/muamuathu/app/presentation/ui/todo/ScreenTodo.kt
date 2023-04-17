@@ -191,6 +191,8 @@ private fun Content(
                 modifier = Modifier.constrainAs(calendarView) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
                 },
                 textTotal = String.format(
                     "%d ${stringResource(R.string.txt_task_today)}", tasks.size

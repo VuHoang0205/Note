@@ -18,7 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -30,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.muamuathu.app.R
+import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.extensions.isSameDay
 import com.muamuathu.app.presentation.extensions.toDayOfMonth
@@ -46,27 +49,40 @@ fun CalendarView(
     onCalendar: (selectDate: ZonedDateTime?) -> Unit,
     onSelectDate: (selectDate: ZonedDateTime) -> Unit,
 ) {
+    val selectDate by remember { mutableStateOf(ZonedDateTime.now()) }
+    ConstraintLayout(modifier = modifier) {
+        val (columnDate, lazyRowCalendar) = createRefs()
+        DateTimeView(modifier = modifier.constrainAs(columnDate) {
+            top.linkTo(parent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            width = Dimension.fillToConstraints
+        }, textTotal = textTotal, onCalendar = onCalendar)
 
+        CalendarView(modifier = Modifier
+            .fillMaxWidth()
+            .constrainAs(lazyRowCalendar) {
+                top.linkTo(columnDate.bottom, 16.dp)
+            }, dateList = dateList, lazyListState = lazyListState, selectDate = selectDate, onSelectDate = onSelectDate)
+    }
+}
+
+@Composable
+fun DateTimeView(
+    modifier: Modifier,
+    textTotal: String,
+    onCalendar: (selectDate: ZonedDateTime?) -> Unit,
+) {
     val selectDate by remember { mutableStateOf(ZonedDateTime.now()) }
     val dateString = selectDate.toDayOfMonth()
-
-    ConstraintLayout(modifier = modifier) {
-        val (columnDate, rowCalendar, lazyRowCalendar) = createRefs()
-        Column(modifier = Modifier.constrainAs(columnDate) {
-            start.linkTo(parent.start)
-            top.linkTo(parent.top, 16.dp)
-        }, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(text = dateString, color = colorResource(R.color.gulf_blue), fontSize = 26.sp)
             Text(text = textTotal, color = colorResource(R.color.storm_grey), fontSize = 13.sp)
         }
         Row(modifier = Modifier
             .clickable {
                 onCalendar(selectDate)
-            }
-            .constrainAs(rowCalendar) {
-                end.linkTo(parent.end)
-                top.linkTo(columnDate.top)
-                bottom.linkTo(columnDate.bottom)
             }, verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -78,18 +94,23 @@ fun CalendarView(
             Image(painter = painterResource(R.drawable.ic_down), contentDescription = "down", modifier = Modifier.align(alignment = Alignment.CenterVertically))
             Image(painter = painterResource(R.drawable.ic_calendar), contentScale = ContentScale.Crop, modifier = Modifier.size(32.dp), contentDescription = "search")
         }
+    }
+}
 
-        LazyRow(
-            state = lazyListState, modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(lazyRowCalendar) {
-                    top.linkTo(columnDate.bottom, 16.dp)
-                }, horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            itemsIndexed(dateList) { _, item ->
-                ItemCalendar(date = item, select = item.isSameDay(selectDate)) {
-                    onSelectDate(item)
-                }
+@Composable
+private fun CalendarView(
+    modifier: Modifier,
+    dateList: List<ZonedDateTime>,
+    lazyListState: LazyListState,
+    selectDate: ZonedDateTime,
+    onSelectDate: (selectDate: ZonedDateTime) -> Unit,
+) {
+    LazyRow(
+        state = lazyListState, modifier = modifier, horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        itemsIndexed(dateList) { _, item ->
+            ItemCalendar(date = item, select = item.isSameDay(selectDate)) {
+                onSelectDate(item)
             }
         }
     }
@@ -234,5 +255,71 @@ fun ItemTagNote(tag: String) {
             .padding(horizontal = 20.dp, vertical = 2.dp)
     ) {
         Text(tag, color = Color.White, textAlign = TextAlign.Center)
+    }
+}
+
+@Composable
+fun FolderSelectView(modifier: Modifier, folder: Folder, onChooseFolder: () -> Unit) {
+    ConstraintLayout(modifier = modifier) {
+        val (divider1, rowFolder, divider2) = createRefs()
+        Divider(modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(colorResource(R.color.gainsboro))
+            .constrainAs(divider1) {
+                top.linkTo(parent.top)
+            })
+
+        ConstraintLayout(modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onChooseFolder.invoke()
+            }
+            .constrainAs(rowFolder) {
+                top.linkTo(divider1.bottom)
+            }) {
+            val (icFolder, textChooseFolder, icArrow) = createRefs()
+            Image(painter = painterResource(R.drawable.ic_folder),
+                contentDescription = "folder",
+                colorFilter = ColorFilter.tint(colorResource(R.color.storm_grey)),
+                modifier = Modifier
+                    .padding(top = 16.dp, start = 20.dp, bottom = 16.dp)
+                    .constrainAs(icFolder) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    })
+
+            Text(text = folder.name.ifEmpty { stringResource(R.string.txt_choose_folder) },
+                color = colorResource(if (folder.name.isEmpty()) R.color.storm_grey else R.color.gulf_blue),
+                fontSize = 14.sp,
+                textAlign = TextAlign.End,
+                modifier = Modifier.constrainAs(textChooseFolder) {
+                    top.linkTo(icFolder.top)
+                    bottom.linkTo(icFolder.bottom)
+                    start.linkTo(icFolder.end, 16.dp)
+                })
+
+            Image(
+                painter = painterResource(R.drawable.ic_down),
+                contentDescription = null,
+                modifier = Modifier
+                    .rotate(-90f)
+                    .constrainAs(icArrow) {
+                        top.linkTo(icFolder.top)
+                        bottom.linkTo(icFolder.bottom)
+                        end.linkTo(parent.end, 8.dp)
+                    },
+                colorFilter = ColorFilter.tint(colorResource(R.color.storm_grey))
+            )
+        }
+
+        Divider(modifier = Modifier
+            .fillMaxWidth()
+            .background(colorResource(R.color.storm_grey))
+            .height(1.dp)
+            .background(colorResource(R.color.gainsboro))
+            .constrainAs(divider2) {
+                top.linkTo(rowFolder.bottom)
+            })
     }
 }

@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -14,9 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -31,9 +28,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
+import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.SubTask
 import com.muamuathu.app.domain.model.Task
 import com.muamuathu.app.domain.model.TaskAction
+import com.muamuathu.app.presentation.common.FolderSelectView
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
@@ -140,9 +139,7 @@ private fun Content(
                 IconButton(onClick = {
                     onClose()
                 }) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_close), contentDescription = null
-                    )
+                    Image(painter = painterResource(R.drawable.ic_close), contentDescription = null)
                 }
             },
             listRightIcon = listOf(Triple({
@@ -156,10 +153,10 @@ private fun Content(
             .fillMaxWidth()
             .constrainAs(contentView) {
                 bottom.linkTo(lazyRowBottom.top)
-                top.linkTo(parent.top)
+                top.linkTo(topView.bottom)
                 height = Dimension.fillToConstraints
             }) {
-            val (columnDate, imgCalendar, textTime, divider1, rowFolder, divider2, textTitle, textContent) = createRefs()
+            val (columnDate, imgCalendar, textTime, folderView, textTitle, textContent) = createRefs()
 
             Column(modifier = Modifier
                 .fillMaxWidth()
@@ -197,68 +194,22 @@ private fun Content(
                 )
             }
 
-            Text(text = stringResource(id = R.string.due_date), color = colorResource(R.color.gulf_blue), fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.constrainAs(textTime) {
+            Text(text = stringResource(id = R.string.due_date),
+                color = colorResource(R.color.gulf_blue),
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center, modifier = Modifier.constrainAs(textTime) {
                 top.linkTo(columnDate.top)
                 bottom.linkTo(columnDate.bottom)
                 start.linkTo(parent.start, 16.dp)
             })
 
-            Divider(modifier = Modifier
+            FolderSelectView(modifier = Modifier
                 .fillMaxWidth()
-                .height(1.dp)
-                .background(colorResource(R.color.gainsboro))
-                .constrainAs(divider1) {
-                    top.linkTo(columnDate.bottom, 16.dp)
-                })
-
-            ConstraintLayout(modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    onChooseFolder.invoke()
-                }
-                .constrainAs(rowFolder) {
-                    top.linkTo(divider1.bottom)
-                }) {
-                val (icFolder, textChooseFolder, icArrow) = createRefs()
-                Image(painter = painterResource(R.drawable.ic_folder),
-                    contentDescription = "folder",
-                    colorFilter = ColorFilter.tint(colorResource(R.color.storm_grey)),
-                    modifier = Modifier
-                        .padding(top = 24.dp, start = 16.dp, bottom = 16.dp)
-                        .constrainAs(icFolder) {
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                        })
-
-                Text(text = task.name.ifEmpty { stringResource(R.string.txt_choose_folder) },
-                    color = colorResource(if (task.name.isEmpty()) R.color.storm_grey else R.color.gulf_blue),
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.constrainAs(textChooseFolder) {
-                        top.linkTo(icFolder.top)
-                        bottom.linkTo(icFolder.bottom)
-                        start.linkTo(icFolder.end, 16.dp)
-                    })
-
-                Image(
-                    painter = painterResource(R.drawable.ic_down), contentDescription = null, modifier = Modifier
-                        .rotate(-90f)
-                        .constrainAs(icArrow) {
-                            top.linkTo(icFolder.top)
-                            bottom.linkTo(icFolder.bottom)
-                            end.linkTo(parent.end, 8.dp)
-                        }, colorFilter = ColorFilter.tint(colorResource(R.color.storm_grey))
-                )
+                .constrainAs(folderView) {
+                    top.linkTo(columnDate.bottom)
+                }, folder = Folder()) {
+                onChooseFolder()
             }
-
-            Divider(modifier = Modifier
-                .fillMaxWidth()
-                .background(colorResource(R.color.storm_grey))
-                .height(1.dp)
-                .background(colorResource(R.color.gainsboro))
-                .constrainAs(divider2) {
-                    top.linkTo(rowFolder.bottom)
-                })
 
             TextField(
                 value = title,
@@ -277,7 +228,7 @@ private fun Content(
                     .fillMaxWidth()
                     .background(Color.Transparent)
                     .constrainAs(textTitle) {
-                        top.linkTo(rowFolder.bottom, 20.dp)
+                        top.linkTo(folderView.bottom, 20.dp)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         width = Dimension.fillToConstraints
