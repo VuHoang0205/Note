@@ -2,6 +2,7 @@
 
 package com.muamuathu.app.presentation.ui.note
 
+import android.app.DatePickerDialog
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -38,14 +39,14 @@ import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.common.DateTimeView
 import com.muamuathu.app.presentation.common.FolderSelectView
 import com.muamuathu.app.presentation.common.ItemTagNote
-import com.muamuathu.app.presentation.components.dialog.CustomDatePickerDialog
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
-import java.time.ZoneOffset
+import java.util.Calendar
+import java.util.TimeZone
 
 @Composable
 fun ScreenNewNote() {
@@ -62,7 +63,9 @@ fun ScreenNewNote() {
     val tag by viewModel.tags.collectAsState()
     val folder by viewModel.folder.collectAsState()
     val enableSave by viewModel.isValidData.collectAsState()
-
+    val calendar: Calendar by remember {
+        mutableStateOf(Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar)
+    }
     fun onBackPress() {
         viewModel.clearReference()
         eventHandler.postNavEvent(NavEvent.PopBackStack(false))
@@ -93,7 +96,19 @@ fun ScreenNewNote() {
             })
         },
         onCalendar = {
-            viewModel.updateDateTime(it)
+            val dialog = DatePickerDialog(
+                context,
+                { _, year, month, dayOfMonth ->
+                    calendar.set(Calendar.YEAR, year)
+                    calendar.set(Calendar.MONTH, month)
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                    viewModel.updateDateTime(calendar.timeInMillis)
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            )
+            dialog.show()
         },
         onChooseFolder = {
             eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderChoose))
@@ -140,12 +155,11 @@ private fun Content(
     onInputContent: (String) -> Unit,
     onClose: () -> Unit,
     onSave: () -> Unit,
-    onCalendar: (Long) -> Unit,
+    onCalendar: () -> Unit,
     onChooseFolder: () -> Unit,
     onActionClick: (noteAction: NoteAction) -> Unit,
     onTageClick: () -> Unit,
 ) {
-    var isShowDatePicker by remember { mutableStateOf(false) }
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -191,7 +205,7 @@ private fun Content(
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     width = Dimension.fillToConstraints
-                }, textTotal = stringResource(id = R.string.txt_add_new_journal), onCalendar = { isShowDatePicker = true })
+                }, textTotal = stringResource(id = R.string.txt_add_new_journal), onCalendar = {onCalendar()})
 
             FolderSelectView(modifier = Modifier
                 .fillMaxWidth()
@@ -393,13 +407,6 @@ private fun Content(
                     Image(painterResource(it.resource), contentDescription = null)
                 }
             }
-        }
-
-        if (isShowDatePicker) {
-            CustomDatePickerDialog(isShow = isShowDatePicker, onDismissRequest = { isShowDatePicker = false }, onDateChange = {
-                isShowDatePicker = false
-                onCalendar(it.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli())
-            })
         }
     }
 }

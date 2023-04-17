@@ -2,6 +2,7 @@
 
 package com.muamuathu.app.presentation.ui.todo
 
+import android.app.DatePickerDialog
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -35,7 +36,6 @@ import com.muamuathu.app.domain.model.SubTask
 import com.muamuathu.app.domain.model.Task
 import com.muamuathu.app.domain.model.TaskAction
 import com.muamuathu.app.presentation.common.FolderSelectView
-import com.muamuathu.app.presentation.components.dialog.CustomDatePickerDialog
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
@@ -43,7 +43,6 @@ import com.muamuathu.app.presentation.extensions.formatFromPattern
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.todo.viewModel.AddTodoViewModel
-import java.time.ZoneOffset
 import java.util.*
 
 @Composable
@@ -87,7 +86,15 @@ fun ScreenNewTask() {
             onBackPress()
         })
     }, onCalendar = {
-        viewModel.updateDateTime(calendar.timeInMillis)
+        val dialog = DatePickerDialog(
+            context, { _, year, month, dayOfMonth ->
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, month)
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                viewModel.updateDateTime(calendar.timeInMillis)
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        dialog.show()
     }, onChooseFolder = {
         eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderChoose))
     }, onActionClick = {
@@ -112,11 +119,10 @@ private fun Content(
     onInputContent: (String) -> Unit,
     onClose: () -> Unit,
     onSave: () -> Unit,
-    onCalendar: (Long) -> Unit,
+    onCalendar: () -> Unit,
     onChooseFolder: () -> Unit,
     onActionClick: (action: TaskAction) -> Unit,
 ) {
-    var isShowDatePicker by remember { mutableStateOf(false) }
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -180,7 +186,7 @@ private fun Content(
                 bottom.linkTo(columnDate.bottom)
                 end.linkTo(parent.end)
             }, onClick = {
-                isShowDatePicker = true
+                onCalendar()
             }) {
                 Image(
                     modifier = Modifier.size(32.dp),
@@ -203,7 +209,8 @@ private fun Content(
                 .fillMaxWidth()
                 .constrainAs(folderView) {
                     top.linkTo(columnDate.bottom)
-                }, folder = Folder()) {
+                }, folder = Folder()
+            ) {
                 onChooseFolder()
             }
 
@@ -341,12 +348,6 @@ private fun Content(
                     Image(painterResource(it.resource), contentDescription = null)
                 }
             }
-        }
-        if (isShowDatePicker) {
-            CustomDatePickerDialog(isShow = isShowDatePicker, onDismissRequest = { isShowDatePicker = false }, onDateChange = {
-                isShowDatePicker = false
-                onCalendar(it.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli())
-            })
         }
     }
 }
