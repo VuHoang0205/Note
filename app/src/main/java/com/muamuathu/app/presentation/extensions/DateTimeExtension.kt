@@ -1,6 +1,9 @@
 package com.muamuathu.app.presentation.extensions
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -73,7 +76,7 @@ fun Long.getStartOfDay(): Long {
     return this - (local % 86_400_000L)
 }
 
-const val FORMAT_TIME_PICKER="hh:mm:ss"
+const val FORMAT_TIME_PICKER = "hh:mm:ss"
 fun String.toTimeInMillis(format: String): Long {
     return try {
         val sdf = SimpleDateFormat(format, Locale.getDefault())
@@ -83,6 +86,10 @@ fun String.toTimeInMillis(format: String): Long {
         0L
     }
 }
+
+fun LocalDate.toZonedDateTime(): ZonedDateTime = ZonedDateTime.of(
+    this, LocalTime.now(), ZoneId.systemDefault()
+)
 
 
 

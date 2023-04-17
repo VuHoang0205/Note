@@ -85,4 +85,5 @@
     <string name="add_sub_task">"Add Sub -Tasks"</string>
     <string name="select_a_due_time">"Select a due time"</string>
     <string name="due_date">"Due Date"</string>
+    <string name="msg_choose_time_error">"The current time has passed the selected time, please choose again"</string>
 </resources>

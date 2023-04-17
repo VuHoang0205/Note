@@ -1,6 +1,7 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.muamuathu.app.presentation.ui.todo
 
-import android.app.DatePickerDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,11 +14,11 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,18 +32,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.data.entity.EntityTask
 import com.muamuathu.app.presentation.common.CalendarView
+import com.muamuathu.app.presentation.components.dialog.CustomDatePickerDialog
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.indexOfDate
 import com.muamuathu.app.presentation.extensions.toDayOfWeek
 import com.muamuathu.app.presentation.extensions.toHour
+import com.muamuathu.app.presentation.extensions.toZonedDateTime
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.ui.todo.viewModel.TodoViewModel
 import de.charlex.compose.*
-import java.time.ZoneId
-
 import java.time.ZonedDateTime
-import java.util.*
 
 const val TAB_1 = 0
 const val TAB_2 = 1
@@ -55,7 +55,6 @@ sealed class Tabs(val tabName: Int) {
 @Composable
 fun ScreenTodo() {
 
-    val context = LocalContext.current
     val viewModel: TodoViewModel = hiltViewModel()
     val eventHandler = initEventHandler()
     val dateList by viewModel.bindDateListState().collectAsState(initial = emptyList())
@@ -71,23 +70,7 @@ fun ScreenTodo() {
         }, onSort = {
 
         }, onCalendar = {
-            val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar
-            if (it != null) {
-                calendar.timeInMillis = it.toInstant().toEpochMilli()
-            }
-            val dialog = DatePickerDialog(
-                context,
-                { _, year, month, dayOfMonth ->
-                    selectDate = ZonedDateTime.of(
-                        year, month, dayOfMonth, 1, 1, 1, 1, ZoneId.systemDefault()
-                    )
-                    viewModel.getCalenderList(selectDate)
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            dialog.show()
+            viewModel.getCalenderList(it)
         }, onSelectDate = {
             selectDate = it
             viewModel.getCalenderList(selectDate)
@@ -108,7 +91,7 @@ private fun Content(
     selectEntityTaskList: List<EntityTask>,
     onAdd: () -> Unit,
     onSort: () -> Unit,
-    onCalendar: (selectDate: ZonedDateTime?) -> Unit,
+    onCalendar: (selectDate: ZonedDateTime) -> Unit,
     onSelectDate: (selectDate: ZonedDateTime) -> Unit,
     onTaskItem: (selectEntityTask: EntityTask) -> Unit,
     onDeleteTaskItem: (selectEntityTask: EntityTask) -> Unit,
@@ -135,7 +118,7 @@ private fun Content(
             listState.animateScrollToItem(index, offset)
         }
     }
-
+    var isShowDatePicker by remember { mutableStateOf(false) }
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -199,7 +182,7 @@ private fun Content(
                 ),
                 dateList = dateList,
                 lazyListState = listState,
-                onCalendar = onCalendar,
+                onCalendar = { isShowDatePicker = true },
                 onSelectDate = onSelectDate
             )
 
@@ -258,6 +241,12 @@ private fun Content(
                     }, checked = selectEntityTaskList.contains(item))
                 }
             }
+        }
+        if (isShowDatePicker) {
+            CustomDatePickerDialog(isShow = isShowDatePicker, onDismissRequest = { isShowDatePicker = false }, onDateChange = {
+                isShowDatePicker = false
+                onCalendar(it.toZonedDateTime())
+            })
         }
     }
 }

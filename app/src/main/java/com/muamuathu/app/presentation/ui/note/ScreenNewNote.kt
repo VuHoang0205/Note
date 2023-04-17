@@ -1,6 +1,7 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.muamuathu.app.presentation.ui.note
 
-import android.app.DatePickerDialog
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -14,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -36,14 +38,14 @@ import com.muamuathu.app.domain.model.Tag
 import com.muamuathu.app.presentation.common.DateTimeView
 import com.muamuathu.app.presentation.common.FolderSelectView
 import com.muamuathu.app.presentation.common.ItemTagNote
+import com.muamuathu.app.presentation.components.dialog.CustomDatePickerDialog
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
-import com.muamuathu.app.presentation.extensions.formatFromPattern
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
-import java.util.*
+import java.time.ZoneOffset
 
 @Composable
 fun ScreenNewNote() {
@@ -54,20 +56,12 @@ fun ScreenNewNote() {
     val viewModel = hiltViewModel<AddNoteViewModel>(context)
     val coroutineScope = rememberCoroutineScope()
 
-    val calendar: Calendar by remember {
-        mutableStateOf(Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar)
-    }
-    val dateTime by viewModel.dateTime.collectAsState()
     val title by viewModel.title.collectAsState()
     val content by viewModel.content.collectAsState()
     val attachments by viewModel.attachments.collectAsState()
     val tag by viewModel.tags.collectAsState()
     val folder by viewModel.folder.collectAsState()
     val enableSave by viewModel.isValidData.collectAsState()
-
-    val monthString by remember { derivedStateOf { dateTime.formatFromPattern("dd MMMM") } }
-    val yearString by remember { derivedStateOf { dateTime.formatFromPattern("yyyy, EEEE") } }
-    val timeString by remember { derivedStateOf { dateTime.formatFromPattern("hh:mm a") } }
 
     fun onBackPress() {
         viewModel.clearReference()
@@ -99,19 +93,7 @@ fun ScreenNewNote() {
             })
         },
         onCalendar = {
-            val dialog = DatePickerDialog(
-                context,
-                { _, year, month, dayOfMonth ->
-                    calendar.set(Calendar.YEAR, year)
-                    calendar.set(Calendar.MONTH, month)
-                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                    viewModel.updateDateTime(calendar.timeInMillis)
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            dialog.show()
+            viewModel.updateDateTime(it)
         },
         onChooseFolder = {
             eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderChoose))
@@ -158,12 +140,12 @@ private fun Content(
     onInputContent: (String) -> Unit,
     onClose: () -> Unit,
     onSave: () -> Unit,
-    onCalendar: () -> Unit,
+    onCalendar: (Long) -> Unit,
     onChooseFolder: () -> Unit,
     onActionClick: (noteAction: NoteAction) -> Unit,
     onTageClick: () -> Unit,
 ) {
-
+    var isShowDatePicker by remember { mutableStateOf(false) }
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -209,7 +191,7 @@ private fun Content(
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     width = Dimension.fillToConstraints
-                }, textTotal = stringResource(id = R.string.txt_add_new_journal), onCalendar = { onCalendar() })
+                }, textTotal = stringResource(id = R.string.txt_add_new_journal), onCalendar = { isShowDatePicker = true })
 
             FolderSelectView(modifier = Modifier
                 .fillMaxWidth()
@@ -411,6 +393,13 @@ private fun Content(
                     Image(painterResource(it.resource), contentDescription = null)
                 }
             }
+        }
+
+        if (isShowDatePicker) {
+            CustomDatePickerDialog(isShow = isShowDatePicker, onDismissRequest = { isShowDatePicker = false }, onDateChange = {
+                isShowDatePicker = false
+                onCalendar(it.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli())
+            })
         }
     }
 }

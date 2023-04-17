@@ -31,9 +31,9 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.marosseleng.compose.material3.datetimepickers.time.ui.dialog.TimePickerDialog
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.SubTask
+import com.muamuathu.app.presentation.components.dialog.CustomTimePickerDialog
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
@@ -235,7 +235,7 @@ private fun Content(
             }
         }
         if (isShowTimePicker) {
-            TimePickerDialog(onDismissRequest = { isShowTimePicker = false }, onTimeChange = {
+            CustomTimePickerDialog(isShow = isShowTimePicker, onDismissRequest = { isShowTimePicker = false }, onTimeChange = {
                 isShowTimePicker = false
                 onTimePicker(it.toString())
             })

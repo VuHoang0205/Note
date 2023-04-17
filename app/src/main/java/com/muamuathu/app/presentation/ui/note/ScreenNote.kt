@@ -1,8 +1,7 @@
-@file:OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 
 package com.muamuathu.app.presentation.ui.note
 
-import android.app.DatePickerDialog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,13 +12,13 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,6 +37,7 @@ import com.muamuathu.app.domain.model.commons.WrapList
 import com.muamuathu.app.presentation.common.CalendarView
 import com.muamuathu.app.presentation.common.ItemTagNote
 import com.muamuathu.app.presentation.common.SearchView
+import com.muamuathu.app.presentation.components.dialog.CustomDatePickerDialog
 import com.muamuathu.app.presentation.components.dialog.JcDialog
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
@@ -45,12 +45,11 @@ import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.getStartOfDay
 import com.muamuathu.app.presentation.extensions.indexOfDate
 import com.muamuathu.app.presentation.extensions.toHour
+import com.muamuathu.app.presentation.extensions.toZonedDateTime
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
 import de.charlex.compose.*
-import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
 
 const val EXTRA_NOTE_ID = "noteId"
 
@@ -58,7 +57,6 @@ const val EXTRA_NOTE_ID = "noteId"
 fun ScreenNote() {
 
     val eventHandler = initEventHandler()
-    val context = LocalContext.current
     val viewModel: NoteViewModel = hiltViewModel()
 
     val selectDateList by viewModel.dateListStateFlow.collectAsState(initial = emptyList())
@@ -81,29 +79,10 @@ fun ScreenNote() {
             viewModel.search("")
         },
         onCalendar = {
-            val calendar: Calendar = Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar
-            if (it != null) {
-                calendar.timeInMillis = it.toInstant().toEpochMilli()
+            it?.let {
+                selectDate = it
+                viewModel.getCalenderList(selectDate)
             }
-            val dialog = DatePickerDialog(
-                context,
-                { _, year, month, dayOfMonth ->
-                    selectDate = ZonedDateTime.of(
-                        year,
-                        month,
-                        dayOfMonth,
-                        1,
-                        1,
-                        1,
-                        1,
-                        ZoneId.systemDefault()
-                    )
-                    viewModel.getCalenderList(selectDate)
-                },
-                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            dialog.show()
         },
         onSelectDate = {
             selectDate = it
@@ -149,6 +128,7 @@ private fun Content(
     var enableSearchMode by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     var query by remember { mutableStateOf("") }
+    var isShowDatePicker by remember { mutableStateOf(false) }
 
     val index = dateList.indexOfDate(selectDate)
     if (index != -1) {
@@ -231,7 +211,7 @@ private fun Content(
                     ),
                     dateList = dateList,
                     lazyListState = listState,
-                    onCalendar = onCalendar,
+                    onCalendar = { isShowDatePicker = true },
                     onSelectDate = onSelectDate
                 )
             }
@@ -273,6 +253,13 @@ private fun Content(
                         }
                     }) {
                 }
+            }
+
+            if (isShowDatePicker) {
+                CustomDatePickerDialog(isShow = isShowDatePicker, onDismissRequest = { isShowDatePicker = false }, onDateChange = {
+                    isShowDatePicker = false
+                    onCalendar(it.toZonedDateTime())
+                })
             }
         }
     }
