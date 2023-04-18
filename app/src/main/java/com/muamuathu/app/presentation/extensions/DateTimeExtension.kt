@@ -77,14 +77,8 @@ fun Long.getStartOfDay(): Long {
 }
 
 const val FORMAT_TIME_PICKER = "hh:mm:ss"
-fun String.toTimeInMillis(format: String): Long {
-    return try {
-        val sdf = SimpleDateFormat(format, Locale.getDefault())
-        val date = sdf.parse(this)
-        date?.time ?: 0L
-    } catch (e: Exception) {
-        0L
-    }
+fun ZonedDateTime.toStartOfDayMillis(): Long {
+    return toInstant().toEpochMilli().getStartOfDay()
 }
 
 fun LocalDate.toZonedDateTime(): ZonedDateTime = ZonedDateTime.of(

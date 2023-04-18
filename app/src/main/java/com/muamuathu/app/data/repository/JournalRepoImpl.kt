@@ -7,14 +7,15 @@ import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.Note
 import com.muamuathu.app.domain.model.SubTask
 import com.muamuathu.app.domain.model.Tag
+import com.muamuathu.app.presentation.extensions.getStartOfDay
 import com.muamuathu.app.presentation.helper.safeDataBaseCall
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class JournalRepoImpl @Inject constructor(private val database: JournalDatabase) : JournalRepo {
-    override suspend fun loadNote(time: Long) = safeDataBaseCall {
-        database.daoNote().getNotes(time).map { it.toDomainModel() }
+    override suspend fun loadNote(time: Long): Flow<List<Note>> {
+        return database.daoNote().getNotes(time.getStartOfDay()).map { it.map { it.toDomainModel() } }
     }
 
     override suspend fun loadFolders(): Flow<List<Folder>> {

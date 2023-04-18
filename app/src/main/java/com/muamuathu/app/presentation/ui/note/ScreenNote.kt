@@ -42,7 +42,6 @@ import com.muamuathu.app.presentation.components.dialog.JcDialog
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
-import com.muamuathu.app.presentation.extensions.getStartOfDay
 import com.muamuathu.app.presentation.extensions.indexOfDate
 import com.muamuathu.app.presentation.extensions.toHour
 import com.muamuathu.app.presentation.extensions.toZonedDateTime
@@ -63,11 +62,6 @@ fun ScreenNote() {
     val noteItemList by viewModel.noteListStateFlow.collectAsState(initial = WrapList(mutableListOf()))
     var selectDate by remember { mutableStateOf(ZonedDateTime.now()) }
 
-    LaunchedEffect(key1 = selectDate, block = {
-        viewModel.getCalenderList(selectDate)
-        viewModel.getNoteList(selectDate.toInstant().toEpochMilli().getStartOfDay())
-    })
-
     Content(selectDate, selectDateList, noteItemList.list,
         onAdd = {
             eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAdd))
@@ -81,7 +75,7 @@ fun ScreenNote() {
         onCalendar = {
             it?.let {
                 selectDate = it
-                viewModel.getCalenderList(selectDate)
+                viewModel.getNoteList(it.toInstant().toEpochMilli())
             }
         },
         onSelectDate = {

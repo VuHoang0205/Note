@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class DaoTag : DaoBase<EntityTag>() {
-    @Query("SELECT * FROM entitytag ORDER BY id DESC ")
+    @Query("SELECT * FROM EntityTag ORDER BY id DESC ")
     abstract fun getTags(): Flow<List<EntityTag>>
 }

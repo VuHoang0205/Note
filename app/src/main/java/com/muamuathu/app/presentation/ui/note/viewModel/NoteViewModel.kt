@@ -25,7 +25,12 @@ class NoteViewModel @Inject constructor(private val repo: JournalRepo) : ViewMod
         MutableStateFlow(ArrayList())
     var query: MutableStateFlow<String> = MutableStateFlow("")
 
-    fun getCalenderList(
+    init {
+        getCalenderList(ZonedDateTime.now())
+        getNoteList(ZonedDateTime.now().toInstant().toEpochMilli())
+    }
+
+    private fun getCalenderList(
         zonedDateTime: ZonedDateTime,
     ) = ioLaunch {
         MockData.getCalendarList(zonedDateTime).flowOn(Dispatchers.IO).collect {
@@ -33,12 +38,10 @@ class NoteViewModel @Inject constructor(private val repo: JournalRepo) : ViewMod
         }
     }
 
-    fun getNoteList(time: Long) = resultFlow {
-        repo.loadNote(time).apply {
-            if (this is ResultWrapper.Success) {
-                noteListListOriginStateFlow.value = value
-                noteListStateFlow.tryEmit(WrapList(value))
-            }
+     fun getNoteList(time: Long) = ioLaunch {
+        repo.loadNote(time).collect {
+            noteListListOriginStateFlow.value = it
+            noteListStateFlow.tryEmit(WrapList(it))
         }
     }
 
