@@ -45,8 +45,7 @@ import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
-import java.util.Calendar
-import java.util.TimeZone
+import java.util.*
 
 @Composable
 fun ScreenNewNote() {
@@ -112,32 +111,29 @@ fun ScreenNewNote() {
         },
         onChooseFolder = {
             eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderChoose))
-        },
-        onActionClick = {
-            when (it) {
-                NoteAction.OpenCamera -> {
-                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteCaptureImage))
-                }
-                NoteAction.OpenGallery -> {
-                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddImage))
-                }
-//                Action.AddTag -> {
-//                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddTags))
-//                }
+        }
+    ) {
+        when (it) {
+            NoteAction.OpenCamera -> {
+                eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteCaptureImage))
+            }
+            NoteAction.OpenGallery -> {
+                eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddImage))
+            }
+            NoteAction.AddTag -> {
+                eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddTags))
+            }
 //                Action.AddAudio -> {}
 //                Action.OpenVideo -> {
 //                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddVideo))
 //                }
-                NoteAction.FileManager -> {
-                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NotePickImage))
-                }
-                NoteAction.DrawSketch -> {
-                    eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteDrawSketch))
-                }
+            NoteAction.FileManager -> {
+                eventHandler.postNavEvent(NavEvent.Action(NavTarget.NotePickImage))
+            }
+            NoteAction.DrawSketch -> {
+                eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteDrawSketch))
             }
         }
-    ) {
-        eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddTags))
     }
 }
 
@@ -158,7 +154,6 @@ private fun Content(
     onCalendar: () -> Unit,
     onChooseFolder: () -> Unit,
     onActionClick: (noteAction: NoteAction) -> Unit,
-    onTageClick: () -> Unit,
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -299,6 +294,7 @@ private fun Content(
                     })
                 LazyRow(
                     modifier = Modifier
+                        .padding(horizontal = 16.dp)
                         .fillMaxWidth()
                         .constrainAs(lazyRowAttach) {
                             top.linkTo(textAttachment.bottom, 12.dp)
@@ -308,7 +304,9 @@ private fun Content(
                     itemsIndexed(attachments.take(limitItem)) { index, path ->
                         AttachmentsItem(
                             path, index == limitItem - 1, redundantItem
-                        ) { }
+                        ) {
+
+                        }
                     }
                 }
             }
@@ -367,20 +365,6 @@ private fun Content(
                                 }
                             }
                         }
-
-                        IconButton(
-                            modifier = Modifier
-                                .constrainAs(btnAdd) {
-                                    centerVerticallyTo(parent)
-                                    end.linkTo(parent.end)
-                                },
-                            onClick = { onTageClick() }
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_plus),
-                                contentDescription = ""
-                            )
-                        }
                     }
                 }
             }
@@ -421,7 +405,6 @@ private fun PreviewContent() {
         emptyList(),
         emptyList(),
         true,
-        {},
         {},
         {},
         {},

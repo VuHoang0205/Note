@@ -157,7 +157,7 @@ private fun Content(
                     Image(
                         painter = painterResource(id = R.drawable.ic_image_default),
                         contentDescription = "avatar",
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.Inside,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(280.dp)
@@ -287,98 +287,38 @@ private fun Content(
                                 start.linkTo(parent.start)
                             })
 
-//                Card(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .constrainAs(audioView) {
-//                            top.linkTo(textContent.bottom, 8.dp)
-//                            start.linkTo(parent.start)
-//                        },
-//                    elevation = 4.dp,
-//                    backgroundColor = Color.White,
-//                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
-//                ) {
-//                    Box(modifier = Modifier.fillMaxWidth()) {
-//                        Column(
-//                            modifier = Modifier
-//                                .padding(vertical = 8.dp, horizontal = 12.dp)
-//                                .align(alignment = Alignment.CenterStart)
-//                        ) {
-//                            Text(
-//                                text = "Audio",
-//                                color = colorResource(R.color.gulf_blue),
-//                                fontSize = 14.sp,
-//                            )
-//                            Row {
-//                                Image(
-//                                    painter = painterResource(R.drawable.ic_music),
-//                                    contentDescription = "icon",
-//                                )
-//
-//                                Divider(modifier = Modifier.size(3.dp))
-//
-//                                Text(
-//                                    text = "Ed Sherran",
-//                                    color = colorResource(R.color.gulf_blue),
-//                                    fontSize = 11.sp,
-//                                    modifier = Modifier.padding(start = 4.dp)
-//                                )
-//                            }
-//                        }
-//
-//                        TextButton(
-//                            onClick = {
-//                                onPlayAudio()
-//                            },
-//                            modifier = Modifier
-//                                .align(alignment = Alignment.CenterEnd)
-//                                .padding(8.dp)
-//                        ) {
-//                            Image(
-//                                painter = painterResource(R.drawable.ic_play),
-//                                contentDescription = "down",
-//                                modifier = Modifier.align(alignment = Alignment.CenterVertically)
-//                            )
-//                            Text(
-//                                text = stringResource(R.string.txt_play),
-//                                color = colorResource(R.color.gulf_blue),
-//                                fontSize = 14.sp,
-//                                textAlign = TextAlign.Center,
-//                                modifier = Modifier.padding(start = 6.dp)
-//                            )
-//                        }
-//                    }
-//                }
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .constrainAs(tagView) {
-                                top.linkTo(textContent.bottom, 16.dp)
-                                start.linkTo(parent.start)
-                            },
-                        elevation = CardDefaults.cardElevation(2.dp),
-                        colors = CardDefaults.cardColors(Color.White),
-                        shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
-                    ) {
-                        Column(modifier = Modifier.fillMaxWidth()) {
+                    if (tags.isNotEmpty()){
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .constrainAs(tagView) {
+                                    top.linkTo(textContent.bottom, 16.dp)
+                                    start.linkTo(parent.start)
+                                },
+                            elevation = CardDefaults.cardElevation(2.dp),
+                            colors = CardDefaults.cardColors(Color.White),
+                            shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp))
+                        ) {
+                            Column(modifier = Modifier.fillMaxWidth()) {
 
-                            Text(
-                                text = stringResource(R.string.txt_tags),
-                                color = colorResource(R.color.gulf_blue),
-                                fontSize = 14.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
+                                Text(
+                                    text = stringResource(R.string.txt_tags),
+                                    color = colorResource(R.color.gulf_blue),
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
 
-                            LazyRow(
-                                modifier = Modifier
-                                    .padding(
-                                        top = 4.dp, start = 8.dp, end = 8.dp, bottom = 10.dp
-                                    )
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                items(tags) {
-                                    ItemTagNote(tag = it.name)
+                                LazyRow(
+                                    modifier = Modifier
+                                        .padding(
+                                            top = 4.dp, start = 8.dp, end = 8.dp, bottom = 10.dp
+                                        )
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    items(tags) {
+                                        ItemTagNote(tag = it.name)
+                                    }
                                 }
                             }
                         }
@@ -399,7 +339,9 @@ private fun Content(
                             color = colorResource(R.color.gulf_blue),
                             fontSize = 16.sp,
                             modifier = Modifier.constrainAs(textAttachment) {
-                                top.linkTo(tagView.bottom, 12.dp)
+                                top.linkTo(if (tags.isEmpty()) textContent.bottom else {
+                                    tagView.bottom
+                                }, 12.dp)
                                 start.linkTo(parent.start)
                             })
                         LazyRow(
