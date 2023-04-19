@@ -1,10 +1,7 @@
 package com.muamuathu.app.presentation.extensions
 
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -84,6 +81,12 @@ fun ZonedDateTime.toStartOfDayMillis(): Long {
 fun LocalDate.toZonedDateTime(): ZonedDateTime = ZonedDateTime.of(
     this, LocalTime.now(), ZoneId.systemDefault()
 )
+
+fun Long.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
+
+fun ZonedDateTime.toTimeInMillis(): Long {
+    return this.toInstant().toEpochMilli()
+}
 
 
 

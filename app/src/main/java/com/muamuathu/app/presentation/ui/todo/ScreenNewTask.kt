@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalComposeUiApi::class)
-
 package com.muamuathu.app.presentation.ui.todo
 
 import android.app.DatePickerDialog
@@ -14,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -33,16 +30,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.SubTask
-import com.muamuathu.app.domain.model.Task
 import com.muamuathu.app.domain.model.TaskAction
 import com.muamuathu.app.presentation.common.FolderSelectView
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.formatFromPattern
+import com.muamuathu.app.presentation.extensions.toHour
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.todo.viewModel.AddTodoViewModel
+import com.muamuathu.app.presentation.ui.todo.viewModel.SubTasksViewModel
 import java.util.*
 
 @Composable
@@ -52,6 +50,7 @@ fun ScreenNewTask() {
     val context = LocalContext.current as ComponentActivity
 
     val viewModel = hiltViewModel<AddTodoViewModel>(context)
+    val subTaskViewModel = hiltViewModel<SubTasksViewModel>(context)
     val coroutineScope = rememberCoroutineScope()
 
     val calendar: Calendar by remember {
@@ -62,6 +61,7 @@ fun ScreenNewTask() {
     val content by viewModel.content.collectAsState()
     val task by viewModel.task.collectAsState()
     val enableSave by viewModel.isValidData.collectAsState()
+    val subTasks = subTaskViewModel.filterSubTaskValid(dateTime).collectAsState()
 
     val monthString by remember { derivedStateOf { dateTime.formatFromPattern("dd MMMM") } }
     val yearString by remember { derivedStateOf { dateTime.formatFromPattern("yyyy, EEEE") } }
@@ -75,34 +75,41 @@ fun ScreenNewTask() {
         onBackPress()
     }
 
-    Content(monthString, yearString, task = task, title = title, content = content, enableSave = enableSave, onInputTitle = {
-        viewModel.updateTitle(it)
-    }, onInputContent = {
-        viewModel.updateContent(it)
-    }, onClose = {
-        onBackPress()
-    }, onSave = {
-        coroutineScope.observeResultFlow(viewModel.saveNote(), successHandler = {
+    Content(monthString, yearString,
+        title = title,
+        content = content,
+        enableSave = enableSave,
+        onInputTitle = {
+            viewModel.updateTitle(it)
+        },
+        onInputContent = {
+            viewModel.updateContent(it)
+        }, onClose = {
             onBackPress()
-        })
-    }, onCalendar = {
-        val dialog = DatePickerDialog(
-            context, { _, year, month, dayOfMonth ->
-                calendar.set(Calendar.YEAR, year)
-                calendar.set(Calendar.MONTH, month)
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                viewModel.updateDateTime(calendar.timeInMillis)
-            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        dialog.show()
-    }, onChooseFolder = {
-        eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderChoose))
-    }, onActionClick = {
-        when (it) {
-            TaskAction.AddSubTask -> eventHandler.postNavEvent(NavEvent.Action(NavTarget.TodoAddSubTask))
-            else -> {}
-        }
-    })
+        }, onSave = {
+            coroutineScope.observeResultFlow(viewModel.saveNote(), successHandler = {
+                onBackPress()
+            })
+        }, onCalendar = {
+            val dialog = DatePickerDialog(
+                context, { _, year, month, dayOfMonth ->
+                    calendar.set(Calendar.YEAR, year)
+                    calendar.set(Calendar.MONTH, month)
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                    viewModel.updateDateTime(calendar.timeInMillis)
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
+            )
+            dialog.show()
+        }, onChooseFolder = {
+            eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderChoose))
+        }, onActionClick = {
+            when (it) {
+                TaskAction.AddSubTask -> eventHandler.postNavEvent(NavEvent.Action(NavTarget.TodoAddSubTask))
+                else -> {}
+            }
+        }, onRemoveSubTask = {
+            subTaskViewModel.removeSubTask(it)
+        }, subTasks = subTasks.value.list)
 }
 
 
@@ -111,7 +118,6 @@ fun ScreenNewTask() {
 private fun Content(
     monthString: String,
     yearString: String,
-    task: Task,
     title: String,
     content: String,
     enableSave: Boolean,
@@ -122,6 +128,8 @@ private fun Content(
     onCalendar: () -> Unit,
     onChooseFolder: () -> Unit,
     onActionClick: (action: TaskAction) -> Unit,
+    onRemoveSubTask: (subTask: SubTask) -> Unit,
+    subTasks: List<SubTask>,
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -158,7 +166,7 @@ private fun Content(
                 top.linkTo(topView.bottom)
                 height = Dimension.fillToConstraints
             }) {
-            val (columnDate, imgCalendar, textTime, folderView, textTitle, textContent) = createRefs()
+            val (columnDate, imgCalendar, textTime, folderView, textTitle, textContent, columnTask) = createRefs()
 
             Column(modifier = Modifier
                 .fillMaxWidth()
@@ -277,56 +285,59 @@ private fun Content(
                     fontSize = 14.sp, color = colorResource(R.color.storm_grey)
                 ),
             )
-        }
 
-        if (task.subTasks.isNotEmpty()) {
-            Column(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .background(Color.White, shape = RoundedCornerShape(8.dp))
-            ) {
-                Text(
-                    text = stringResource(id = R.string.sub_tasks), color = colorResource(R.color.gulf_blue), fontSize = 14.sp
-                )
-                LazyRow(modifier = Modifier.fillMaxWidth()) {
-                    items(task.subTasks) {
-                        ItemSubTask(subTask = it) {
+            if (subTasks.isNotEmpty()) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(columnTask) {
+                        top.linkTo(textContent.bottom, 8.dp)
+                    }) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .background(Color.White, shape = RoundedCornerShape(8.dp))
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.sub_tasks), color = colorResource(R.color.gulf_blue), fontSize = 14.sp
+                        )
+                        LazyRow(modifier = Modifier.fillMaxWidth()) {
+                            items(subTasks) {
+                                ItemSubTask(subTask = it) {
+                                    onRemoveSubTask(it)
+                                }
+                            }
+                        }
+                        Divider(color = Color.Gray, thickness = 0.5.dp)
 
+                        TextButton(onClick = { /*TODO*/ }) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_plus), contentDescription = null
+                            )
+                            Text(
+                                text = stringResource(id = R.string.add_more_sub_task), color = colorResource(id = R.color.royal_blue), fontSize = 14.sp
+                            )
                         }
                     }
-                }
-                Divider(color = Color.Gray, thickness = 0.5.dp)
+                    Column(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .background(Color.White, shape = RoundedCornerShape(8.dp))
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.sub_tasks), color = colorResource(R.color.gulf_blue), fontSize = 14.sp
+                            )
 
-                TextButton(onClick = { /*TODO*/ }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_plus), contentDescription = null
-                    )
-                    Text(
-                        text = stringResource(id = R.string.add_more_sub_task), color = colorResource(id = R.color.royal_blue), fontSize = 14.sp
-                    )
-                }
-            }
-            Column(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .background(Color.White, shape = RoundedCornerShape(8.dp))
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.sub_tasks), color = colorResource(R.color.gulf_blue), fontSize = 14.sp
-                    )
-
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_edit), contentDescription = null
-                        )
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_edit), contentDescription = null
+                                )
+                            }
+                        }
                     }
-                }
-
-                Row() {
-
                 }
             }
         }
@@ -355,27 +366,16 @@ private fun Content(
 @Composable
 fun ItemSubTask(subTask: SubTask, onClose: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth()) {
-        Image(
-            modifier = Modifier.align(Alignment.CenterVertically), painter = painterResource(id = R.drawable.ic_sub_task_small), contentDescription = null
-        )
+        Image(modifier = Modifier.align(Alignment.CenterVertically), painter = painterResource(id = R.drawable.ic_sub_task_small), contentDescription = null)
 
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterVertically)
-        ) {
-            Text(
-                text = subTask.name, color = colorResource(R.color.gulf_blue), fontSize = 14.sp
-            )
-            Text(
-                text = subTask.reminderTime.toString(), color = colorResource(R.color.storm_grey), fontSize = 12.sp
-            )
+        Column(Modifier
+            .weight(1f)
+            .padding(start = 8.dp)
+            .align(Alignment.CenterVertically), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(text = subTask.name, color = colorResource(R.color.gulf_blue), fontSize = 14.sp)
+            Text(text = subTask.reminderTime.toHour(), color = colorResource(R.color.storm_grey), fontSize = 12.sp)
         }
-        IconButton(onClick = { onClose() }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_remove_subtask), contentDescription = null
-            )
-        }
+        IconButton(onClick = { onClose() }) { Image(painter = painterResource(id = R.drawable.ic_remove_subtask), contentDescription = null) }
     }
 }
 
@@ -385,7 +385,6 @@ private fun PreviewContent() {
     Content(
         "",
         "",
-        Task(),
         "",
         "",
         true,
@@ -396,5 +395,7 @@ private fun PreviewContent() {
         {},
         {},
         {},
+        {},
+        emptyList()
     )
 }

@@ -6,6 +6,7 @@ import com.muamuathu.app.data.repository.JournalRepo
 import com.muamuathu.app.domain.model.Note
 import com.muamuathu.app.domain.model.commons.WrapList
 import com.muamuathu.app.presentation.extensions.removeAccent
+import com.muamuathu.app.presentation.extensions.toTimeInMillis
 import com.muamuathu.app.presentation.helper.ResultWrapper
 import com.muamuathu.app.presentation.helper.resultFlow
 import com.muamuathu.common.ioLaunch
@@ -27,7 +28,7 @@ class NoteViewModel @Inject constructor(private val repo: JournalRepo) : ViewMod
 
     init {
         getCalenderList(ZonedDateTime.now())
-        getNoteList(ZonedDateTime.now().toInstant().toEpochMilli())
+        getNoteList(ZonedDateTime.now().toTimeInMillis())
     }
 
     private fun getCalenderList(

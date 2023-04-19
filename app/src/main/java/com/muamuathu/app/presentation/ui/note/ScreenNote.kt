@@ -44,6 +44,7 @@ import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.indexOfDate
 import com.muamuathu.app.presentation.extensions.toHour
+import com.muamuathu.app.presentation.extensions.toTimeInMillis
 import com.muamuathu.app.presentation.extensions.toZonedDateTime
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.ui.note.viewModel.NoteViewModel
@@ -75,7 +76,7 @@ fun ScreenNote() {
         onCalendar = {
             it?.let {
                 selectDate = it
-                viewModel.getNoteList(it.toInstant().toEpochMilli())
+                viewModel.getNoteList(it.toTimeInMillis())
             }
         },
         onSelectDate = {
