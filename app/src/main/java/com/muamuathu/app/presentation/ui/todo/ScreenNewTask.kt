@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -75,41 +77,37 @@ fun ScreenNewTask() {
         onBackPress()
     }
 
-    Content(monthString, yearString,
-        title = title,
-        content = content,
-        enableSave = enableSave,
-        onInputTitle = {
-            viewModel.updateTitle(it)
-        },
-        onInputContent = {
-            viewModel.updateContent(it)
-        }, onClose = {
+    Content(monthString, yearString, title = title, content = content, enableSave = enableSave, onInputTitle = {
+        viewModel.updateTitle(it)
+    }, onInputContent = {
+        viewModel.updateContent(it)
+    }, onClose = {
+        onBackPress()
+    }, onSave = {
+        coroutineScope.observeResultFlow(viewModel.saveNote(), successHandler = {
             onBackPress()
-        }, onSave = {
-            coroutineScope.observeResultFlow(viewModel.saveNote(), successHandler = {
-                onBackPress()
-            })
-        }, onCalendar = {
-            val dialog = DatePickerDialog(
-                context, { _, year, month, dayOfMonth ->
-                    calendar.set(Calendar.YEAR, year)
-                    calendar.set(Calendar.MONTH, month)
-                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                    viewModel.updateDateTime(calendar.timeInMillis)
-                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            dialog.show()
-        }, onChooseFolder = {
-            eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderChoose))
-        }, onActionClick = {
-            when (it) {
-                TaskAction.AddSubTask -> eventHandler.postNavEvent(NavEvent.Action(NavTarget.TodoAddSubTask))
-                else -> {}
-            }
-        }, onRemoveSubTask = {
-            subTaskViewModel.removeSubTask(it)
-        }, subTasks = subTasks.value.list)
+        })
+    }, onCalendar = {
+        val dialog = DatePickerDialog(
+            context, { _, year, month, dayOfMonth ->
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, month)
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                viewModel.updateDateTime(calendar.timeInMillis)
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        dialog.show()
+    }, onChooseFolder = {
+        eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderChoose))
+    }, onActionClick = {
+        when (it) {
+            TaskAction.AddSubTask -> eventHandler.postNavEvent(NavEvent.Action(NavTarget.TodoAddSubTask))
+            else -> {}
+        }
+    }, onRemoveSubTask = {
+        subTaskViewModel.removeSubTask(it)
+    }, subTasks = subTasks.value.list
+    )
 }
 
 
@@ -204,20 +202,18 @@ private fun Content(
                 )
             }
 
-            Text(text = stringResource(id = R.string.due_date),
-                color = colorResource(R.color.gulf_blue),
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center, modifier = Modifier.constrainAs(textTime) {
-                    top.linkTo(columnDate.top)
-                    bottom.linkTo(columnDate.bottom)
-                    start.linkTo(parent.start, 16.dp)
-                })
+            Text(text = stringResource(id = R.string.due_date), color = colorResource(R.color.gulf_blue), fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.constrainAs(textTime) {
+                top.linkTo(columnDate.top)
+                bottom.linkTo(columnDate.bottom)
+                start.linkTo(parent.start, 16.dp)
+            })
 
-            FolderSelectView(modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(folderView) {
-                    top.linkTo(columnDate.bottom)
-                }, folder = Folder()
+            FolderSelectView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(folderView) {
+                        top.linkTo(columnDate.bottom)
+                    }, folder = Folder()
             ) {
                 onChooseFolder()
             }
@@ -295,13 +291,18 @@ private fun Content(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
+                            .padding(16.dp)
                             .background(Color.White, shape = RoundedCornerShape(8.dp))
+                            .padding(16.dp)
                     ) {
                         Text(
-                            text = stringResource(id = R.string.sub_tasks), color = colorResource(R.color.gulf_blue), fontSize = 14.sp
+                            text = stringResource(id = R.string.sub_tasks), fontWeight = FontWeight.Bold, color = colorResource(R.color.gulf_blue), fontSize = 14.sp
                         )
-                        LazyRow(modifier = Modifier.fillMaxWidth()) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
                             items(subTasks) {
                                 ItemSubTask(subTask = it) {
                                     onRemoveSubTask(it)
@@ -310,12 +311,12 @@ private fun Content(
                         }
                         Divider(color = Color.Gray, thickness = 0.5.dp)
 
-                        TextButton(onClick = { /*TODO*/ }) {
+                        TextButton(onClick = { onActionClick(TaskAction.AddSubTask) }) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_plus), contentDescription = null
                             )
                             Text(
-                                text = stringResource(id = R.string.add_more_sub_task), color = colorResource(id = R.color.royal_blue), fontSize = 14.sp
+                                modifier = Modifier.padding(start = 8.dp), text = stringResource(id = R.string.add_more_sub_task), color = colorResource(id = R.color.royal_blue), fontSize = 14.sp
                             )
                         }
                     }
@@ -333,6 +334,7 @@ private fun Content(
 
                             IconButton(onClick = { /*TODO*/ }) {
                                 Icon(
+                                    modifier = Modifier.size(16.dp),
                                     painter = painterResource(id = R.drawable.ic_edit), contentDescription = null
                                 )
                             }
@@ -366,36 +368,28 @@ private fun Content(
 @Composable
 fun ItemSubTask(subTask: SubTask, onClose: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth()) {
-        Image(modifier = Modifier.align(Alignment.CenterVertically), painter = painterResource(id = R.drawable.ic_sub_task_small), contentDescription = null)
+        Image(
+            modifier = Modifier
+                .size(24.dp)
+                .align(Alignment.CenterVertically), painter = painterResource(id = R.drawable.ic_sub_task_small), contentDescription = null
+        )
 
-        Column(Modifier
-            .weight(1f)
-            .padding(start = 8.dp)
-            .align(Alignment.CenterVertically), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(text = subTask.name, color = colorResource(R.color.gulf_blue), fontSize = 14.sp)
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(start = 8.dp)
+                .align(Alignment.CenterVertically), verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(text = subTask.name, fontWeight = FontWeight.Bold, color = colorResource(R.color.gulf_blue), fontSize = 14.sp)
             Text(text = subTask.reminderTime.toHour(), color = colorResource(R.color.storm_grey), fontSize = 12.sp)
         }
-        IconButton(onClick = { onClose() }) { Image(painter = painterResource(id = R.drawable.ic_remove_subtask), contentDescription = null) }
+        IconButton(onClick = { onClose() }) { Image(modifier = Modifier.size(30.dp), painter = painterResource(id = R.drawable.ic_remove_subtask), contentDescription = null) }
     }
 }
 
 @Preview
 @Composable
 private fun PreviewContent() {
-    Content(
-        "",
-        "",
-        "",
-        "",
-        true,
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-        emptyList()
+    Content("", "", "", "", true, {}, {}, {}, {}, {}, {}, {}, {}, emptyList()
     )
 }
