@@ -10,7 +10,7 @@ import com.muamuathu.app.presentation.helper.resultFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,6 +35,10 @@ class AddTodoViewModel @Inject constructor(private val repo: JournalRepo) : View
     fun updateDateTime(time: Long) {
         dateTime.value = time
         checkValidData()
+    }
+
+    fun updateRepeatType() {
+
     }
 
     private fun checkValidData() {

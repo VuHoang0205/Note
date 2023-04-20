@@ -6,7 +6,11 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
@@ -33,8 +37,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Task
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
+import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
+import com.muamuathu.app.presentation.ui.todo.bottomSheet.ReminderTypeBottomSheet
 import com.muamuathu.app.presentation.ui.todo.viewModel.AddTodoViewModel
 
 @Composable
@@ -43,7 +49,9 @@ fun ScreenReminder() {
     val context = LocalContext.current as ComponentActivity
     val viewModel = hiltViewModel<AddTodoViewModel>(context)
     val task = viewModel.task.collectAsState()
-    Content(task = task.value, onClose = { eventHandler.postNavEvent(NavEvent.PopBackStack()) }, onReminderType = {}, onSelectDate = {}, onSelectTime = {}, onRepeatType = {}, onDone = {})
+    Content(task = task.value, onClose = { eventHandler.postNavEvent(NavEvent.PopBackStack()) }, onReminderType = {}, onSelectDate = {}, onSelectTime = {}, onRepeatType = {
+        eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { ReminderTypeBottomSheet() })
+    }, onDone = {})
 }
 
 @Composable
@@ -65,45 +73,46 @@ private fun Content(
         TopBarBase(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(70.dp),
-            titleAlign = TextAlign.Center,
-            title = stringResource(R.string.reminder),
-            navigationIcon = {
+                .height(70.dp), titleAlign = TextAlign.Center, title = stringResource(R.string.reminder), navigationIcon = {
                 IconButton(onClick = {
                     onClose()
                 }) {
                     Image(painter = painterResource(R.drawable.ic_close), contentDescription = null)
                 }
-            },
-            listRightIcon = null)
+            }, listRightIcon = null
+        )
 
-        Column(modifier = Modifier
-            .padding(vertical = 16.dp)
-            .weight(1f)) {
-            ItemReminder(icon = R.drawable.ic_task_reminder, title = R.string.reminder_type, data = stringResource(id = R.string.repeating)) {
+        Column(
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .weight(1f)
+        ) {
+            ItemReminder(icon = R.drawable.ic_reminder, title = R.string.reminder_type, data = stringResource(id = R.string.repeating)) {
                 onReminderType()
             }
-            ItemReminder(icon = R.drawable.ic_task_reminder, title = R.string.date, data = stringResource(id = R.string.select_a_date)) {
+            ItemReminder(icon = R.drawable.ic_select_date, title = R.string.date, data = stringResource(id = R.string.select_a_date)) {
                 onSelectDate()
             }
-            ItemReminder(icon = R.drawable.ic_task_reminder, title = R.string.time, data = stringResource(id = R.string.select_a_time)) {
+            ItemReminder(icon = R.drawable.ic_select_time, title = R.string.time, data = stringResource(id = R.string.select_a_time)) {
                 onSelectTime()
             }
-            ItemReminder(icon = R.drawable.ic_task_reminder, title = R.string.repeat, data = stringResource(id = R.string.select_a_type)) {
+            ItemReminder(icon = R.drawable.ic_reapting, title = R.string.repeat, data = stringResource(id = R.string.select_a_type)) {
                 onRepeatType()
             }
         }
 
-        TextButton(enabled = true, onClick = {
-            onDone()
-        }, modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .alpha(0.5f)
-            .padding(horizontal = 16.dp)
-            .background(
-                colorResource(R.color.royal_blue), RoundedCornerShape(4.dp)
-            )) {
+        TextButton(
+            enabled = true, onClick = {
+                onDone()
+            }, modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .alpha(0.5f)
+                .padding(horizontal = 16.dp, vertical = 30.dp)
+                .background(
+                    colorResource(R.color.royal_blue), RoundedCornerShape(4.dp)
+                )
+        ) {
             Text(
                 text = stringResource(R.string.done).toUpperCase(Locale.current),
                 color = Color.White,
@@ -134,11 +143,13 @@ private fun ItemReminder(@DrawableRes icon: Int, @StringRes title: Int, data: St
             Text(text = stringResource(id = title), fontSize = 12.sp, color = colorResource(id = R.color.storm_grey))
             Text(text = data, fontSize = 14.sp, color = colorResource(id = R.color.gulf_blue))
         }
-        Divider(modifier = Modifier
-            .fillMaxWidth()
-            .constrainAs(divider) {
-                bottom.linkTo(parent.bottom)
-            }, color = Color.Gray, thickness = 0.5.dp)
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(divider) {
+                    bottom.linkTo(parent.bottom)
+                }, color = Color.Gray, thickness = 0.5.dp
+        )
     }
 }
 
