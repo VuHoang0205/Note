@@ -105,6 +105,7 @@ fun ScreenNewTask() {
         }, onActionClick = {
             when (it) {
                 TaskAction.AddSubTask -> eventHandler.postNavEvent(NavEvent.Action(NavTarget.TodoAddSubTask))
+                TaskAction.AddReminder -> eventHandler.postNavEvent(NavEvent.Action(NavTarget.TodoReminder))
                 else -> {}
             }
         }, onRemoveSubTask = {

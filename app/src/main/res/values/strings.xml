@@ -86,4 +86,13 @@
     <string name="select_a_due_time">"Select a due time"</string>
     <string name="due_date">"Due Date"</string>
     <string name="msg_choose_time_error">"The current time has passed the selected time, please choose again"</string>
+    <string name="reminder">"Reminder"</string>
+    <string name="reminder_type">"Reminder Type"</string>
+    <string name="repeating">"Repeating"</string>
+    <string name="date">"Date"</string>
+    <string name="select_a_date">"Select a date"</string>
+    <string name="time">"Time"</string>
+    <string name="select_a_time">"Select a time"</string>
+    <string name="repeat">"Repeat"</string>
+    <string name="select_a_type">"Select a Type"</string>
 </resources>

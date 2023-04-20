@@ -42,6 +42,7 @@ sealed class NavTarget(val route: String) {
     object Todo : NavTarget("todo")
     object TodoAdd : NavTarget("todo/add")
     object TodoAddSubTask : NavTarget("todo/add/subtask")
+    object TodoReminder : NavTarget("todo/add/reminder")
 
 
     object WebView : NavTarget("webView/{$WEB_URL_KEY}")
