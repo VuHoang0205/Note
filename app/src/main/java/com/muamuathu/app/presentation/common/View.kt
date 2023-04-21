@@ -189,14 +189,15 @@ fun SearchView(
                             )
                         }
                     }
-                }, singleLine = true, shape = RoundedCornerShape(4.dp), colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.White,
-                    textColor = colorResource(R.color.storm_grey),
-                    cursorColor = colorResource(R.color.storm_grey),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                )
+                }, singleLine = true,
+                    shape = RoundedCornerShape(4.dp), colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.White,
+                        cursorColor = colorResource(R.color.storm_grey),
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        focusedLabelColor = colorResource(R.color.storm_grey)
+                    )
                 )
             }
         }

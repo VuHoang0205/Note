@@ -6,8 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -73,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                 navController.handleNavEvent(it)
             }
         }
-        val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+        val sheetState = rememberModalBottomSheetState()
         LaunchedEffect(key1 = eventHandler.bottomSheetEvent().isShowing()) {
             if (eventHandler.bottomSheetEvent().isShowing()) {
                 sheetState.show()
@@ -95,17 +93,17 @@ class MainActivity : AppCompatActivity() {
                     Modifier
                         .fillMaxSize())
 
-//                if (sheetState.isVisible) {
-//                    ModalBottomSheet(
-//                        sheetState = sheetState,
-//                        containerColor = colorResource(id = R.color.alice_blue),
-//                        onDismissRequest = {
-//                            eventHandler.postBottomSheetEvent(BottomSheetEvent.Hide { true })
-//                        },
-//                    ) {
-//                        AppBottomSheet(eventHandler)
-//                    }
-//                }
+                if (sheetState.isVisible) {
+                    ModalBottomSheet(
+                        sheetState = sheetState,
+                        containerColor = colorResource(id = R.color.alice_blue),
+                        onDismissRequest = {
+                            eventHandler.postBottomSheetEvent(BottomSheetEvent.Hide { true })
+                        },
+                    ) {
+                        AppBottomSheet(eventHandler)
+                    }
+                }
 
                 AppDialog(eventHandler = eventHandler)
             }
