@@ -58,7 +58,7 @@ fun ScreenNewTask() {
     val calendar: Calendar by remember {
         mutableStateOf(Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar)
     }
-    val dateTime by viewModel.dateTime.collectAsState()
+    val dateTime by viewModel.taskStartTime.collectAsState()
     val title by viewModel.title.collectAsState()
     val content by viewModel.content.collectAsState()
     val task by viewModel.task.collectAsState()

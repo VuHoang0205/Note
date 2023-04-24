@@ -31,15 +31,17 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.ReminderTypeEnum
-import com.muamuathu.app.domain.model.Task
+import com.muamuathu.app.domain.model.RepeatTypeEnum
 import com.muamuathu.app.presentation.components.dialog.CustomTimePickerDialog
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
+import com.muamuathu.app.presentation.extensions.toHour
+import com.muamuathu.app.presentation.extensions.toReminderDate
 import com.muamuathu.app.presentation.ui.todo.bottomSheet.ReminderTypeBottomSheet
 import com.muamuathu.app.presentation.ui.todo.bottomSheet.RepeatTypeBottomSheet
-import com.muamuathu.app.presentation.ui.todo.viewModel.AddTodoViewModel
+import com.muamuathu.app.presentation.ui.todo.viewModel.ReminderViewModel
 import java.time.LocalTime
 import java.util.*
 
@@ -47,48 +49,55 @@ import java.util.*
 fun ScreenReminder() {
     val eventHandler = initEventHandler()
     val context = LocalContext.current as ComponentActivity
-    val viewModel = hiltViewModel<AddTodoViewModel>(context)
-    val task = viewModel.task.collectAsState()
-    val enableRepeatType = viewModel.reminderType.collectAsState().value == ReminderTypeEnum.Repeating
+    val viewModel = hiltViewModel<ReminderViewModel>(context)
+    val reminderType = viewModel.reminderType.collectAsState().value
+    val repeatType = viewModel.repeatType.collectAsState().value
+    val reminderTime = viewModel.reminderTime.collectAsState().value
     val calendar: Calendar by remember {
         mutableStateOf(Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar)
     }
-    Content(task = task.value, enableRepeatType, onClose = { eventHandler.postNavEvent(NavEvent.PopBackStack()) }, onReminderType = {
-        eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { ReminderTypeBottomSheet() })
-    }, onSelectDate = {
-        val dialog = DatePickerDialog(
-            context,
-            { _, year, month, dayOfMonth ->
-                calendar.set(Calendar.YEAR, year)
-                calendar.set(Calendar.MONTH, month)
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                viewModel.updateDateTime(calendar.timeInMillis)
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        dialog.show()
-    }, onSelectTime = {
-                      
-    }, onRepeatType = {
-        eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { RepeatTypeBottomSheet() })
-    }, onDone = {})
+    Content(reminderTime = reminderTime,
+        reminderType = reminderType,
+        repeatType = repeatType,
+        onClose = { eventHandler.postNavEvent(NavEvent.PopBackStack()) },
+        onReminderType = {
+            eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { ReminderTypeBottomSheet() })
+        }, onSelectDate = {
+            val dialog = DatePickerDialog(
+                context, { _, year, month, dayOfMonth ->
+                    calendar.set(Calendar.YEAR, year)
+                    calendar.set(Calendar.MONTH, month)
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                    viewModel.updateReminderTime(calendar.timeInMillis)
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
+            )
+            dialog.show()
+        }, onSelectTime = {
+            calendar.set(Calendar.HOUR, it.hour)
+            calendar.set(Calendar.MINUTE, it.minute)
+            viewModel.updateReminderTime(calendar.timeInMillis)
+        }, onRepeatType = {
+            eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { RepeatTypeBottomSheet() })
+        }, onDone = {})
 }
 
 @Composable
 private fun Content(
-    task: Task,
-    enableRepeatType: Boolean,
+    reminderTime: Long,
+    reminderType: ReminderTypeEnum,
+    repeatType: RepeatTypeEnum,
     onClose: () -> Unit,
     onReminderType: () -> Unit,
-    onSelectDate: (LocalTime) -> Unit,
-    onSelectTime: () -> Unit,
+    onSelectDate: () -> Unit,
+    onSelectTime: (LocalTime) -> Unit,
     onRepeatType: () -> Unit,
     onDone: () -> Unit,
 ) {
 
     var isShowTimePicker by remember { mutableStateOf(false) }
+    val date = if (reminderTime == 0L) stringResource(id = R.string.select_a_date) else reminderTime.toReminderDate()
+    val time = if (reminderTime == 0L) stringResource(id = R.string.select_a_time) else reminderTime.toHour()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -112,17 +121,17 @@ private fun Content(
                 .padding(vertical = 16.dp)
                 .weight(1f)
         ) {
-            ItemReminder(icon = R.drawable.ic_reminder, title = R.string.reminder_type, data = stringResource(id = R.string.repeating)) {
+            ItemReminder(icon = R.drawable.ic_reminder, title = R.string.reminder_type, data = reminderType.text) {
                 onReminderType()
             }
-            ItemReminder(icon = R.drawable.ic_select_date, title = R.string.date, data = stringResource(id = R.string.select_a_date)) {
+            ItemReminder(icon = R.drawable.ic_select_date, title = R.string.date, data = date) {
+                onSelectDate()
+            }
+            ItemReminder(icon = R.drawable.ic_select_time, title = R.string.time, data = time) {
                 isShowTimePicker = true
             }
-            ItemReminder(icon = R.drawable.ic_select_time, title = R.string.time, data = stringResource(id = R.string.select_a_time)) {
-                onSelectTime()
-            }
-            if (enableRepeatType) {
-                ItemReminder(icon = R.drawable.ic_reapting, title = R.string.repeat, data = stringResource(id = R.string.select_a_type)) {
+            if (reminderType != ReminderTypeEnum.OneTime) {
+                ItemReminder(icon = R.drawable.ic_reapting, title = R.string.repeat, data = repeatType.text) {
                     onRepeatType()
                 }
             }
@@ -150,7 +159,7 @@ private fun Content(
         if (isShowTimePicker) {
             CustomTimePickerDialog(isShow = isShowTimePicker, onDismissRequest = { isShowTimePicker = false }, onTimeChange = {
                 isShowTimePicker = false
-                onSelectDate(it)
+                onSelectTime(it)
             })
         }
     }
@@ -162,14 +171,18 @@ private fun ItemReminder(@DrawableRes icon: Int, @StringRes title: Int, data: St
         .clickable { onClick() }
         .fillMaxWidth()) {
         val (ivIcon, contentView, divider) = createRefs()
-        Image(modifier = Modifier.constrainAs(ivIcon) {
-            start.linkTo(parent.start, 16.dp)
-            centerVerticallyTo(contentView)
-        }, painter = painterResource(id = icon), contentDescription = null)
+        Image(
+            modifier = Modifier
+                .size(24.dp)
+                .constrainAs(ivIcon) {
+                    start.linkTo(parent.start, 16.dp)
+                    centerVerticallyTo(contentView)
+                }, painter = painterResource(id = icon), contentDescription = null
+        )
         Column(modifier = Modifier
             .padding(vertical = 8.dp)
             .constrainAs(contentView) {
-                start.linkTo(ivIcon.end, 4.dp)
+                start.linkTo(ivIcon.end, 8.dp)
                 end.linkTo(parent.end, 16.dp)
                 width = Dimension.fillToConstraints
                 centerVerticallyTo(parent)
@@ -191,8 +204,9 @@ private fun ItemReminder(@DrawableRes icon: Int, @StringRes title: Int, data: St
 @Composable
 private fun PreviewContent() {
     Content(
-        Task(),
-        true,
+        0L,
+        ReminderTypeEnum.OneTime,
+        RepeatTypeEnum.Daily,
         {},
         {},
         {},

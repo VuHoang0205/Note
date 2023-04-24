@@ -1,10 +1,16 @@
 package com.muamuathu.app.presentation.extensions
 
 import java.text.SimpleDateFormat
-import java.time.*
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
 fun Long.toDayMonth(): String {
     val calendar = Calendar.getInstance().clone() as Calendar
@@ -86,6 +92,12 @@ fun Long.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(Instant.ofEp
 
 fun ZonedDateTime.toTimeInMillis(): Long {
     return this.toInstant().toEpochMilli()
+}
+
+fun Long.toReminderDate(): String {
+    val calendar = Calendar.getInstance().clone() as Calendar
+    calendar.timeInMillis = this
+    return SimpleDateFormat("dd,MM yyyy", Locale.getDefault()).format(calendar.time)
 }
 
 

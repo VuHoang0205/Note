@@ -4,7 +4,12 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -26,15 +31,15 @@ import com.muamuathu.app.domain.model.RepeatTypeEnum
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.initEventHandler
-import com.muamuathu.app.presentation.ui.todo.viewModel.AddTodoViewModel
+import com.muamuathu.app.presentation.ui.todo.viewModel.ReminderViewModel
 
 @Composable
 fun RepeatTypeBottomSheet() {
-    val eventHandler = initEventHandler()
-    val todoViewModel = hiltViewModel<AddTodoViewModel>(LocalContext.current as ComponentActivity)
+    val reminderViewModel = initEventHandler()
+    val todoViewModel = hiltViewModel<ReminderViewModel>(LocalContext.current as ComponentActivity)
     Content(onDone = {
         todoViewModel.updateRepeatType(it)
-        eventHandler.postBottomSheetEvent(BottomSheetEvent.Hide { true })
+        reminderViewModel.postBottomSheetEvent(BottomSheetEvent.Hide { true })
     })
 }
 
@@ -48,7 +53,14 @@ private fun Content(
             .background(colorResource(R.color.alice_blue))
     ) {
 
-        TopBarBase(modifier = Modifier.fillMaxWidth(), titleAlign = TextAlign.Center, title = stringResource(R.string.reminder), navigationIcon = {}, listRightIcon = null, backgroundColor = Color.Transparent)
+        TopBarBase(
+            modifier = Modifier.fillMaxWidth(),
+            titleAlign = TextAlign.Center,
+            title = stringResource(R.string.reminder),
+            navigationIcon = {},
+            listRightIcon = null,
+            backgroundColor = Color.Transparent
+        )
 
         LazyColumn(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             items(RepeatTypeEnum.values().filter { it.text.isNotEmpty() }) {
@@ -67,7 +79,7 @@ private fun ItemRepeatType(reminderType: RepeatTypeEnum, onClick: () -> Unit) {
     }, contentAlignment = Alignment.Center) {
         Row(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(16.dp)
                 .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Image(painter = painterResource(id = R.drawable.ic_repeat_type), contentDescription = null)

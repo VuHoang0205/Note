@@ -12,19 +12,20 @@ import com.muamuathu.app.presentation.helper.resultFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
 class AddTodoViewModel @Inject constructor(private val repo: JournalRepo) : ViewModel() {
 
-    internal val dateTime = MutableStateFlow(ZonedDateTime.now().toTimeInMillis())
+    internal val taskStartTime = MutableStateFlow(ZonedDateTime.now().toTimeInMillis())
     internal val task = MutableStateFlow(Task())
     internal val title = MutableStateFlow("")
     internal val content = MutableStateFlow("")
     internal val reminderType = MutableStateFlow(ReminderTypeEnum.OneTime)
     internal val repeatType = MutableStateFlow(RepeatTypeEnum.None)
     internal val isValidData = MutableStateFlow(false)
+    internal val reminderTime = MutableStateFlow(0L)
 
     fun updateTitle(title: String) {
         this.title.tryEmit(title)
@@ -37,7 +38,7 @@ class AddTodoViewModel @Inject constructor(private val repo: JournalRepo) : View
     }
 
     fun updateDateTime(time: Long) {
-        dateTime.value = time
+        taskStartTime.value = time
         checkValidData()
     }
 
@@ -50,7 +51,7 @@ class AddTodoViewModel @Inject constructor(private val repo: JournalRepo) : View
     }
 
     private fun checkValidData() {
-        isValidData.value = dateTime.value > 0L
+        isValidData.value = taskStartTime.value > 0L
                 && !TextUtils.isEmpty(task.value.name)
                 && !TextUtils.isEmpty(title.value)
                 && !TextUtils.isEmpty(content.value)
@@ -65,6 +66,6 @@ class AddTodoViewModel @Inject constructor(private val repo: JournalRepo) : View
         isValidData.value = false
         title.value = ""
         content.value = ""
-        dateTime.value = Calendar.getInstance().timeInMillis
+        taskStartTime.value = Calendar.getInstance().timeInMillis
     }
 }
