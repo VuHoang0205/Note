@@ -95,4 +95,5 @@
     <string name="select_a_time">"Select a time"</string>
     <string name="repeat">"Repeat"</string>
     <string name="select_a_type">"Select a Type"</string>
+    <string name="select_type">"Select Type"</string>
 </resources>

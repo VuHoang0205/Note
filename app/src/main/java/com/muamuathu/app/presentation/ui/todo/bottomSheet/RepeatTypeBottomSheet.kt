@@ -22,25 +22,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
-import com.muamuathu.app.domain.model.ReminderTypeEnum
+import com.muamuathu.app.domain.model.RepeatTypeEnum
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.ui.todo.viewModel.AddTodoViewModel
 
 @Composable
-fun ReminderTypeBottomSheet() {
+fun RepeatTypeBottomSheet() {
     val eventHandler = initEventHandler()
     val todoViewModel = hiltViewModel<AddTodoViewModel>(LocalContext.current as ComponentActivity)
     Content(onDone = {
-        todoViewModel.updateReminderType(it)
+        todoViewModel.updateRepeatType(it)
         eventHandler.postBottomSheetEvent(BottomSheetEvent.Hide { true })
     })
 }
 
 @Composable
 private fun Content(
-    onDone: (repeatType: ReminderTypeEnum) -> Unit,
+    onDone: (repeatType: RepeatTypeEnum) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -48,15 +48,10 @@ private fun Content(
             .background(colorResource(R.color.alice_blue))
     ) {
 
-        TopBarBase(modifier = Modifier.fillMaxWidth(),
-            titleAlign = TextAlign.Center,
-            title = stringResource(R.string.select_type),
-            navigationIcon = {},
-            listRightIcon = null,
-            backgroundColor = Color.Transparent)
+        TopBarBase(modifier = Modifier.fillMaxWidth(), titleAlign = TextAlign.Center, title = stringResource(R.string.reminder), navigationIcon = {}, listRightIcon = null, backgroundColor = Color.Transparent)
 
         LazyColumn(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            items(ReminderTypeEnum.values()) {
+            items(RepeatTypeEnum.values().filter { it.text.isNotEmpty() }) {
                 ItemRepeatType(reminderType = it) {
                     onDone(it)
                 }
@@ -66,7 +61,7 @@ private fun Content(
 }
 
 @Composable
-private fun ItemRepeatType(reminderType: ReminderTypeEnum, onClick: () -> Unit) {
+private fun ItemRepeatType(reminderType: RepeatTypeEnum, onClick: () -> Unit) {
     Box(modifier = Modifier.clickable {
         onClick()
     }, contentAlignment = Alignment.Center) {
@@ -75,7 +70,7 @@ private fun ItemRepeatType(reminderType: ReminderTypeEnum, onClick: () -> Unit) 
                 .padding(8.dp)
                 .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(painter = painterResource(id = if (reminderType == ReminderTypeEnum.OneTime) R.drawable.ic_one_time else R.drawable.ic_repeat_type), contentDescription = null)
+            Image(painter = painterResource(id = R.drawable.ic_repeat_type), contentDescription = null)
             Text(text = reminderType.text, fontSize = 14.sp, color = colorResource(id = R.color.gulf_blue))
         }
     }

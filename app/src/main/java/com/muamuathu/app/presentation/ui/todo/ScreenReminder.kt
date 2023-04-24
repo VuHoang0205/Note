@@ -1,23 +1,18 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.muamuathu.app.presentation.ui.todo
 
+import android.app.DatePickerDialog
 import androidx.activity.ComponentActivity
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -35,13 +30,18 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
+import com.muamuathu.app.domain.model.ReminderTypeEnum
 import com.muamuathu.app.domain.model.Task
+import com.muamuathu.app.presentation.components.dialog.CustomTimePickerDialog
 import com.muamuathu.app.presentation.components.topbar.TopBarBase
 import com.muamuathu.app.presentation.event.BottomSheetEvent
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.ui.todo.bottomSheet.ReminderTypeBottomSheet
+import com.muamuathu.app.presentation.ui.todo.bottomSheet.RepeatTypeBottomSheet
 import com.muamuathu.app.presentation.ui.todo.viewModel.AddTodoViewModel
+import java.time.LocalTime
+import java.util.*
 
 @Composable
 fun ScreenReminder() {
@@ -49,21 +49,46 @@ fun ScreenReminder() {
     val context = LocalContext.current as ComponentActivity
     val viewModel = hiltViewModel<AddTodoViewModel>(context)
     val task = viewModel.task.collectAsState()
-    Content(task = task.value, onClose = { eventHandler.postNavEvent(NavEvent.PopBackStack()) }, onReminderType = {}, onSelectDate = {}, onSelectTime = {}, onRepeatType = {
+    val enableRepeatType = viewModel.reminderType.collectAsState().value == ReminderTypeEnum.Repeating
+    val calendar: Calendar by remember {
+        mutableStateOf(Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar)
+    }
+    Content(task = task.value, enableRepeatType, onClose = { eventHandler.postNavEvent(NavEvent.PopBackStack()) }, onReminderType = {
         eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { ReminderTypeBottomSheet() })
+    }, onSelectDate = {
+        val dialog = DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, month)
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                viewModel.updateDateTime(calendar.timeInMillis)
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        dialog.show()
+    }, onSelectTime = {
+                      
+    }, onRepeatType = {
+        eventHandler.postBottomSheetEvent(BottomSheetEvent.Custom { RepeatTypeBottomSheet() })
     }, onDone = {})
 }
 
 @Composable
 private fun Content(
     task: Task,
+    enableRepeatType: Boolean,
     onClose: () -> Unit,
     onReminderType: () -> Unit,
-    onSelectDate: () -> Unit,
+    onSelectDate: (LocalTime) -> Unit,
     onSelectTime: () -> Unit,
     onRepeatType: () -> Unit,
     onDone: () -> Unit,
 ) {
+
+    var isShowTimePicker by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -91,13 +116,15 @@ private fun Content(
                 onReminderType()
             }
             ItemReminder(icon = R.drawable.ic_select_date, title = R.string.date, data = stringResource(id = R.string.select_a_date)) {
-                onSelectDate()
+                isShowTimePicker = true
             }
             ItemReminder(icon = R.drawable.ic_select_time, title = R.string.time, data = stringResource(id = R.string.select_a_time)) {
                 onSelectTime()
             }
-            ItemReminder(icon = R.drawable.ic_reapting, title = R.string.repeat, data = stringResource(id = R.string.select_a_type)) {
-                onRepeatType()
+            if (enableRepeatType) {
+                ItemReminder(icon = R.drawable.ic_reapting, title = R.string.repeat, data = stringResource(id = R.string.select_a_type)) {
+                    onRepeatType()
+                }
             }
         }
 
@@ -118,6 +145,13 @@ private fun Content(
                 color = Color.White,
                 fontSize = 14.sp,
             )
+        }
+
+        if (isShowTimePicker) {
+            CustomTimePickerDialog(isShow = isShowTimePicker, onDismissRequest = { isShowTimePicker = false }, onTimeChange = {
+                isShowTimePicker = false
+                onSelectDate(it)
+            })
         }
     }
 }
@@ -158,6 +192,7 @@ private fun ItemReminder(@DrawableRes icon: Int, @StringRes title: Int, data: St
 private fun PreviewContent() {
     Content(
         Task(),
+        true,
         {},
         {},
         {},

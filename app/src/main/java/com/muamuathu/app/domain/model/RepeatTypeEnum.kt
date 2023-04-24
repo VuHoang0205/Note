@@ -1,9 +1,10 @@
 package com.muamuathu.app.domain.model
 
-enum class RepeatTypeEnum(name: String) {
+enum class RepeatTypeEnum(val text: String) {
+    None(""),
     Daily("Daily"),
     Weekly("Weekly"),
     Monthly("Monthly"),
     Yearly("Yearly"),
-    Custom_Repeat("Custom Repeat"),
+    CustomRepeat("Custom Repeat"),
 }
