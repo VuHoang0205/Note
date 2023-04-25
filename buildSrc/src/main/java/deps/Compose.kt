@@ -12,7 +12,7 @@ object Compose : Dependency() {
         const val accompanistPermission = "0.22.0-rc"
         const val accompanistSwipeRefresh = "0.24.6-alpha"
         const val liveData = "1.1.1"
-        const val material3 = "1.1.0-alpha08"
+        const val material3 = "1.1.0-rc01"
         const val googleFont = "1.3.2"
         const val coilCompose = "2.2.2"
     }

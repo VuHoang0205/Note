@@ -4,21 +4,8 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,16 +23,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.muamuathu.app.R
 import com.muamuathu.app.presentation.components.AppDialog
-import com.muamuathu.app.presentation.components.bottomsheet.BottomSheetEmpty
+import com.muamuathu.app.presentation.components.bottomsheet.AppBottomSheet
 import com.muamuathu.app.presentation.event.BottomSheetEvent
-import com.muamuathu.app.presentation.event.EventHandler
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.extensions.handleNavEvent
-import com.muamuathu.app.presentation.graph.NavTarget
-import com.muamuathu.app.presentation.graph.authentication
-import com.muamuathu.app.presentation.graph.folder
-import com.muamuathu.app.presentation.graph.note
-import com.muamuathu.app.presentation.graph.todo
+import com.muamuathu.app.presentation.graph.*
 import com.muamuathu.app.presentation.ui.tab.BottomTabItem
 import com.muamuathu.feature.consent.ConsentInfo
 import com.muamuathu.theme.AppTheme
@@ -77,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun GraphMainApp() {
         val navController = rememberNavController()
@@ -88,13 +70,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         val sheetState = rememberModalBottomSheetState()
-        LaunchedEffect(key1 = eventHandler.bottomSheetEvent()) {
-            if (eventHandler.bottomSheetEvent().isShowing()) {
-                sheetState.show()
-            } else {
-                sheetState.hide()
-            }
-        }
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
@@ -105,10 +80,9 @@ class MainActivity : AppCompatActivity() {
             Box(modifier = Modifier
                 .fillMaxSize()
                 .padding(it)) {
-                NavGraph(navController,
-                    Modifier
-                        .fillMaxSize())
-                if (sheetState.isVisible) {
+                NavGraph(navController, Modifier.fillMaxSize())
+                AppDialog(eventHandler = eventHandler)
+                if (eventHandler.bottomSheetEvent().isShowing()) {
                     ModalBottomSheet(
                         sheetState = sheetState,
                         containerColor = colorResource(id = R.color.alice_blue),
@@ -119,12 +93,9 @@ class MainActivity : AppCompatActivity() {
                         AppBottomSheet(eventHandler)
                     }
                 }
-
-                AppDialog(eventHandler = eventHandler)
             }
         }
     }
-
 
     @Composable
     fun AwareBottomBar(navController: NavController, tabs: Array<BottomTabItem>) {
@@ -171,13 +142,6 @@ class MainActivity : AppCompatActivity() {
             NavTarget.GraphNote.route,
             modifier) {
 
-//            navigation(
-//                startDestination = NavTarget.Welcome.route,
-//                route = NavTarget.GraphOnboard.route
-//            ) {
-//
-//            }
-//
             navigation(
                 startDestination = NavTarget.Login.route,
                 route = NavTarget.GraphAuthentication.route
@@ -203,15 +167,6 @@ class MainActivity : AppCompatActivity() {
                 todo()
             }
         }
-    }
-}
-
-@Composable
-fun AppBottomSheet(eventHandler: EventHandler) {
-    when (val event = eventHandler.bottomSheetEvent()) {
-        is BottomSheetEvent.Custom -> event.ui()
-        is BottomSheetEvent.None -> BottomSheetEmpty()
-        else -> BottomSheetEmpty()
     }
 }
 
