@@ -30,7 +30,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -48,9 +47,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 @Composable
-fun ScreenNoteDetail(idNote: String) {
+fun ScreenNoteDetail(idNote: String, viewModel: NoteViewModel) {
 
-    val viewModel: NoteViewModel = hiltViewModel()
     val eventHandler = initEventHandler()
     val coroutineScope = rememberCoroutineScope()
     var note: Note by remember {
@@ -287,7 +285,7 @@ private fun Content(
                                 start.linkTo(parent.start)
                             })
 
-                    if (tags.isNotEmpty()){
+                    if (tags.isNotEmpty()) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -490,7 +488,7 @@ private fun ExpandedText(
 @Preview
 @Composable
 private fun PreviewContent() {
-    
+
     Content(Note(
         1,
         "Fun day with Friends $1",

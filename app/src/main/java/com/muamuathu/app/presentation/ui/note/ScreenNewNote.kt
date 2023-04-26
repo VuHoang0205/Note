@@ -1,8 +1,6 @@
 package com.muamuathu.app.presentation.ui.note
 
 import android.app.DatePickerDialog
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -28,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.NoteAction
@@ -41,18 +38,16 @@ import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.graph.NavTarget
 import com.muamuathu.app.presentation.helper.observeResultFlow
+import com.muamuathu.app.presentation.ui.folder.KEY_CHOOSE_FOLDER
 import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 import java.util.*
 
 @Composable
-fun ScreenNewNote() {
+fun ScreenNewNote(viewModel: AddNoteViewModel) {
 
     val eventHandler = initEventHandler()
-    val context = LocalContext.current as ComponentActivity
-
-    val viewModel = hiltViewModel<AddNoteViewModel>(context)
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-
     val title by viewModel.title.collectAsState()
     val content by viewModel.content.collectAsState()
     val attachments by viewModel.attachments.collectAsState()
@@ -62,13 +57,9 @@ fun ScreenNewNote() {
     val calendar: Calendar by remember {
         mutableStateOf(Calendar.getInstance(TimeZone.getDefault()).clone() as Calendar)
     }
-    fun onBackPress() {
-        viewModel.clearReference()
-        eventHandler.postNavEvent(NavEvent.PopBackStack(false))
-    }
 
-    BackHandler(true) {
-        onBackPress()
+    fun onBackPress() {
+        eventHandler.postNavEvent(NavEvent.PopBackStack(false))
     }
 
     Content(folder = folder,
@@ -107,7 +98,7 @@ fun ScreenNewNote() {
             dialog.show()
         },
         onChooseFolder = {
-            eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderChoose))
+            eventHandler.postNavEvent(NavEvent.ActionWithValue(NavTarget.FolderAdd, Pair(KEY_CHOOSE_FOLDER, true.toString())))
         }
     ) {
         when (it) {
@@ -197,7 +188,7 @@ private fun Content(
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     width = Dimension.fillToConstraints
-                }, textTotal = stringResource(id = R.string.txt_add_new_journal), onCalendar = {onCalendar()})
+                }, textTotal = stringResource(id = R.string.txt_add_new_journal), onCalendar = { onCalendar() })
 
             FolderSelectView(modifier = Modifier
                 .fillMaxWidth()

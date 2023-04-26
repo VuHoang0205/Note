@@ -1,5 +1,8 @@
 package com.muamuathu.app.presentation.extensions
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.muamuathu.app.presentation.event.NavEvent
@@ -17,7 +20,7 @@ fun NavController.navigateToWeb(url: String) {
 }
 
 fun NavController.navigate(route: String, keyValue: Pair<String, String>) {
-    val encodedParam = URLEncoder.encode(keyValue.second,  Charsets.UTF_8.name())
+    val encodedParam = URLEncoder.encode(keyValue.second, Charsets.UTF_8.name())
     val newRoute = route.replace("{${keyValue.first}}", encodedParam)
     navigate(newRoute)
 }
@@ -60,4 +63,16 @@ fun NavHostController.handleNavEvent(navEvent: NavEvent) {
             }
         }
     }
+}
+
+@Composable
+fun NavBackStackEntry.getParentEntry(navController: NavHostController, parentEntry: String): NavBackStackEntry? {
+    val navBackStackEntry = remember(this) {
+        try {
+            navController.getBackStackEntry(parentEntry)
+        } catch (e: Exception) {
+            null
+        }
+    }
+    return navBackStackEntry
 }

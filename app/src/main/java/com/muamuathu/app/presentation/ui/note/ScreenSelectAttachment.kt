@@ -1,6 +1,5 @@
 package com.muamuathu.app.presentation.ui.note
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.decode.VideoFrameDecoder
 import coil.request.ImageRequest
@@ -46,15 +44,11 @@ import com.muamuathu.app.presentation.ui.note.viewModel.SelectFileViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ScreenSelectAttachment(isSelectImage: Boolean) {
+fun ScreenSelectAttachment(isSelectImage: Boolean,viewModel: SelectFileViewModel,noteViewModel: AddNoteViewModel) {
     val storagePermissionState = rememberPermissionState(
         android.Manifest.permission.READ_EXTERNAL_STORAGE
     )
-    val context = LocalContext.current as ComponentActivity
     val eventHandler = initEventHandler()
-
-    val viewModel: SelectFileViewModel = hiltViewModel()
-    val noteViewModel = hiltViewModel<AddNoteViewModel>(context)
 
     val mediaList by viewModel.bindMediaList().collectAsState(initial = mutableListOf())
 

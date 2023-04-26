@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.presentation.common.SearchView
@@ -40,9 +39,8 @@ import com.muamuathu.app.presentation.ui.folder.dialog.EditFolderDialog
 import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
 
 @Composable
-fun ScreenFolder() {
+fun ScreenFolder(viewModel: FolderViewModel) {
     val eventHandler = initEventHandler()
-    val viewModel: FolderViewModel = hiltViewModel()
     val wrapperList by viewModel.entityFolderListState.collectAsState()
 
     @Composable

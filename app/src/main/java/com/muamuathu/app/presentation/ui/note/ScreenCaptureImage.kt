@@ -32,7 +32,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.muamuathu.app.R
@@ -52,12 +51,9 @@ const val FILE_NAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ScreenCaptureImage() {
+fun ScreenCaptureImage(viewModel: SelectFileViewModel, noteViewModel: AddNoteViewModel) {
     val context = LocalContext.current as ComponentActivity
     val eventHandler = initEventHandler()
-    val viewModel = hiltViewModel<SelectFileViewModel>()
-    val noteViewModel = hiltViewModel<AddNoteViewModel>(context)
-
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )

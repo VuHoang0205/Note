@@ -2,15 +2,12 @@ package com.muamuathu.app.presentation.ui.note
 
 import android.net.Uri
 import android.text.TextUtils
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.presentation.event.NavEvent
 import com.muamuathu.app.presentation.event.initEventHandler
 import com.muamuathu.app.presentation.helper.observeResultFlow
@@ -26,11 +23,8 @@ enum class MediaType {
 }
 
 @Composable
-fun ScreenPickFile(mediaType: MediaType) {
-    val context = LocalContext.current as ComponentActivity
+fun ScreenPickFile(mediaType: MediaType, noteViewModel: AddNoteViewModel, selectViewModel: SelectFileViewModel) {
     val eventHandler = initEventHandler()
-    val noteViewModel = hiltViewModel<AddNoteViewModel>(context)
-    val selectViewModel = hiltViewModel<SelectFileViewModel>(context)
     val coroutineScope = rememberCoroutineScope()
     Content(mediaType = mediaType, onImageUri = {
         if (!TextUtils.equals(it.toString(), EMPTY_IMAGE_URI.toString())) {

@@ -1,5 +1,7 @@
 package com.muamuathu.app.presentation.graph
 
+import com.muamuathu.app.presentation.ui.folder.KEY_CHOOSE_FOLDER
+
 sealed class NavTarget(val route: String) {
     // splash
     object Splash : NavTarget("splash")
@@ -24,6 +26,8 @@ sealed class NavTarget(val route: String) {
     object GraphNote : NavTarget("note/graph")
     object Note : NavTarget("note")
     object NoteDetail : NavTarget("note/detail/{noteId}")
+
+    object GraphNoteAdd : NavTarget("note/add/graph")
     object NoteAdd : NavTarget("note/add")
     object NoteAddImage : NavTarget("note/add/image")
     object NoteAddVideo : NavTarget("note/add/video")
@@ -35,8 +39,7 @@ sealed class NavTarget(val route: String) {
 
     object GraphFolder : NavTarget("folder/graph")
     object Folder : NavTarget("folder")
-    object FolderAdd : NavTarget("folder/add")
-    object FolderChoose : NavTarget("folder/add?isChoose={true}")
+    object FolderAdd : NavTarget("folder/add?$KEY_CHOOSE_FOLDER={$KEY_CHOOSE_FOLDER}")
 
     object GraphTodo : NavTarget("todo/graph")
     object Todo : NavTarget("todo")

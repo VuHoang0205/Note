@@ -1,7 +1,6 @@
 package com.muamuathu.app.presentation.ui.draw_sketch
 
 import android.graphics.Bitmap
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +17,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -27,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.SketchColor
 import com.muamuathu.app.presentation.components.topbar.Toolbar
@@ -40,17 +37,15 @@ import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 import com.muamuathu.app.presentation.ui.note.viewModel.SelectFileViewModel
 
 @Composable
-fun ScreenDrawSketch() {
+fun ScreenDrawSketch(noteViewModel: AddNoteViewModel, selectViewModel: SelectFileViewModel) {
     val eventHandler = initEventHandler()
     val coroutineScope = rememberCoroutineScope()
-    val selectFileViewModel = hiltViewModel<SelectFileViewModel>()
-    val noteViewModel = hiltViewModel<AddNoteViewModel>(LocalContext.current as ComponentActivity)
-    val pathSavedDrawSketch by remember { selectFileViewModel.pathDrawSketchStateFlow }
+    val pathSavedDrawSketch by remember { selectViewModel.pathDrawSketchStateFlow }
 
     Content(onBack = {
         eventHandler.postNavEvent(NavEvent.PopBackStack())
     }, onSave = {
-        coroutineScope.observeResultFlow(selectFileViewModel.saveImageDrawSketch(it), {
+        coroutineScope.observeResultFlow(selectViewModel.saveImageDrawSketch(it), {
             noteViewModel.updateAttachments(listOf(it))
             eventHandler.postNavEvent(NavEvent.PopBackStack(false))
         })

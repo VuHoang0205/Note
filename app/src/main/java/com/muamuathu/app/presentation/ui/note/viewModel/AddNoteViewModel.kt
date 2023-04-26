@@ -79,14 +79,4 @@ class AddNoteViewModel @Inject constructor(private val repo: JournalRepo) : View
             )
         )
     }
-
-    fun clearReference() {
-        folder.value = Folder()
-        tags.value = WrapList(emptyList())
-        attachments.value = WrapList(emptyList())
-        isValidData.value = false
-        title.value = ""
-        content.value = ""
-        dateTime.value = Calendar.getInstance().timeInMillis
-    }
 }

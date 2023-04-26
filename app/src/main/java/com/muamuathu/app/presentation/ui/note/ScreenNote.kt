@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Note
@@ -54,10 +53,9 @@ import java.time.ZonedDateTime
 const val EXTRA_NOTE_ID = "noteId"
 
 @Composable
-fun ScreenNote() {
+fun ScreenNote(viewModel: NoteViewModel) {
 
     val eventHandler = initEventHandler()
-    val viewModel: NoteViewModel = hiltViewModel()
 
     val selectDateList by viewModel.dateListStateFlow.collectAsState(initial = emptyList())
     val noteItemList by viewModel.noteListStateFlow.collectAsState(initial = WrapList(mutableListOf()))

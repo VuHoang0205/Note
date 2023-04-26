@@ -137,34 +137,22 @@ class MainActivity : AppCompatActivity() {
 
     @Composable
     fun NavGraph(navController: NavHostController, modifier: Modifier) {
-        NavHost(
-            navController,
-            NavTarget.GraphNote.route,
-            modifier) {
+        NavHost(navController, NavTarget.GraphNote.route, modifier) {
 
-            navigation(
-                startDestination = NavTarget.Login.route,
-                route = NavTarget.GraphAuthentication.route
-            ) {
-                authentication()
+            navigation(startDestination = NavTarget.Login.route, route = NavTarget.GraphAuthentication.route) {
+                authentication(navController)
             }
 
-            navigation(
-                startDestination = NavTarget.Note.route, route = NavTarget.GraphNote.route
-            ) {
-                note()
+            navigation(startDestination = NavTarget.Note.route, route = NavTarget.GraphNote.route) {
+                note(navController = navController, route = NavTarget.GraphNote.route)
             }
 
-            navigation(
-                startDestination = NavTarget.Folder.route, route = NavTarget.GraphFolder.route
-            ) {
-                folder()
+            navigation(startDestination = NavTarget.Folder.route, route = NavTarget.GraphFolder.route) {
+                folder(navController = navController, route = NavTarget.GraphFolder.route)
             }
 
-            navigation(
-                startDestination = NavTarget.Todo.route, route = NavTarget.GraphTodo.route
-            ) {
-                todo()
+            navigation(startDestination = NavTarget.Todo.route, route = NavTarget.GraphTodo.route) {
+                todo(navController)
             }
         }
     }

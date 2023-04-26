@@ -2,7 +2,6 @@
 
 package com.muamuathu.app.presentation.ui.note
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -41,11 +39,10 @@ import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 import com.muamuathu.app.presentation.ui.note.viewModel.TagViewModel
 
 @Composable
-fun ScreenAddTag() {
+fun ScreenAddTag(addNoteViewModel: AddNoteViewModel) {
     val eventHandler = initEventHandler()
 
     val viewModel: TagViewModel = hiltViewModel()
-    val addNoteViewModel = hiltViewModel<AddNoteViewModel>(LocalContext.current as ComponentActivity)
     val coroutineScope = rememberCoroutineScope()
     val tagSelectedList = remember { mutableStateListOf<Tag>() }
     val tagList by viewModel.tagListState.collectAsState()

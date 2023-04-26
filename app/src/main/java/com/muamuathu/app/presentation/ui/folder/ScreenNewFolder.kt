@@ -2,7 +2,6 @@
 
 package com.muamuathu.app.presentation.ui.folder
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,7 +20,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.FolderColor
@@ -45,11 +42,11 @@ import com.muamuathu.app.presentation.helper.observeResultFlow
 import com.muamuathu.app.presentation.ui.folder.viewModel.FolderViewModel
 import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 
+const val KEY_CHOOSE_FOLDER = "isChooseFolder"
+
 @Composable
-fun ScreenNewFolder(isChooseFolder: Boolean) {
+fun ScreenNewFolder(isChooseFolder: Boolean, viewModel: FolderViewModel, addNoteViewModel: AddNoteViewModel) {
     val eventHandler = initEventHandler()
-    val viewModel: FolderViewModel = hiltViewModel()
-    val addNoteViewModel: AddNoteViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
     val colorList by remember { mutableStateOf(FolderColor.values().toList()) }
     val folderList by viewModel.entityFolderListState.collectAsState()
     val coroutineScope = rememberCoroutineScope()

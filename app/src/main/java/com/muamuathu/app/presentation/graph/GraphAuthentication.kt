@@ -1,6 +1,7 @@
 package com.muamuathu.app.presentation.graph
 
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.muamuathu.app.presentation.ui.authentication.ScreenLogin
 import com.muamuathu.app.presentation.ui.authentication.ScreenLoginWithEmail
@@ -9,7 +10,7 @@ import com.muamuathu.app.presentation.ui.authentication.ScreenVerifyEmail
 
 const val EXTRA_EMAIL = "email"
 
-fun NavGraphBuilder.authentication() {
+fun NavGraphBuilder.authentication(navController: NavHostController) {
     composable(NavTarget.Login.route) {
         ScreenLogin()
     }
