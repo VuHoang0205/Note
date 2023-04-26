@@ -1,7 +1,12 @@
 package com.muamuathu.app.presentation.components.topbar
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.IconButton
@@ -9,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -29,10 +35,7 @@ fun TopBarBase(
     backgroundColor: Color = Color.White,
 ) {
     TopAppBar(
-        modifier = modifier.background(backgroundColor),
-        backgroundColor = Color.Transparent,
-        elevation = 0.dp,
-        contentColor = Color.White
+        modifier = modifier.background(backgroundColor), backgroundColor = Color.Transparent, elevation = 0.dp, contentColor = Color.White
     ) {
         ConstraintLayout(
             modifier = Modifier
@@ -51,8 +54,7 @@ fun TopBarBase(
                 }
             } else {
                 val AppBarHorizontalPadding = 4.dp
-                val TitleInsetWithoutIcon =
-                    Modifier.width(16.dp - AppBarHorizontalPadding)
+                val TitleInsetWithoutIcon = Modifier.width(16.dp - AppBarHorizontalPadding)
                 Spacer(TitleInsetWithoutIcon.constrainAs(leftItem) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
@@ -68,19 +70,14 @@ fun TopBarBase(
                                 start.linkTo(parent.start)
                                 end.linkTo(parent.end)
                             }
+
                             else -> {
                                 start.linkTo(leftItem.end)
                             }
                         }
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
-                    },
-                text = title,
-                maxLines = 1,
-                fontSize = 20.sp,
-                overflow = TextOverflow.Ellipsis,
-                color = colorResource(R.color.gulf_blue),
-                textAlign = titleAlign
+                    }, text = title, maxLines = 1, fontSize = 20.sp, overflow = TextOverflow.Ellipsis, color = colorResource(R.color.gulf_blue), textAlign = titleAlign
             )
             if (listRightIcon != null) {
                 LazyRow(modifier = Modifier.constrainAs(rightIconList) {
@@ -89,7 +86,8 @@ fun TopBarBase(
                     bottom.linkTo(parent.bottom)
                 }) {
                     items(listRightIcon) {
-                        IconButton(onClick = it.second, enabled = it.third ?: true) {
+                        val enable = it.third ?: true
+                        IconButton(modifier = Modifier.alpha(if (enable) 1f else 0.5f), onClick = it.second, enabled = enable) {
                             it.first.invoke()
                         }
                     }

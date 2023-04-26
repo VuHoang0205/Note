@@ -98,7 +98,7 @@ fun ScreenNewNote(viewModel: AddNoteViewModel) {
             dialog.show()
         },
         onChooseFolder = {
-            eventHandler.postNavEvent(NavEvent.ActionWithValue(NavTarget.FolderAdd, Pair(KEY_CHOOSE_FOLDER, true.toString())))
+            eventHandler.postNavEvent(NavEvent.ActionWithValue(NavTarget.NoteAddFolder, Pair(KEY_CHOOSE_FOLDER, true.toString())))
         }
     ) {
         when (it) {

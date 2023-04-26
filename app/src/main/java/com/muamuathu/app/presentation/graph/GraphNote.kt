@@ -9,21 +9,26 @@ import com.muamuathu.app.presentation.extensions.getParentEntry
 import com.muamuathu.app.presentation.ui.draw_sketch.ScreenDrawSketch
 import com.muamuathu.app.presentation.ui.folder.KEY_CHOOSE_FOLDER
 import com.muamuathu.app.presentation.ui.folder.ScreenNewFolder
-import com.muamuathu.app.presentation.ui.note.*
+import com.muamuathu.app.presentation.ui.note.EXTRA_NOTE_ID
+import com.muamuathu.app.presentation.ui.note.MediaType
+import com.muamuathu.app.presentation.ui.note.ScreenAddTag
+import com.muamuathu.app.presentation.ui.note.ScreenCaptureImage
+import com.muamuathu.app.presentation.ui.note.ScreenNewNote
+import com.muamuathu.app.presentation.ui.note.ScreenNoteDetail
+import com.muamuathu.app.presentation.ui.note.ScreenPickFile
+import com.muamuathu.app.presentation.ui.note.ScreenSelectAttachment
 
 fun NavGraphBuilder.note(navController: NavHostController, route: String) {
-    composable(NavTarget.Note.route) {
-        ScreenNote(hiltViewModel())
+    composable(NavTarget.NoteAdd.route) { backStackEntry ->
+        backStackEntry.getParentEntry(navController = navController, parentEntry = route)?.let {
+            ScreenNewNote(hiltViewModel(it))
+        }
     }
 
     composable(NavTarget.NoteDetail.route) { backstackEntry ->
         backstackEntry.arguments?.getString(EXTRA_NOTE_ID)?.let {
             ScreenNoteDetail(it, hiltViewModel())
         }
-    }
-
-    composable(NavTarget.NoteAdd.route) { backStackEntry ->
-        ScreenNewNote(hiltViewModel(backStackEntry))
     }
 
     composable(NavTarget.NoteAddImage.route) { backstackEntry ->
@@ -68,9 +73,11 @@ fun NavGraphBuilder.note(navController: NavHostController, route: String) {
         }
     }
 
-    composable(NavTarget.FolderAdd.route, arguments = listOf(navArgument(KEY_CHOOSE_FOLDER) { defaultValue = true })) { backStackEntry ->
-        val isChoose = backStackEntry.arguments?.getBoolean(KEY_CHOOSE_FOLDER) ?: false
-        ScreenNewFolder(isChoose, hiltViewModel(), hiltViewModel(backStackEntry))
+    composable(NavTarget.NoteAddFolder.route, arguments = listOf(navArgument(KEY_CHOOSE_FOLDER) { defaultValue = true })) { backStackEntry ->
+        backStackEntry.getParentEntry(navController = navController, parentEntry = route)?.let {
+            val isChoose = backStackEntry.arguments?.getBoolean(KEY_CHOOSE_FOLDER) ?: false
+            ScreenNewFolder(isChoose, hiltViewModel(), hiltViewModel(it))
+        }
     }
 }
 

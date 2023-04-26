@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.muamuathu.app.R
 import com.muamuathu.app.domain.model.Folder
 import com.muamuathu.app.domain.model.FolderColor
@@ -45,7 +46,7 @@ import com.muamuathu.app.presentation.ui.note.viewModel.AddNoteViewModel
 const val KEY_CHOOSE_FOLDER = "isChooseFolder"
 
 @Composable
-fun ScreenNewFolder(isChooseFolder: Boolean, viewModel: FolderViewModel, addNoteViewModel: AddNoteViewModel) {
+fun ScreenNewFolder(isChooseFolder: Boolean, viewModel: FolderViewModel, addNoteViewModel: AddNoteViewModel = hiltViewModel()) {
     val eventHandler = initEventHandler()
     val colorList by remember { mutableStateOf(FolderColor.values().toList()) }
     val folderList by viewModel.entityFolderListState.collectAsState()
@@ -57,23 +58,19 @@ fun ScreenNewFolder(isChooseFolder: Boolean, viewModel: FolderViewModel, addNote
         })
     }
 
-    Content(
-        colorList,
-        folderList.list,
-        onClose = {
-            eventHandler.postNavEvent(NavEvent.PopBackStack(false))
-        },
-        onAdd = { folderName, colorFolder ->
-            val folder = Folder(name = folderName, color = colorFolder)
-            coroutineScope.observeResultFlow(viewModel.saveFolder(folder))
-        }, onItemSelect = {
+    Content(colorList, folderList.list, onClose = {
+        eventHandler.postNavEvent(NavEvent.PopBackStack(false))
+    }, onAdd = { folderName, colorFolder ->
+        val folder = Folder(name = folderName, color = colorFolder)
+        coroutineScope.observeResultFlow(viewModel.saveFolder(folder))
+    }, onItemSelect = {
 
-        }, onDone = { folder ->
-            if (isChooseFolder) {
-                addNoteViewModel.updateFolder(folder)
-            }
-            eventHandler.postNavEvent(NavEvent.PopBackStack(false))
-        })
+    }, onDone = { folder ->
+        if (isChooseFolder) {
+            addNoteViewModel.updateFolder(folder)
+        }
+        eventHandler.postNavEvent(NavEvent.PopBackStack(false))
+    })
 }
 
 @Composable
@@ -103,20 +100,15 @@ private fun Content(
     ) {
         val (topView, contentView) = createRefs()
 
-        TopBarBase(title = stringResource(id = R.string.txt_add_new_folder),
-            titleAlign = TextAlign.Center,
-            navigationIcon = {
-                IconButton(onClick = {
-                    onClose()
-                }) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_close),
-                        contentDescription = "close"
-                    )
-                }
-            },
-            listRightIcon = null,
-            modifier = Modifier.constrainAs(topView) { top.linkTo(parent.top) })
+        TopBarBase(title = stringResource(id = R.string.txt_add_new_folder), titleAlign = TextAlign.Center, navigationIcon = {
+            IconButton(onClick = {
+                onClose()
+            }) {
+                Image(
+                    painter = painterResource(R.drawable.ic_close), contentDescription = "close"
+                )
+            }
+        }, listRightIcon = null, modifier = Modifier.constrainAs(topView) { top.linkTo(parent.top) })
 
         ConstraintLayout(modifier = Modifier
             .fillMaxWidth()
@@ -126,12 +118,10 @@ private fun Content(
                 height = Dimension.fillToConstraints
             }) {
             val (imgPlus, textFieldInput, btnAdd, lazyRowColor, viewLine, lazyColumnFolder, btnDone) = createRefs()
-            Image(painterResource(R.drawable.ic_plus),
-                null,
-                modifier = Modifier.constrainAs(imgPlus) {
-                    top.linkTo(parent.top)
-                    start.linkTo(lazyColumnFolder.start)
-                })
+            Image(painterResource(R.drawable.ic_plus), null, modifier = Modifier.constrainAs(imgPlus) {
+                top.linkTo(parent.top)
+                start.linkTo(lazyColumnFolder.start)
+            })
 
             if (folderName.isNotEmpty()) {
                 AnimatedVisibility(visible = stateVisibility, modifier = Modifier
@@ -146,8 +136,7 @@ private fun Content(
                         onClick = {
                             onAdd(folderName, colorSelected.color)
                             folderName = ""
-                        }, shape = RoundedCornerShape(4.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.royal_blue))
+                        }, shape = RoundedCornerShape(4.dp), colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.royal_blue))
                     ) {
                         Text(
                             text = stringResource(R.string.txt_add),
@@ -191,27 +180,23 @@ private fun Content(
                     disabledTextColor = Color.Transparent,
                 ),
                 textStyle = TextStyle(
-                    fontSize = 14.sp,
-                    color = colorResource(R.color.gulf_blue)
+                    fontSize = 14.sp, color = colorResource(R.color.gulf_blue)
                 ),
             )
 
             if (folderName.isNotEmpty()) {
-                AnimatedVisibility(visible = stateVisibility,
-                    modifier = Modifier.constrainAs(lazyRowColor) {
-                        top.linkTo(btnAdd.bottom, 8.dp)
-                        start.linkTo(imgPlus.start)
-                        end.linkTo(btnAdd.end, 4.dp)
-                        width = Dimension.fillToConstraints
-                    }) {
+                AnimatedVisibility(visible = stateVisibility, modifier = Modifier.constrainAs(lazyRowColor) {
+                    top.linkTo(btnAdd.bottom, 8.dp)
+                    start.linkTo(imgPlus.start)
+                    end.linkTo(btnAdd.end, 4.dp)
+                    width = Dimension.fillToConstraints
+                }) {
                     LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically
                     ) {
                         itemsIndexed(colorList) { _, item ->
                             ItemFolderColor(
-                                itemColor = item,
-                                selected = colorSelected == item
+                                itemColor = item, selected = colorSelected == item
                             ) { item ->
                                 colorSelected = item
                             }
@@ -240,13 +225,11 @@ private fun Content(
                     bottom.linkTo(btnDone.top)
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
-                },
-                horizontalAlignment = Alignment.CenterHorizontally
+                }, horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 itemsIndexed(entityFolderList) { _, item ->
                     ItemFolder(
-                        itemColor = item,
-                        selected = folderSelected == item
+                        itemColor = item, selected = folderSelected == item
                     ) {
                         folderSelected = item
                         onItemSelect(item)
@@ -254,25 +237,21 @@ private fun Content(
                 }
             }
 
-            TextButton(
-                enabled = folderSelected.name.isNotEmpty(),
-                onClick = {
-                    onDone(folderSelected)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .alpha(if (folderSelected.name.isNotEmpty()) 1f else 0.5f)
-                    .background(
-                        colorResource(R.color.royal_blue),
-                        RoundedCornerShape(4.dp)
-                    )
-                    .constrainAs(btnDone) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(lazyColumnFolder.start)
-                        end.linkTo(lazyColumnFolder.end)
-                        width = Dimension.fillToConstraints
-                    }) {
+            TextButton(enabled = folderSelected.name.isNotEmpty(), onClick = {
+                onDone(folderSelected)
+            }, modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .alpha(if (folderSelected.name.isNotEmpty()) 1f else 0.5f)
+                .background(
+                    colorResource(R.color.royal_blue), RoundedCornerShape(4.dp)
+                )
+                .constrainAs(btnDone) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(lazyColumnFolder.start)
+                    end.linkTo(lazyColumnFolder.end)
+                    width = Dimension.fillToConstraints
+                }) {
                 Text(
                     text = stringResource(R.string.txt_done).toUpperCase(Locale.current),
                     color = Color.White,
@@ -290,10 +269,9 @@ internal fun ItemFolderColor(
     itemClick: (selectColor: FolderColor) -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .clickable {
-                itemClick(itemColor)
-            }, contentAlignment = Alignment.Center
+        modifier = Modifier.clickable {
+            itemClick(itemColor)
+        }, contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
@@ -303,8 +281,7 @@ internal fun ItemFolderColor(
         )
         if (selected) {
             Image(
-                painter = painterResource(id = R.drawable.ic_tick),
-                contentDescription = null
+                painter = painterResource(id = R.drawable.ic_tick), contentDescription = null
             )
         }
     }
@@ -324,15 +301,13 @@ private fun ItemFolder(
         }) {
         val (imgFolder, boxColor, textName, checkBox) = createRefs()
 
-        Image(painter = painterResource(id = R.drawable.ic_folder),
-            contentDescription = null, contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(20.dp)
-                .constrainAs(imgFolder) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    bottom.linkTo(parent.bottom)
-                })
+        Image(painter = painterResource(id = R.drawable.ic_folder), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier
+            .size(20.dp)
+            .constrainAs(imgFolder) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                bottom.linkTo(parent.bottom)
+            })
 
         Box(modifier = Modifier
             .size(8.dp)
@@ -344,27 +319,22 @@ private fun ItemFolder(
                 start.linkTo(imgFolder.end, 30.dp)
             })
 
-        Text(text = itemColor.name,
-            fontSize = 14.sp,
-            color = colorResource(id = R.color.gulf_blue),
-            modifier = Modifier.constrainAs(textName) {
-                top.linkTo(imgFolder.top)
-                bottom.linkTo(imgFolder.bottom)
-                start.linkTo(boxColor.end, 8.dp)
-                end.linkTo(checkBox.start)
-                width = Dimension.fillToConstraints
-            })
-        RadioButton(selected = selected,
-            modifier = Modifier.constrainAs(checkBox) {
-                top.linkTo(imgFolder.top)
-                end.linkTo(parent.end)
-                bottom.linkTo(imgFolder.bottom)
-            }, colors = RadioButtonDefaults.colors(
-                selectedColor = colorResource(R.color.royal_blue),
-                unselectedColor = colorResource(R.color.storm_grey)
-            ), onClick = {
-                itemClick()
-            })
+        Text(text = itemColor.name, fontSize = 14.sp, color = colorResource(id = R.color.gulf_blue), modifier = Modifier.constrainAs(textName) {
+            top.linkTo(imgFolder.top)
+            bottom.linkTo(imgFolder.bottom)
+            start.linkTo(boxColor.end, 8.dp)
+            end.linkTo(checkBox.start)
+            width = Dimension.fillToConstraints
+        })
+        RadioButton(selected = selected, modifier = Modifier.constrainAs(checkBox) {
+            top.linkTo(imgFolder.top)
+            end.linkTo(parent.end)
+            bottom.linkTo(imgFolder.bottom)
+        }, colors = RadioButtonDefaults.colors(
+            selectedColor = colorResource(R.color.royal_blue), unselectedColor = colorResource(R.color.storm_grey)
+        ), onClick = {
+            itemClick()
+        })
     }
 }
 

@@ -27,16 +27,6 @@ sealed class NavTarget(val route: String) {
     object Note : NavTarget("note")
     object NoteDetail : NavTarget("note/detail/{noteId}")
 
-    object GraphNoteAdd : NavTarget("note/add/graph")
-    object NoteAdd : NavTarget("note/add")
-    object NoteAddImage : NavTarget("note/add/image")
-    object NoteAddVideo : NavTarget("note/add/video")
-    object NoteCaptureImage : NavTarget("note/add/capture_image")
-    object NotePickImage : NavTarget("note/add/pick_image")
-    object NotePickVideo : NavTarget("note/add/pick_video")
-    object NoteDrawSketch : NavTarget("note/add/draw_sketch")
-    object NoteAddTags : NavTarget("note/add/tags")
-
     object GraphFolder : NavTarget("folder/graph")
     object Folder : NavTarget("folder")
     object FolderAdd : NavTarget("folder/add?$KEY_CHOOSE_FOLDER={$KEY_CHOOSE_FOLDER}")
@@ -46,6 +36,21 @@ sealed class NavTarget(val route: String) {
     object TodoAdd : NavTarget("todo/add")
     object TodoAddSubTask : NavTarget("todo/add/subtask")
     object TodoReminder : NavTarget("todo/add/reminder")
+
+    //Home
+    object GraphHome : NavTarget("home/graph")
+
+    //Add Note
+    object GraphNoteAdd : NavTarget("note/add/graph")
+    object NoteAdd : NavTarget("note/add")
+    object NoteAddImage : NavTarget("note/add/image")
+    object NoteAddVideo : NavTarget("note/add/video")
+    object NoteCaptureImage : NavTarget("note/add/capture_image")
+    object NotePickImage : NavTarget("note/add/pick_image")
+    object NotePickVideo : NavTarget("note/add/pick_video")
+    object NoteDrawSketch : NavTarget("note/add/draw_sketch")
+    object NoteAddTags : NavTarget("note/add/tags")
+    object NoteAddFolder : NavTarget("note/add/folder?$KEY_CHOOSE_FOLDER={$KEY_CHOOSE_FOLDER}")
 
 
     object WebView : NavTarget("webView/{$WEB_URL_KEY}")

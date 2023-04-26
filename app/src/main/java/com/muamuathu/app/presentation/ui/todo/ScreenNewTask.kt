@@ -98,7 +98,7 @@ fun ScreenNewTask() {
         )
         dialog.show()
     }, onChooseFolder = {
-        eventHandler.postNavEvent(NavEvent.Action(NavTarget.FolderAdd))
+        eventHandler.postNavEvent(NavEvent.Action(NavTarget.NoteAddFolder))
     }, onActionClick = {
         when (it) {
             TaskAction.AddSubTask -> eventHandler.postNavEvent(NavEvent.Action(NavTarget.TodoAddSubTask))
